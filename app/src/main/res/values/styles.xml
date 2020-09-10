@@ -16,4 +16,10 @@
         <item name="backgroundTint">@color/secondaryLightColor</item>
     </style>
 
+    <style name="AppTheme.TabLayout" parent="Widget.MaterialComponents.TabLayout.Colored">
+        <item name="tabSelectedTextColor">@color/secondaryLightColor</item>
+        <item name="tabIndicatorColor">@color/secondaryLightColor</item>
+        <item name="tabRippleColor">@color/secondaryColor</item>
+    </style>
+
 </resources>
