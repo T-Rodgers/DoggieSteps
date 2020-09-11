@@ -3,4 +3,9 @@
     <string name="my_doggies_toolbar_title">My Doggies</string>
     <string name="favorites_tab_title">Favorites</string>
     <string name="home_tab_title">Home</string>
+    <string name="delete_all_menu_title">Delete All Pets</string>
+    <string name="list_view_menu_title">List View</string>
+    <string name="grid_view_menu_title">Grid View</string>
+    <string name="delete_pet_menu_title">Delete</string>
+    <string name="total_pets_title">Total Pets:</string>
 </resources>
