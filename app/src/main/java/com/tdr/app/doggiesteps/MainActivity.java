@@ -3,22 +3,29 @@ package com.tdr.app.doggiesteps;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.tdr.app.doggiesteps.adapters.TabsAdapter;
+import com.tdr.app.doggiesteps.fragments.CustomEntryDialogFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity{
 
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
     @BindView(R.id.view_pager)
     ViewPager viewPager;
     @BindView(R.id.bottom_bar)
@@ -33,6 +40,14 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showEntryDialog();
+
+            }
+        });
 
         TabsAdapter tabsAdapter =
                 new TabsAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
@@ -72,5 +87,15 @@ public class MainActivity extends AppCompatActivity{
         }
         return super.onOptionsItemSelected(item);
 
+    }
+
+    public void showEntryDialog() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        CustomEntryDialogFragment newFragment = new CustomEntryDialogFragment();
+
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.add(android.R.id.content, newFragment)
+                .addToBackStack(null).commit();
     }
 }

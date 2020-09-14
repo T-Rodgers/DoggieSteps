@@ -11,4 +11,5 @@
     <string name="action_delete">Delete Pet</string>
     <string name="no_dog">No Dog</string>
     <string name="not_applicable">N/A</string>
+    <string name="enter_new_dog">Enter New Pet</string>
 </resources>
