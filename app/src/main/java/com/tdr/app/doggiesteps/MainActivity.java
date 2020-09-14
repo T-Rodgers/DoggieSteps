@@ -8,21 +8,23 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.tabs.TabLayout;
+import com.tdr.app.doggiesteps.adapters.TabsAdapter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity{
 
+    @BindView(R.id.view_pager)
+    ViewPager viewPager;
     @BindView(R.id.bottom_bar)
     BottomAppBar bottomAppBar;
-
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-
     @BindView(R.id.tabLayout)
     TabLayout tabLayout;
 
@@ -32,26 +34,15 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        TabsAdapter tabsAdapter =
+                new TabsAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        viewPager.setAdapter(tabsAdapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                switch (tab.getPosition()) {
-                    case 0:
-                        Toast.makeText(getBaseContext(), "Home has been selected",
-                                Toast.LENGTH_SHORT).show();
-                        break;
+                viewPager.setCurrentItem(tab.getPosition());
 
-                    case 1:
-                        Toast.makeText(getBaseContext(), "Favorites has been selected",
-                                Toast.LENGTH_SHORT).show();
-                        break;
-
-                    default:
-                        Toast.makeText(getBaseContext(), "What do I do?",
-                                Toast.LENGTH_SHORT).show();
-                        break;
-
-                }
             }
 
             @Override

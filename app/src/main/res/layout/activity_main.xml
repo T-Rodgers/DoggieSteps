@@ -37,6 +37,11 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottom_bar"
         style="@style/AppTheme.BottomAppBar"
@@ -46,6 +51,7 @@
         android:backgroundTint="@color/primaryDarkColor"
         app:fabAlignmentMode="center"
         app:fabCradleRoundedCornerRadius="8dp">
+
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
@@ -70,9 +76,7 @@
 
         </com.google.android.material.tabs.TabLayout>
 
-
     </com.google.android.material.bottomappbar.BottomAppBar>
-
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
