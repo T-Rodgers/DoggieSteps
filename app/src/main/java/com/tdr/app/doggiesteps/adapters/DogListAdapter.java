@@ -11,10 +11,13 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.database.DogDatabase;
+import com.tdr.app.doggiesteps.database.DogListViewModel;
 import com.tdr.app.doggiesteps.model.Dog;
 
 import java.util.List;
@@ -48,8 +51,8 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
 
         if (dogList != null) {
             Dog currentDog = dogList.get(position);
-            holder.dogNameView.setText(currentDog.getDogName());
-            holder.breedView.setText(currentDog.getBreed());
+            holder.dogNameView.setText("Diesel");
+            holder.breedView.setText("Miniature-Schnauzer");
             holder.options.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -63,7 +66,10 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
                             if (item.getItemId() == R.id.delete_list_item) {
-                                dogDatabase.dogDao().delete(currentDog.getPetId());
+                                DogListViewModel dogListViewModel =
+                                        new ViewModelProvider((FragmentActivity)context)
+                                        .get(DogListViewModel.class);
+                                dogListViewModel.delete(currentDog);
                             }
                             return false;
                         }
@@ -81,7 +87,7 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
         }
     }
 
-    void setDogList(List<Dog> dogs) {
+    public void setDogList(List<Dog> dogs) {
         dogList = dogs;
         notifyDataSetChanged();
 
