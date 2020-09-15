@@ -12,16 +12,26 @@ import java.util.List;
 
 public class DogListViewModel extends AndroidViewModel {
 
-    private LiveData<List<Dog>> dogs;
 
-    public DogListViewModel(@NonNull Application application) {
+    private DogRepository mRepository;
+    private LiveData<List<Dog>> mAllDogs;
+
+    public DogListViewModel(Application application) {
         super(application);
-        DogDatabase database = DogDatabase.getInstance(this.getApplication());
-        dogs = database.dogDao().getAllDogs();
+        mRepository = new DogRepository(application);
+        mAllDogs = mRepository.getAllDogs();
     }
 
-    public LiveData<List<Dog>> getDogs() {
-        return dogs;
+    public LiveData<List<Dog>> getAllDogs() {
+        return mAllDogs;
+    }
+
+    public void insert(Dog dog) {
+        mRepository.insert(dog);
+    }
+
+    public void delete(Dog dog) {
+        mRepository.delete(dog);
     }
 
 }

@@ -2,6 +2,7 @@ package com.tdr.app.doggiesteps.database;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -26,9 +27,6 @@ public interface DogDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     void update(Dog dog);
 
-    @Query("DELETE FROM my_pets WHERE petId = :petId")
-    void delete(int petId);
-
-    @Query("SELECT * FROM my_pets WHERE petId = :id")
-    LiveData<Dog> loadDogById(int id);
+    @Delete
+    void delete(Dog dog);
 }
