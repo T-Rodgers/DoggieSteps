@@ -1,12 +1,10 @@
-package com.tdr.app.doggiesteps;
+package com.tdr.app.doggiesteps.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
@@ -16,8 +14,8 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.adapters.TabsAdapter;
-import com.tdr.app.doggiesteps.fragments.CustomEntryDialogFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,7 +42,7 @@ public class MainActivity extends AppCompatActivity{
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showEntryDialog();
+                addPet();
 
             }
         });
@@ -73,29 +71,10 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
+    public void addPet() {
+
+        Intent petEntryIntent = new Intent(this, PetEntryActivity.class);
+        startActivity(petEntryIntent);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_delete) {
-            Toast.makeText(this, "All pets have been deleted", Toast.LENGTH_SHORT).show();
-        }
-        return super.onOptionsItemSelected(item);
-
-    }
-
-    public void showEntryDialog() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        CustomEntryDialogFragment newFragment = new CustomEntryDialogFragment();
-
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.add(android.R.id.content, newFragment)
-                .addToBackStack(null).commit();
-    }
 }
