@@ -12,4 +12,8 @@
     <string name="no_dog">No Dog</string>
     <string name="not_applicable">N/A</string>
     <string name="enter_new_dog">Enter New Pet</string>
+    <string name="pet_name_hint">Pet Name</string>
+    <string name="pet_breed_hint">Breed</string>
+    <string name="pet_age_hint">Age</string>
+    <string name="pet_bio_hint">Bio</string>
 </resources>
