@@ -5,6 +5,7 @@
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorAccent">@color/secondaryLightColor</item>
+
     </style>
 
     <style name="AppTheme.BottomAppBar" parent="Widget.MaterialComponents.BottomAppBar">
@@ -21,5 +22,6 @@
         <item name="tabIndicatorColor">@color/secondaryLightColor</item>
         <item name="tabRippleColor">@color/secondaryColor</item>
     </style>
+
 
 </resources>
