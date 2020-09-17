@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="168dp"
         app:elevation="16dp"
-        android:background="@color/primaryDarkColor"
+        android:background="@color/primaryColor"
         android:layout_marginBottom="8dp"
         app:liftOnScroll="true">
 
@@ -50,10 +50,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:backgroundTint="@color/primaryDarkColor"
         app:fabAlignmentMode="center"
-        app:fabCradleRoundedCornerRadius="8dp">
-
+        app:fabCradleRoundedCornerRadius="4dp"
+        app:fabCradleMargin="8dp"
+        app:fabCradleVerticalOffset="16dp">
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
@@ -62,18 +62,17 @@
             style="@style/AppTheme.TabLayout"
             android:background="@android:color/transparent"
             app:tabMode="fixed"
-            app:tabUnboundedRipple="false">
+            app:tabUnboundedRipple="false"
+            app:tabIconTint="@color/tab_icon_color">
 
             <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/home_tab_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:icon="@drawable/ic_action_home"/>
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/favorites_tab_title"
                 android:icon="@drawable/ic_action_pet_favorites"/>
 
         </com.google.android.material.tabs.TabLayout>

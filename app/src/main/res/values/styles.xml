@@ -8,7 +8,7 @@
 
     </style>
 
-    <style name="AppTheme.BottomAppBar" parent="Widget.MaterialComponents.BottomAppBar">
+    <style name="AppTheme.BottomAppBar" parent="Widget.MaterialComponents.BottomAppBar.Colored">
         <item name="contentInsetStart">0dp</item>
         <item name="contentInsetStartWithNavigation">0dp</item>
     </style>
