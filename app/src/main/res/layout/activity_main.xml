@@ -17,6 +17,7 @@
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:elevation="16dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <com.google.android.material.appbar.MaterialToolbar
@@ -42,16 +43,24 @@
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_marginBottom="@dimen/recycler_view_bottom_margin"/>
+
+    <View
+        android:id="@+id/main_snackbar_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottom_bar"
+        app:hideOnScroll="true"
         style="@style/AppTheme.BottomAppBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         app:fabAlignmentMode="center"
-        app:fabAnimationMode="slide"
+        app:elevation="8dp"
         app:fabCradleMargin="8dp"
         app:fabCradleRoundedCornerRadius="4dp"
         app:fabCradleVerticalOffset="16dp">
@@ -86,6 +95,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_action_add"
+        app:pressedTranslationZ="16dp"
         app:layout_anchor="@+id/bottom_bar"
         app:layout_anchorGravity="top|center" />
 

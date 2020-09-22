@@ -3,4 +3,5 @@
     <dimen name="linear_list_item_padding">8dp</dimen>
     <dimen name="linear_list_item_height">72dp</dimen>
     <dimen name="extended_app_bar">128dp</dimen>
+    <dimen name="recycler_view_bottom_margin">64dp</dimen>
 </resources>

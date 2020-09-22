@@ -17,8 +17,7 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            app:layout_scrollFlags="scroll">
+            android:layout_height="?actionBarSize">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -31,13 +30,20 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <View
+        android:id="@+id/main_snackbar_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottom_bar"
+        app:hideOnScroll="true"
         style="@style/AppTheme.BottomAppBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
