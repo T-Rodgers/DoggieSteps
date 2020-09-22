@@ -24,17 +24,19 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class PetListFragment extends Fragment {
+
     @BindView(R.id.pet_list_recycler_view)
     RecyclerView recyclerView;
 
     private DogListAdapter adapter;
+    private DogListViewModel dogListViewModel;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.linear_pet_list, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_linear_layout_pet_list, container, false);
         ButterKnife.bind(this, rootView);
 
         adapter = new DogListAdapter(getContext());
@@ -42,13 +44,9 @@ public class PetListFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
-        initiateViewModel();
 
-        return rootView;
-    }
 
-    private void initiateViewModel() {
-        DogListViewModel dogListViewModel = new ViewModelProvider(this).get(DogListViewModel.class);
+        dogListViewModel = new ViewModelProvider(this).get(DogListViewModel.class);
         dogListViewModel.getAllDogs().observe(getViewLifecycleOwner(), new Observer<List<Dog>>() {
             @Override
             public void onChanged(List<Dog> dogs) {
@@ -56,5 +54,6 @@ public class PetListFragment extends Fragment {
             }
         });
 
+        return rootView;
     }
 }

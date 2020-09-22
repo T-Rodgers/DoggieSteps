@@ -9,35 +9,32 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "my_pets")
 public class Dog implements Parcelable {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private int petId;
-
-
 
     private String dogName;
 
     private String breed;
 
-    private int age;
+    private String age;
 
     private String petBio;
 
     public Dog() {
     }
 
-    public Dog(int petId, String petName, String breed, int age, String petBio) {
-        this.petId = petId;
+    public Dog(String petName, String breed, String age, String petBio) {
         this.dogName = petName;
         this.breed = breed;
         this.age = age;
         this.petBio = petBio;
     }
 
-    protected Dog(Parcel in) {
+    public Dog(Parcel in) {
         petId = in.readInt();
         dogName = in.readString();
         breed = in.readString();
-        age = in.readInt();
+        age = in.readString();
         petBio = in.readString();
     }
 
@@ -65,11 +62,11 @@ public class Dog implements Parcelable {
         this.dogName = dogName;
     }
 
-    public int getAge() {
+    public String getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(String age) {
         this.age = age;
     }
 
@@ -91,7 +88,7 @@ public class Dog implements Parcelable {
         dest.writeInt(petId);
         dest.writeString(dogName);
         dest.writeString(breed);
-        dest.writeInt(age);
+        dest.writeString(age);
         dest.writeString(petBio);
     }
 
