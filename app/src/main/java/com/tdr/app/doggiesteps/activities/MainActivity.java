@@ -2,26 +2,34 @@ package com.tdr.app.doggiesteps.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.adapters.TabsAdapter;
+import com.tdr.app.doggiesteps.database.DogListViewModel;
+import com.tdr.app.doggiesteps.fragments.PetListFragment;
+import com.tdr.app.doggiesteps.model.Dog;
+import com.tdr.app.doggiesteps.utils.Constants;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity{
+    private static final String TAG = MainActivity.class.getSimpleName();
 
+    @BindView(R.id.main_snackbar_view)
+    View snackBarView;
     @BindView(R.id.fab)
     FloatingActionButton fab;
     @BindView(R.id.view_pager)
@@ -39,13 +47,8 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addPet();
 
-            }
-        });
+        fab.setOnClickListener(v -> addPet());
 
         TabsAdapter tabsAdapter =
                 new TabsAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
@@ -74,7 +77,34 @@ public class MainActivity extends AppCompatActivity{
     public void addPet() {
 
         Intent petEntryIntent = new Intent(this, PetEntryActivity.class);
-        startActivity(petEntryIntent);
+        startActivityForResult(petEntryIntent, Constants.NEW_PET_REQUEST_CODE);
     }
 
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Constants.NEW_PET_REQUEST_CODE && resultCode == RESULT_OK) {
+            DogListViewModel dogListViewModel = new ViewModelProvider(this).get(DogListViewModel.class);
+            Dog dog = data.getParcelableExtra("SAVED_DOG");
+            if (dog != null) {
+                dogListViewModel.insert(data.getParcelableExtra("SAVED_DOG"));
+
+                Snackbar.make(snackBarView, dog.getDogName() + " has been added to list.", Snackbar.LENGTH_SHORT)
+                        .setAnchorView(fab)
+                        .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
+                        .show();
+
+                Log.d(TAG, "Dog from PetEntry " + dog.getDogName());
+            }
+
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("RETRIEVED_PET", dog);
+            PetListFragment petListFragment = new PetListFragment();
+            petListFragment.setArguments(bundle);
+        } else {
+            Toast.makeText(getApplicationContext(), "Entry Cancelled",
+                    Toast.LENGTH_LONG).show();
+        }
+    }
 }
