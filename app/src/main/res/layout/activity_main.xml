@@ -44,8 +44,7 @@
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_marginBottom="@dimen/recycler_view_bottom_margin"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <View
         android:id="@+id/main_snackbar_view"
