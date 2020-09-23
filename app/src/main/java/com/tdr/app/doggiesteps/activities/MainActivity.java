@@ -18,7 +18,6 @@ import com.google.android.material.tabs.TabLayout;
 import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.adapters.TabsAdapter;
 import com.tdr.app.doggiesteps.database.DogListViewModel;
-import com.tdr.app.doggiesteps.fragments.PetListFragment;
 import com.tdr.app.doggiesteps.model.Dog;
 import com.tdr.app.doggiesteps.utils.Constants;
 
@@ -89,7 +88,9 @@ public class MainActivity extends AppCompatActivity{
             if (dog != null) {
                 dogListViewModel.insert(data.getParcelableExtra("SAVED_DOG"));
 
-                Snackbar.make(snackBarView, dog.getDogName() + " has been added to list.", Snackbar.LENGTH_SHORT)
+                Snackbar.make(snackBarView,
+                        dog.getDogName() + " has been added to list.",
+                        Snackbar.LENGTH_SHORT)
                         .setAnchorView(fab)
                         .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
                         .show();
@@ -97,11 +98,6 @@ public class MainActivity extends AppCompatActivity{
                 Log.d(TAG, "Dog from PetEntry " + dog.getDogName());
             }
 
-
-            Bundle bundle = new Bundle();
-            bundle.putParcelable("RETRIEVED_PET", dog);
-            PetListFragment petListFragment = new PetListFragment();
-            petListFragment.setArguments(bundle);
         } else {
             Toast.makeText(getApplicationContext(), "Entry Cancelled",
                     Toast.LENGTH_LONG).show();

@@ -53,12 +53,7 @@ public class PetEntryActivity extends AppCompatActivity {
             Dog newDog = new Dog(dogName, breed, age, bio);
             savedPetDataIntent.putExtra("SAVED_DOG", newDog);
             setResult(RESULT_OK, savedPetDataIntent);
-//            savedPetDataIntent.putExtra(Constants.EXTRA_DOG_NAME, dogName);
-//            savedPetDataIntent.putExtra(Constants.EXTRA_DOG_BREED, breed);
-//            savedPetDataIntent.putExtra(Constants.EXTRA_DOG_AGE, age);
-//            savedPetDataIntent.putExtra(Constants.EXTRA_DOG_BIO, bio);
             finish();
-
 
         }
 
