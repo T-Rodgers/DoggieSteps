@@ -1,11 +1,13 @@
 package com.tdr.app.doggiesteps.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,7 +27,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PetListFragment extends Fragment {
+public class PetListFragment extends Fragment implements DogListAdapter.DogListAdapterClickHandler {
 
     @BindView(R.id.pet_list_recycler_view)
     RecyclerView recyclerView;
@@ -35,7 +37,6 @@ public class PetListFragment extends Fragment {
     TextView emptyViewText;
 
     private DogListAdapter adapter;
-    private DogListViewModel dogListViewModel;
 
     @Nullable
     @Override
@@ -45,16 +46,12 @@ public class PetListFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_linear_layout_pet_list, container, false);
         ButterKnife.bind(this, rootView);
 
-        adapter = new DogListAdapter(getContext());
+        adapter = new DogListAdapter(getContext(), this);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
-        int count = adapter.getItemCount();
 
-
-
-
-        dogListViewModel = new ViewModelProvider(this).get(DogListViewModel.class);
+        DogListViewModel dogListViewModel = new ViewModelProvider(this).get(DogListViewModel.class);
         dogListViewModel.getAllDogs().observe(getViewLifecycleOwner(), new Observer<List<Dog>>() {
             @Override
             public void onChanged(List<Dog> dogs) {
@@ -69,11 +66,15 @@ public class PetListFragment extends Fragment {
             }
         });
 
-        if (count == 0) {
-            emptyViewPhoto.setVisibility(View.VISIBLE);
-            emptyViewText.setVisibility(View.VISIBLE);
-        }
-
         return rootView;
+    }
+
+    @Override
+    public void onClick(Dog dogData) {
+        Toast.makeText(
+                getContext(),
+                dogData.getAge() + "\n\n" +dogData.getPetBio(),
+                Toast.LENGTH_SHORT)
+                .show();
     }
 }

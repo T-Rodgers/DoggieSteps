@@ -26,10 +26,16 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
     private final LayoutInflater inflater;
     private List<Dog> dogList;
     private Context context;
+    private DogListAdapterClickHandler mclickhandler;
 
-    public DogListAdapter(Context context) {
+    public interface DogListAdapterClickHandler{
+        void onClick(Dog dogData);
+    }
+
+    public DogListAdapter(Context context, DogListAdapterClickHandler handler) {
         inflater = LayoutInflater.from(context);
         this.context = context;
+        mclickhandler = handler;
 
     }
 
@@ -45,7 +51,7 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
     @Override
     public void onBindViewHolder(@NonNull DogViewHolder holder, int position) {
 
-        if (dogList != null) {
+
             Dog currentDog = dogList.get(position);
             holder.dogNameView.setText(currentDog.getDogName());
             holder.breedView.setText(currentDog.getBreed());
@@ -70,11 +76,7 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
 
             });
 
-        } else {
-            // Covers the case of data not being ready yet
-            holder.dogNameView.setText(R.string.no_dog);
-            holder.breedView.setText(R.string.not_applicable);
-        }
+
     }
 
     public void setDogList(List<Dog> dogs) {
@@ -94,7 +96,7 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
         }
     }
 
-    static class DogViewHolder extends RecyclerView.ViewHolder {
+    public class DogViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private final TextView dogNameView;
         private final TextView breedView;
@@ -105,7 +107,15 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
             dogNameView = itemView.findViewById(R.id.dog_name_text_view);
             breedView = itemView.findViewById(R.id.dog_breed_text_view);
             options = itemView.findViewById(R.id.list_item_options);
+            itemView.setOnClickListener(this);
 
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            Dog dog = dogList.get(position);
+            mclickhandler.onClick(dog);
         }
     }
 
