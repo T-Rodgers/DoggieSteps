@@ -1,6 +1,5 @@
 package com.tdr.app.doggiesteps.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -43,7 +43,7 @@ public class PetListFragment extends Fragment implements DogListAdapter.DogListA
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_linear_layout_pet_list, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_pet_list, container, false);
         ButterKnife.bind(this, rootView);
 
         adapter = new DogListAdapter(getContext(), this);
@@ -71,10 +71,20 @@ public class PetListFragment extends Fragment implements DogListAdapter.DogListA
 
     @Override
     public void onClick(Dog dogData) {
-        Toast.makeText(
-                getContext(),
-                dogData.getAge() + "\n\n" +dogData.getPetBio(),
-                Toast.LENGTH_SHORT)
-                .show();
+        showDialog();
+    }
+
+    private void showDialog() {
+
+        FragmentTransaction ft = getParentFragmentManager().beginTransaction();
+        Fragment prev = getParentFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+
+        ft.addToBackStack(null);
+
+        PetDetailsDialogFragment newFragment = new PetDetailsDialogFragment();
+        newFragment.show((ft), "dialog");
     }
 }
