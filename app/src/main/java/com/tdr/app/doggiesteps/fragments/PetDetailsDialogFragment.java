@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,8 +21,16 @@ public class PetDetailsDialogFragment extends DialogFragment {
 
     private Dog dog;
 
+    @BindView(R.id.dialog_pet_image)
+    ImageView dialogPetImage;
     @BindView(R.id.dialog_pet_name)
     TextView dialogPetName;
+    @BindView(R.id.dialog_pet_breed)
+    TextView dialogPetBreed;
+    @BindView(R.id.dialog_pet_age)
+    TextView dialogPetAge;
+    @BindView(R.id.dialog_pet_bio)
+    TextView dialogPetBio;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,15 +47,19 @@ public class PetDetailsDialogFragment extends DialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
+        View rootView = inflater.inflate(R.layout.fragment_details_dialog, container, false);
+        ButterKnife.bind(this, rootView);
 
+        setPetData();
 
+        return rootView;
+    }
 
-        View view = inflater.inflate(R.layout.fragment_details_dialog, container, false);
-        ButterKnife.bind(this, view);
-
+    public void setPetData() {
         dialogPetName.setText(dog.getDogName());
+        dialogPetBreed.setText(dog.getBreed());
+        dialogPetAge.setText(dog.getAge());
+        dialogPetBio.setText(dog.getPetBio());
 
-
-        return view;
     }
 }
