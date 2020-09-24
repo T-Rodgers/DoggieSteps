@@ -11,7 +11,6 @@ import com.tdr.app.doggiesteps.fragments.FavoritesListFragment;
 import com.tdr.app.doggiesteps.fragments.PetListFragment;
 
 public class TabsAdapter extends FragmentStatePagerAdapter {
-    Bundle bundle;
     int numberOfTabs;
 
     public TabsAdapter(FragmentManager fm, int numberOfTabs) {
