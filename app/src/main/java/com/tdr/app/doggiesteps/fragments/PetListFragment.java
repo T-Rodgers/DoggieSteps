@@ -64,10 +64,10 @@ public class PetListFragment extends Fragment implements DogListAdapter.DogListA
 
     @Override
     public void onClick(Dog dogData) {
-        showDialog();
+        showDialog(dogData);
     }
 
-    private void showDialog() {
+    private void showDialog(Dog dogData) {
 
         FragmentTransaction ft = getParentFragmentManager().beginTransaction();
         Fragment prev = getParentFragmentManager().findFragmentByTag("dialog");
@@ -77,7 +77,12 @@ public class PetListFragment extends Fragment implements DogListAdapter.DogListA
 
         ft.addToBackStack(null);
 
+
+        Bundle petData = new Bundle();
+        petData.putParcelable("SELECTED_PET", dogData);
+
         PetDetailsDialogFragment newFragment = new PetDetailsDialogFragment();
+        newFragment.setArguments(petData);
         newFragment.show((ft), "dialog");
     }
 }
