@@ -2,11 +2,13 @@ package com.tdr.app.doggiesteps.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -17,6 +19,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class PetEntryActivity extends AppCompatActivity {
+
+    private Dog dog;
 
     @BindView(R.id.details_snackbar_view)
     View contextView;
@@ -36,6 +40,13 @@ public class PetEntryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pet_entry);
         ButterKnife.bind(this);
+
+        Bundle petData = getIntent().getExtras();
+        if (petData != null) {
+            dog = petData.getParcelable("EXTRA_PET_EDIT");
+            assert dog != null;
+            retrievePetToBeEdited(dog);
+        }
 
         saveButton.setOnClickListener(v -> savePet());
     }
@@ -58,4 +69,18 @@ public class PetEntryActivity extends AppCompatActivity {
         }
 
     }
+
+    public void retrievePetToBeEdited(Dog dog) {
+        nameEntry.setText(dog.getDogName());
+        breedEntry.setText(dog.getBreed());
+        ageEntry.setText(dog.getAge());
+        bioEntry.setText(dog.getPetBio());
+    }
+
+    // TODO: (1) PetEntryActivity: Check for id of pet. If it is null we are entering a new pet.
+    // TODO: (2) PetEntryActivity: Edit retrievePetToBeEdited method to load pet into fields based on petId from db
+    // TODO: (3) PetDetailsDialogFragment: Continue editing editFab clickListener
+    // Create interface????
+
+
 }

@@ -15,7 +15,7 @@ import java.util.List;
 @Dao
 public interface DogDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Dog dog);
 
     @Query("DELETE FROM my_pets")
