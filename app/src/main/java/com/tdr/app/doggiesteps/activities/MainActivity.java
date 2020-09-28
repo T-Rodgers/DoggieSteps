@@ -24,7 +24,7 @@ import com.tdr.app.doggiesteps.utils.Constants;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     @BindView(R.id.main_snackbar_view)
@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
 
         fab.setOnClickListener(v -> addPet());
 
@@ -74,33 +73,28 @@ public class MainActivity extends AppCompatActivity{
     }
 
     public void addPet() {
-
         Intent petEntryIntent = new Intent(this, PetEntryActivity.class);
         startActivityForResult(petEntryIntent, Constants.NEW_PET_REQUEST_CODE);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == Constants.NEW_PET_REQUEST_CODE) {
 
-        if (requestCode == Constants.NEW_PET_REQUEST_CODE && resultCode == RESULT_OK) {
-            DogListViewModel dogListViewModel = new ViewModelProvider(this).get(DogListViewModel.class);
-            Dog dog = data.getParcelableExtra("SAVED_DOG");
-            if (dog != null) {
-                dogListViewModel.insert(data.getParcelableExtra("SAVED_DOG"));
+                DogListViewModel dogListViewModel = new ViewModelProvider(this).get(DogListViewModel.class);
+                Dog dog = data.getParcelableExtra(Constants.EXTRA_SAVED_PET);
+                if (dog != null) {
+                    dogListViewModel.insert(dog);
 
-                Snackbar.make(snackBarView,
-                        dog.getDogName() + " has been added to list.",
-                        Snackbar.LENGTH_SHORT)
-                        .setAnchorView(fab)
-                        .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
-                        .show();
+                    Snackbar.make(snackBarView,
+                            dog.getPetName() + " has been added to list.",
+                            Snackbar.LENGTH_SHORT)
+                            .setAnchorView(fab)
+                            .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
+                            .show();
 
-                Log.d(TAG, "Dog from PetEntry " + dog.getDogName());
-            }
-
-        } else {
-            Toast.makeText(getApplicationContext(), "Entry Cancelled",
-                    Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "Dog from PetEntry " + dog.getPetName());
+                }
         }
     }
 }
