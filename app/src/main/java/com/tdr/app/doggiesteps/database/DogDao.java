@@ -15,17 +15,14 @@ import java.util.List;
 @Dao
 public interface DogDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(Dog dog);
 
     @Query("DELETE FROM my_pets")
     void deleteAll();
 
-    @Query("SELECT * FROM my_pets ORDER BY dogName ASC")
+    @Query("SELECT * FROM my_pets ORDER BY petName ASC")
     LiveData<List<Dog>> getAllDogs();
-
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    void update(Dog dog);
 
     @Delete
     void delete(Dog dog);

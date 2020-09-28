@@ -53,7 +53,7 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
 
 
             Dog currentDog = dogList.get(position);
-            holder.dogNameView.setText(currentDog.getDogName());
+            holder.dogNameView.setText(currentDog.getPetName());
             holder.breedView.setText(currentDog.getBreed());
             holder.options.setOnClickListener(view -> {
 

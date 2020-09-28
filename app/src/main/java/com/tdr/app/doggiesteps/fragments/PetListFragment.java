@@ -19,6 +19,7 @@ import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.adapters.DogListAdapter;
 import com.tdr.app.doggiesteps.database.DogListViewModel;
 import com.tdr.app.doggiesteps.model.Dog;
+import com.tdr.app.doggiesteps.utils.Constants;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -79,7 +80,8 @@ public class PetListFragment extends Fragment implements DogListAdapter.DogListA
 
 
         Bundle petData = new Bundle();
-        petData.putParcelable("SELECTED_PET", dogData);
+        petData.putParcelable(Constants.EXTRA_SELECTED_PET, dogData);
+        petData.putInt("SELECTED_ID", dogData.getPetId());
 
         PetDetailsDialogFragment newFragment = new PetDetailsDialogFragment();
         newFragment.setArguments(petData);

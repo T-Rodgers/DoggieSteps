@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "my_pets")
@@ -12,7 +13,7 @@ public class Dog implements Parcelable {
     @PrimaryKey(autoGenerate = true)
     private int petId;
 
-    private String dogName;
+    private String petName;
 
     private String breed;
 
@@ -24,18 +25,18 @@ public class Dog implements Parcelable {
     }
 
     public Dog(String petName, String breed, String age, String petBio) {
-        this.dogName = petName;
+        this.petName = petName;
         this.breed = breed;
         this.age = age;
         this.petBio = petBio;
     }
 
-    public Dog(Parcel in) {
-        petId = in.readInt();
-        dogName = in.readString();
-        breed = in.readString();
-        age = in.readString();
-        petBio = in.readString();
+    public Dog(int petId, String petName, String breed, String age, String petBio) {
+        this.petId = petId;
+        this.petName = petName;
+        this.breed = breed;
+        this.age = age;
+        this.petBio = petBio;
     }
 
     public int getPetId() {
@@ -46,20 +47,20 @@ public class Dog implements Parcelable {
         this.petId = petId;
     }
 
+    public String getPetName() {
+        return petName;
+    }
+
+    public void setPetName(String petName) {
+        this.petName = petName;
+    }
+
     public String getBreed() {
         return breed;
     }
 
     public void setBreed(String breed) {
         this.breed = breed;
-    }
-
-    public String getDogName() {
-        return this.dogName;
-    }
-
-    public void setDogName(String dogName) {
-        this.dogName = dogName;
     }
 
     public String getAge() {
@@ -78,18 +79,12 @@ public class Dog implements Parcelable {
         this.petBio = petBio;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(petId);
-        dest.writeString(dogName);
-        dest.writeString(breed);
-        dest.writeString(age);
-        dest.writeString(petBio);
+    protected Dog(Parcel in) {
+        petId = in.readInt();
+        petName = in.readString();
+        breed = in.readString();
+        age = in.readString();
+        petBio = in.readString();
     }
 
     public static final Creator<Dog> CREATOR = new Creator<Dog>() {
@@ -103,4 +98,18 @@ public class Dog implements Parcelable {
             return new Dog[size];
         }
     };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(petId);
+        dest.writeString(petName);
+        dest.writeString(breed);
+        dest.writeString(age);
+        dest.writeString(petBio);
+    }
 }
