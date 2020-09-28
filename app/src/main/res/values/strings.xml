@@ -17,4 +17,6 @@
     <string name="pet_age_hint">Age</string>
     <string name="pet_bio_hint">Bio</string>
     <string name="save_button_text">Save</string>
+    <string name="edit_pet_title">Edit Pet</string>
+    <string name="take_a_walk_button_text">Take A Walk</string>
 </resources>

@@ -85,18 +85,24 @@
             app:layout_constraintTop_toBottomOf="@id/title_container"
             tools:text="Miniature-Schnauzer" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_edit"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/walk_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/AppTheme.FloatingActionButton"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="16dp"
-            app:fabSize="mini"
-            android:src="@drawable/ic_action_edit"
+            android:text="@string/take_a_walk_button_text"
+            app:icon="@drawable/ic_action_pet_favorites"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_pet_bio"
+            app:layout_constraintVertical_bias="1.0" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

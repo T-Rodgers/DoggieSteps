@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.activities.PetEntryActivity;
@@ -27,8 +28,8 @@ public class PetDetailsDialogFragment extends DialogFragment {
 
     private Dog dog;
 
-    @BindView(R.id.fab_edit)
-    FloatingActionButton editFab;
+    @BindView(R.id.walk_button)
+    MaterialButton takeWalkButton;
     @BindView(R.id.dialog_pet_image)
     ImageView dialogPetImage;
     @BindView(R.id.dialog_pet_name)
@@ -46,7 +47,7 @@ public class PetDetailsDialogFragment extends DialogFragment {
 
         Bundle args = getArguments();
         if (args != null) {
-            dog = args.getParcelable("SELECTED_PET");
+            dog = args.getParcelable(Constants.EXTRA_SELECTED_PET);
         }
     }
 
@@ -58,7 +59,7 @@ public class PetDetailsDialogFragment extends DialogFragment {
         View rootView = inflater.inflate(R.layout.fragment_details_dialog, container, false);
         ButterKnife.bind(this, rootView);
 
-        editFab.setOnClickListener(v -> {
+        takeWalkButton.setOnClickListener(v -> {
             Toast.makeText(getContext(), String.valueOf(dog.getPetId()), Toast.LENGTH_SHORT).show();
         });
 
@@ -68,7 +69,7 @@ public class PetDetailsDialogFragment extends DialogFragment {
     }
 
     public void setPetData() {
-        dialogPetName.setText(dog.getDogName());
+        dialogPetName.setText(dog.getPetName());
         dialogPetBreed.setText(dog.getBreed());
         dialogPetAge.setText(dog.getAge());
         dialogPetBio.setText(dog.getPetBio());
