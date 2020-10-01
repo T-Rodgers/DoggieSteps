@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -26,6 +27,8 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    @BindView(R.id.main_toolbar_title)
+    TextView toolbarTitle;
     @BindView(R.id.main_snackbar_view)
     View snackBarView;
     @BindView(R.id.fab)
@@ -34,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     ViewPager viewPager;
     @BindView(R.id.bottom_bar)
     BottomAppBar bottomAppBar;
-    @BindView(R.id.toolbar)
+    @BindView(R.id.main_toolbar)
     Toolbar toolbar;
     @BindView(R.id.tabLayout)
     TabLayout tabLayout;
@@ -58,7 +61,18 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
+
+                int position = tab.getPosition();
+                viewPager.setCurrentItem(position);
+                switch (position) {
+                    case 0:
+                        toolbarTitle.setText(R.string.my_doggies_toolbar_title);
+
+                        break;
+                    case 1:
+                        toolbarTitle.setText(R.string.favorites_toolbar_title);
+                        break;
+                }
 
             }
 
