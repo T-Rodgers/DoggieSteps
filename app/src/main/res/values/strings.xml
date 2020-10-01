@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Doggie Steps</string>
     <string name="my_doggies_toolbar_title">My Doggies</string>
-    <string name="favorites_tab_title">Favorites</string>
+    <string name="favorites_toolbar_title">Favorites</string>
     <string name="home_tab_title">Home</string>
     <string name="delete_all_menu_title">Delete All Pets</string>
     <string name="list_view_menu_title">List View</string>
@@ -9,8 +9,6 @@
     <string name="delete_pet_menu_title">Delete</string>
     <string name="total_pets_title">Total Pets:</string>
     <string name="action_delete">Delete Pet</string>
-    <string name="no_dog">No Dog</string>
-    <string name="not_applicable">N/A</string>
     <string name="enter_new_dog">Enter New Pet</string>
     <string name="pet_name_hint">Pet Name</string>
     <string name="pet_breed_hint">Breed</string>
