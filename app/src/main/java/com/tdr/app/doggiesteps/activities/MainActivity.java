@@ -4,11 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
@@ -17,8 +15,9 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.adapters.TabsAdapter;
-import com.tdr.app.doggiesteps.database.DogListViewModel;
+import com.tdr.app.doggiesteps.database.DogDatabase;
 import com.tdr.app.doggiesteps.model.Dog;
+import com.tdr.app.doggiesteps.utils.AppExecutors;
 import com.tdr.app.doggiesteps.utils.Constants;
 
 import butterknife.BindView;
@@ -40,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.tabLayout)
     TabLayout tabLayout;
 
+    private DogDatabase dogDatabase;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         fab.setOnClickListener(v -> addPet());
+
+        dogDatabase = DogDatabase.getInstance(this);
 
         TabsAdapter tabsAdapter =
                 new TabsAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
@@ -81,20 +84,21 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == Constants.NEW_PET_REQUEST_CODE) {
 
-                DogListViewModel dogListViewModel = new ViewModelProvider(this).get(DogListViewModel.class);
-                Dog dog = data.getParcelableExtra(Constants.EXTRA_SAVED_PET);
-                if (dog != null) {
-                    dogListViewModel.insert(dog);
+            Dog dog = data.getParcelableExtra(Constants.EXTRA_SAVED_PET);
 
-                    Snackbar.make(snackBarView,
-                            dog.getPetName() + " has been added to list.",
-                            Snackbar.LENGTH_SHORT)
-                            .setAnchorView(fab)
-                            .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
-                            .show();
+            if (dog != null) {
+                AppExecutors.getInstance().diskIO().execute(() ->
+                        dogDatabase.dogDao().insert(dog));
 
-                    Log.d(TAG, "Dog from PetEntry " + dog.getPetName());
-                }
+                Snackbar.make(snackBarView,
+                        dog.getPetName() + " has been added to list.",
+                        Snackbar.LENGTH_SHORT)
+                        .setAnchorView(fab)
+                        .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
+                        .show();
+
+                Log.d(TAG, "Dog from PetEntry " + dog.getPetName());
+            }
         }
     }
 }

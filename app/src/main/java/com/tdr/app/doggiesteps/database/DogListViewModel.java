@@ -2,7 +2,6 @@ package com.tdr.app.doggiesteps.database;
 
 import android.app.Application;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
@@ -12,26 +11,15 @@ import java.util.List;
 
 public class DogListViewModel extends AndroidViewModel {
 
-
-    private DogRepository mRepository;
     private LiveData<List<Dog>> mAllDogs;
 
     public DogListViewModel(Application application) {
         super(application);
-        mRepository = new DogRepository(application);
-        mAllDogs = mRepository.getAllDogs();
+        DogDatabase database = DogDatabase.getInstance(this.getApplication());
+        mAllDogs = database.dogDao().getAllDogs();
     }
 
-    public LiveData<List<Dog>> getAllDogs() {
+    public LiveData<List<Dog>> getDogs() {
         return mAllDogs;
     }
-
-    public void insert(Dog dog) {
-        mRepository.insert(dog);
-    }
-
-    public void delete(Dog dog) {
-        mRepository.delete(dog);
-    }
-
 }

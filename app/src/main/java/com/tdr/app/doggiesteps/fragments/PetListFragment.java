@@ -48,17 +48,7 @@ public class PetListFragment extends Fragment implements DogListAdapter.DogListA
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
-        DogListViewModel dogListViewModel = new ViewModelProvider(this).get(DogListViewModel.class);
-        dogListViewModel.getAllDogs().observe(getViewLifecycleOwner(), dogs -> {
-            if (dogs.size() == 0) {
-                emptyViewPhoto.setVisibility(View.VISIBLE);
-                emptyViewText.setVisibility(View.VISIBLE);
-            } else {
-                emptyViewPhoto.setVisibility(View.GONE);
-                emptyViewText.setVisibility(View.GONE);
-            }
-            adapter.setDogList(dogs);
-        });
+        initiateViewModel();
 
         return rootView;
     }
@@ -86,5 +76,13 @@ public class PetListFragment extends Fragment implements DogListAdapter.DogListA
         PetDetailsDialogFragment newFragment = new PetDetailsDialogFragment();
         newFragment.setArguments(petData);
         newFragment.show((ft), "dialog");
+    }
+
+    private void initiateViewModel() {
+        DogListViewModel viewModel = new ViewModelProvider(this).get(DogListViewModel.class);
+        viewModel.getDogs().observe(getViewLifecycleOwner(), dogs -> {
+            adapter.setDogList(dogs);
+        });
+
     }
 }

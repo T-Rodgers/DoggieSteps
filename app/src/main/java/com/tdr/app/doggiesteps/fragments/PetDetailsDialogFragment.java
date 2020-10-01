@@ -1,7 +1,5 @@
 package com.tdr.app.doggiesteps.fragments;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +15,10 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tdr.app.doggiesteps.R;
-import com.tdr.app.doggiesteps.activities.PetEntryActivity;
+import com.tdr.app.doggiesteps.database.DogDatabase;
 import com.tdr.app.doggiesteps.model.Dog;
+import com.tdr.app.doggiesteps.model.Favorite;
+import com.tdr.app.doggiesteps.utils.AppExecutors;
 import com.tdr.app.doggiesteps.utils.Constants;
 
 import butterknife.BindView;
@@ -27,7 +27,10 @@ import butterknife.ButterKnife;
 public class PetDetailsDialogFragment extends DialogFragment {
 
     private Dog dog;
+    private int petId;
 
+    @BindView(R.id.favorite_fab)
+    FloatingActionButton favoriteFab;
     @BindView(R.id.walk_button)
     MaterialButton takeWalkButton;
     @BindView(R.id.dialog_pet_image)
@@ -41,6 +44,8 @@ public class PetDetailsDialogFragment extends DialogFragment {
     @BindView(R.id.dialog_pet_bio)
     TextView dialogPetBio;
 
+    private DogDatabase database;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +53,10 @@ public class PetDetailsDialogFragment extends DialogFragment {
         Bundle args = getArguments();
         if (args != null) {
             dog = args.getParcelable(Constants.EXTRA_SELECTED_PET);
+            if (dog != null) {
+                petId = dog.getPetId();
+            }
+
         }
     }
 
@@ -59,8 +68,20 @@ public class PetDetailsDialogFragment extends DialogFragment {
         View rootView = inflater.inflate(R.layout.fragment_details_dialog, container, false);
         ButterKnife.bind(this, rootView);
 
-        takeWalkButton.setOnClickListener(v -> {
+        database = DogDatabase.getInstance(getContext());
+
+        Favorite favorite = new Favorite(petId);
+
+        favoriteFab.setOnClickListener(v -> {
+
+            AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().insert(favorite));
+
             Toast.makeText(getContext(), String.valueOf(dog.getPetId()), Toast.LENGTH_SHORT).show();
+            dismiss();
+        });
+
+        takeWalkButton.setOnClickListener(v -> {
+
         });
 
         setPetData();
@@ -75,4 +96,5 @@ public class PetDetailsDialogFragment extends DialogFragment {
         dialogPetBio.setText(dog.getPetBio());
 
     }
+
 }

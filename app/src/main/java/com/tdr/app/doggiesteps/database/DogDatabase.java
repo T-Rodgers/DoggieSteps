@@ -8,9 +8,10 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 import com.tdr.app.doggiesteps.model.Dog;
+import com.tdr.app.doggiesteps.model.Favorite;
 
 
-@Database(entities = {Dog.class}, version = 1, exportSchema = false)
+@Database(entities = {Dog.class, Favorite.class}, version = 1, exportSchema = false)
 public abstract class DogDatabase extends RoomDatabase {
 
     private static final String TAG = DogDatabase.class.getSimpleName();
@@ -32,4 +33,6 @@ public abstract class DogDatabase extends RoomDatabase {
     }
 
     public abstract DogDao dogDao();
+
+    public abstract FavoriteDao favoriteDao();
 }

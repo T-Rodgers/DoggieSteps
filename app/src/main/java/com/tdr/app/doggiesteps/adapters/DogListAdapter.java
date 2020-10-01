@@ -10,13 +10,12 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tdr.app.doggiesteps.R;
-import com.tdr.app.doggiesteps.database.DogListViewModel;
+import com.tdr.app.doggiesteps.database.DogDatabase;
 import com.tdr.app.doggiesteps.model.Dog;
+import com.tdr.app.doggiesteps.utils.AppExecutors;
 
 import java.util.List;
 
@@ -43,7 +42,7 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
     @Override
     public DogViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = inflater.inflate(R.layout.linear_list_item, parent, false);
+        View view = inflater.inflate(R.layout.pet_list_item, parent, false);
 
         return new DogViewHolder(view);
     }
@@ -64,10 +63,11 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
                 //adding click listener
                 popup.setOnMenuItemClickListener(item -> {
                     if (item.getItemId() == R.id.delete_list_item) {
-                        DogListViewModel dogListViewModel =
-                                new ViewModelProvider((FragmentActivity)context)
-                                .get(DogListViewModel.class);
-                        dogListViewModel.delete(currentDog);
+                        AppExecutors.getInstance().diskIO().execute(() -> {
+                            DogDatabase database = DogDatabase.getInstance(context.getApplicationContext());
+                            database.dogDao().delete(currentDog);
+                        });
+
                     }
                     return false;
                 });
