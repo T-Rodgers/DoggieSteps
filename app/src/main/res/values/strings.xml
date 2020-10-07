@@ -17,4 +17,5 @@
     <string name="save_button_text">Save</string>
     <string name="edit_pet_title">Edit Pet</string>
     <string name="take_a_walk_button_text">Take A Walk</string>
+    <string name="add_an_image_button_text">Add an Image</string>
 </resources>
