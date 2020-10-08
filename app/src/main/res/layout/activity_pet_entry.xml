@@ -48,7 +48,7 @@
                 app:iconTint="@color/primaryDarkColor"
                 android:textColor="@color/primaryDarkColor"
                 app:icon="@drawable/ic_action_add_photo"
-                app:layout_constraintBottom_toBottomOf="@+id/petImage"
+                app:layout_constraintBottom_toBottomOf="@+id/empty_add_photo_background"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -56,17 +56,18 @@
             <View
                 android:id="@+id/empty_add_photo_background"
                 android:layout_width="match_parent"
-                android:layout_height="194dp"
+                android:layout_height="300dp"
                 android:background="@color/parentBackgroundColor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:visibility="invisible"
                 android:id="@+id/petImage"
                 android:layout_width="match_parent"
-                android:layout_height="194dp"
+                android:layout_height="300dp"
+                android:scaleType="centerCrop"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

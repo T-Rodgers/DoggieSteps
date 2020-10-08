@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     @BindView(R.id.main_toolbar_title)
-    TextView toolbarTitle;
+    TextView toolBarTextView;
     @BindView(R.id.main_snackbar_view)
     View snackBarView;
     @BindView(R.id.fab)
@@ -37,8 +37,6 @@ public class MainActivity extends AppCompatActivity {
     ViewPager viewPager;
     @BindView(R.id.bottom_bar)
     BottomAppBar bottomAppBar;
-    @BindView(R.id.main_toolbar)
-    Toolbar toolbar;
     @BindView(R.id.tabLayout)
     TabLayout tabLayout;
 
@@ -66,11 +64,11 @@ public class MainActivity extends AppCompatActivity {
                 viewPager.setCurrentItem(position);
                 switch (position) {
                     case 0:
-                        toolbarTitle.setText(R.string.my_doggies_toolbar_title);
+                        toolBarTextView.setText(R.string.my_doggies_toolbar_title);
 
                         break;
                     case 1:
-                        toolbarTitle.setText(R.string.favorites_toolbar_title);
+                        toolBarTextView.setText(R.string.favorites_toolbar_title);
                         break;
                 }
 
