@@ -13,8 +13,19 @@ public class Favorite {
     @ColumnInfo
     private int id;
 
-    public Favorite(int id) {
+    private String photoPath;
+
+    public String getPhotoPath() {
+        return photoPath;
+    }
+
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
+    }
+
+    public Favorite(int id, String photoPath) {
         this.id = id;
+        this.photoPath = photoPath;
     }
 
     public int getId() {

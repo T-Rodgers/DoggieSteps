@@ -81,7 +81,16 @@ public class PetListFragment extends Fragment implements DogListAdapter.DogListA
     private void initiateViewModel() {
         DogListViewModel viewModel = new ViewModelProvider(this).get(DogListViewModel.class);
         viewModel.getDogs().observe(getViewLifecycleOwner(), dogs -> {
+            if (dogs.size() != 0) {
+                emptyViewText.setVisibility(View.GONE);
+                emptyViewPhoto.setVisibility(View.GONE);
+            } else {
+                emptyViewText.setVisibility(View.VISIBLE);
+                emptyViewPhoto.setVisibility(View.VISIBLE);
+            }
             adapter.setDogList(dogs);
+
+
         });
 
     }

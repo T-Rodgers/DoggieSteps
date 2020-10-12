@@ -21,14 +21,18 @@ public class Dog implements Parcelable {
 
     private String petBio;
 
+    private String photoPath;
+
+
     public Dog() {
     }
 
-    public Dog(String petName, String breed, String age, String petBio) {
+    public Dog(String petName, String breed, String age, String petBio, String photoPath) {
         this.petName = petName;
         this.breed = breed;
         this.age = age;
         this.petBio = petBio;
+        this.photoPath = photoPath;
     }
 
     public Dog(int petId, String petName, String breed, String age, String petBio) {
@@ -38,6 +42,42 @@ public class Dog implements Parcelable {
         this.age = age;
         this.petBio = petBio;
     }
+
+    protected Dog(Parcel in) {
+        petId = in.readInt();
+        petName = in.readString();
+        breed = in.readString();
+        age = in.readString();
+        petBio = in.readString();
+        photoPath = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(petId);
+        dest.writeString(petName);
+        dest.writeString(breed);
+        dest.writeString(age);
+        dest.writeString(petBio);
+        dest.writeString(photoPath);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Dog> CREATOR = new Creator<Dog>() {
+        @Override
+        public Dog createFromParcel(Parcel in) {
+            return new Dog(in);
+        }
+
+        @Override
+        public Dog[] newArray(int size) {
+            return new Dog[size];
+        }
+    };
 
     public int getPetId() {
         return petId;
@@ -79,37 +119,12 @@ public class Dog implements Parcelable {
         this.petBio = petBio;
     }
 
-    protected Dog(Parcel in) {
-        petId = in.readInt();
-        petName = in.readString();
-        breed = in.readString();
-        age = in.readString();
-        petBio = in.readString();
+    public String getPhotoPath() {
+        return photoPath;
     }
 
-    public static final Creator<Dog> CREATOR = new Creator<Dog>() {
-        @Override
-        public Dog createFromParcel(Parcel in) {
-            return new Dog(in);
-        }
-
-        @Override
-        public Dog[] newArray(int size) {
-            return new Dog[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(petId);
-        dest.writeString(petName);
-        dest.writeString(breed);
-        dest.writeString(age);
-        dest.writeString(petBio);
-    }
 }

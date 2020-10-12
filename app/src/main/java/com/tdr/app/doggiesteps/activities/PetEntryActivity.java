@@ -87,7 +87,7 @@ public class PetEntryActivity extends AppCompatActivity {
             String breed = breedEntry.getText().toString().trim();
             String age = ageEntry.getText().toString().trim();
             String bio = bioEntry.getText().toString().trim();
-            Dog newDog = new Dog(dogName, breed, age, bio);
+            Dog newDog = new Dog(dogName, breed, age, bio, currentPhotoPath);
             savedPetDataIntent.putExtra(Constants.EXTRA_SAVED_PET, newDog);
             setResult(RESULT_OK, savedPetDataIntent);
             finish();
@@ -157,7 +157,9 @@ public class PetEntryActivity extends AppCompatActivity {
             emptyViewBackground.setVisibility(View.GONE);
             addPhotoButton.setVisibility(View.GONE);
             petImageView.setVisibility(View.VISIBLE);
-            petImageView.setImageBitmap(rotatedBitmap);
+            Glide.with(this)
+                    .load(rotatedBitmap)
+                    .into(petImageView);
         }
     }
 }

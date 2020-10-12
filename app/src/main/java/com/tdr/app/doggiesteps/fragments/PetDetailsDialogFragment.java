@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tdr.app.doggiesteps.R;
@@ -28,6 +29,7 @@ public class PetDetailsDialogFragment extends DialogFragment {
 
     private Dog dog;
     private int petId;
+    private String photoPath;
 
     @BindView(R.id.favorite_fab)
     FloatingActionButton favoriteFab;
@@ -55,6 +57,7 @@ public class PetDetailsDialogFragment extends DialogFragment {
             dog = args.getParcelable(Constants.EXTRA_SELECTED_PET);
             if (dog != null) {
                 petId = dog.getPetId();
+                photoPath = dog.getPhotoPath();
             }
 
         }
@@ -70,7 +73,7 @@ public class PetDetailsDialogFragment extends DialogFragment {
 
         database = DogDatabase.getInstance(getContext());
 
-        Favorite favorite = new Favorite(petId);
+        Favorite favorite = new Favorite(petId, photoPath);
 
         favoriteFab.setOnClickListener(v -> {
 
@@ -90,6 +93,11 @@ public class PetDetailsDialogFragment extends DialogFragment {
     }
 
     public void setPetData() {
+        String dogPhotoPath = dog.getPhotoPath();
+        Glide.with(this)
+                .load(dogPhotoPath)
+                .error(R.drawable.ic_action_pet_favorites)
+                .into(dialogPetImage);
         dialogPetName.setText(dog.getPetName());
         dialogPetBreed.setText(dog.getBreed());
         dialogPetAge.setText(dog.getAge());

@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.database.DogDatabase;
 import com.tdr.app.doggiesteps.model.Dog;
@@ -27,7 +28,7 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
     private Context context;
     private DogListAdapterClickHandler mclickhandler;
 
-    public interface DogListAdapterClickHandler{
+    public interface DogListAdapterClickHandler {
         void onClick(Dog dogData);
     }
 
@@ -50,31 +51,35 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
     @Override
     public void onBindViewHolder(@NonNull DogViewHolder holder, int position) {
 
+        Dog currentDog = dogList.get(position);
+        holder.dogNameView.setText(currentDog.getPetName());
+        holder.breedView.setText(currentDog.getBreed());
+        String photoPath = currentDog.getPhotoPath();
+        Glide.with(context)
+                .load(photoPath)
+                .error(R.drawable.ic_action_pet_favorites)
+                .into(holder.petPhotoImageView);
+        holder.options.setOnClickListener(view -> {
 
-            Dog currentDog = dogList.get(position);
-            holder.dogNameView.setText(currentDog.getPetName());
-            holder.breedView.setText(currentDog.getBreed());
-            holder.options.setOnClickListener(view -> {
+            //creating a popup menu
+            PopupMenu popup = new PopupMenu(context, holder.options);
+            //inflating menu from xml resource
+            popup.inflate(R.menu.menu_list_item);
+            //adding click listener
+            popup.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.delete_list_item) {
+                    AppExecutors.getInstance().diskIO().execute(() -> {
+                        DogDatabase database = DogDatabase.getInstance(context.getApplicationContext());
+                        database.dogDao().delete(currentDog);
+                    });
 
-                //creating a popup menu
-                PopupMenu popup = new PopupMenu(context, holder.options);
-                //inflating menu from xml resource
-                popup.inflate(R.menu.menu_list_item);
-                //adding click listener
-                popup.setOnMenuItemClickListener(item -> {
-                    if (item.getItemId() == R.id.delete_list_item) {
-                        AppExecutors.getInstance().diskIO().execute(() -> {
-                            DogDatabase database = DogDatabase.getInstance(context.getApplicationContext());
-                            database.dogDao().delete(currentDog);
-                        });
-
-                    }
-                    return false;
-                });
-                //displaying the popup
-                popup.show();
-
+                }
+                return false;
             });
+            //displaying the popup
+            popup.show();
+
+        });
 
 
     }
@@ -101,12 +106,14 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
         private final TextView dogNameView;
         private final TextView breedView;
         private final ImageView options;
+        private final ImageView petPhotoImageView;
 
         private DogViewHolder(View itemView) {
             super(itemView);
             dogNameView = itemView.findViewById(R.id.dog_name_text_view);
             breedView = itemView.findViewById(R.id.dog_breed_text_view);
             options = itemView.findViewById(R.id.list_item_options);
+            petPhotoImageView = itemView.findViewById(R.id.list_pet_image);
             itemView.setOnClickListener(this);
 
         }
