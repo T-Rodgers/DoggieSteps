@@ -17,9 +17,11 @@
 
             <ImageView
                 android:id="@+id/dialog_pet_image"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="194dp"
+                android:scaleType="centerCrop"
                 android:src="@drawable/dog_photo"
+                app:layout_constraintBottom_toTopOf="@+id/title_container"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/parentBackgroundColor">
+    android:background="@color/primaryLightColor">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/pet_list_recycler_view"

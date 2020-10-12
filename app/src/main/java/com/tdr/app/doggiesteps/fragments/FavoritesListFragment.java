@@ -35,7 +35,7 @@ public class FavoritesListFragment extends Fragment implements FavoritesAdapter.
         ButterKnife.bind(this, rootView);
 
         adapter = new FavoritesAdapter(getContext(), this);
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), calculateNoOfColumns(getContext()));
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
         favoritesRecyclerView.setLayoutManager(layoutManager);
         favoritesRecyclerView.setAdapter(adapter);
 
