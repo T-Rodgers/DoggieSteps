@@ -1,6 +1,5 @@
 package com.tdr.app.doggiesteps.activities;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,15 +9,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
@@ -27,13 +22,12 @@ import com.google.android.material.snackbar.Snackbar;
 import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.model.Dog;
 import com.tdr.app.doggiesteps.utils.Constants;
-import com.tdr.app.doggiesteps.utils.GlideUtils;
+import com.tdr.app.doggiesteps.utils.ImageProperties;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -138,27 +132,18 @@ public class PetEntryActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+
             Bitmap imageBitmap = BitmapFactory.decodeFile(currentPhotoPath);
-            Matrix matrix = new Matrix();
-            matrix.postRotate(90);
-            Bitmap scaledBitmap = Bitmap.createScaledBitmap(
-                    imageBitmap,
-                    imageBitmap.getWidth(),
-                    imageBitmap.getHeight(),
-                    true);
-            Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap,
-                    0,
-                    0,
-                    scaledBitmap.getWidth(),
-                    scaledBitmap.getHeight(),
-                    matrix,
-                    true);
+
+            Bitmap transformedBitmap =
+                    new ImageProperties()
+                            .rotateAndScaleImage(imageBitmap);
 
             emptyViewBackground.setVisibility(View.GONE);
             addPhotoButton.setVisibility(View.GONE);
             petImageView.setVisibility(View.VISIBLE);
             Glide.with(this)
-                    .load(rotatedBitmap)
+                    .load(transformedBitmap)
                     .into(petImageView);
         }
     }
