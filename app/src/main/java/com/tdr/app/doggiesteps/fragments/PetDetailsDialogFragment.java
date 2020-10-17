@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,7 +15,6 @@ import androidx.fragment.app.DialogFragment;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.database.DogDatabase;
 import com.tdr.app.doggiesteps.model.Dog;
@@ -31,8 +31,8 @@ public class PetDetailsDialogFragment extends DialogFragment {
     private int petId;
     private String photoPath;
 
-    @BindView(R.id.favorite_fab)
-    FloatingActionButton favoriteFab;
+    @BindView(R.id.dialog_favorite_button)
+    ToggleButton favoriteButton;
     @BindView(R.id.walk_button)
     MaterialButton takeWalkButton;
     @BindView(R.id.dialog_pet_image)
@@ -75,12 +75,12 @@ public class PetDetailsDialogFragment extends DialogFragment {
 
         Favorite favorite = new Favorite(petId, photoPath);
 
-        favoriteFab.setOnClickListener(v -> {
+        favoriteButton.setOnClickListener(v -> {
 
             AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().insert(favorite));
 
-            Toast.makeText(getContext(), String.valueOf(dog.getPetId()), Toast.LENGTH_SHORT).show();
-            dismiss();
+            Toast.makeText(getContext(), dog.getPetName() + " marked as Favorite!", Toast.LENGTH_LONG).show();
+
         });
 
         takeWalkButton.setOnClickListener(v -> {
