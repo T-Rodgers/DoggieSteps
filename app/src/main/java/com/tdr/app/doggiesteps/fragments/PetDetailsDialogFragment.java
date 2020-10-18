@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ import butterknife.ButterKnife;
 public class PetDetailsDialogFragment extends DialogFragment {
 
     private Dog dog;
+    private Favorite favorite;
     private int petId;
     private String photoPath;
 
@@ -73,16 +75,19 @@ public class PetDetailsDialogFragment extends DialogFragment {
 
         database = DogDatabase.getInstance(getContext());
 
-        Favorite favorite = new Favorite(petId, photoPath);
+         favorite = new Favorite(petId, photoPath);
 
-        favoriteButton.setOnClickListener(v -> {
+         favoriteButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+             @Override
+             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                 if (isChecked){
+                     addToFavorites();
+                 } else {
+                     removeFromFavorites();
+                 }
 
-            AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().insert(favorite));
-
-            Toast.makeText(getContext(), dog.getPetName() + " marked as Favorite!", Toast.LENGTH_LONG).show();
-
-        });
-
+             }
+         });
         takeWalkButton.setOnClickListener(v -> {
 
         });
@@ -104,5 +109,20 @@ public class PetDetailsDialogFragment extends DialogFragment {
         dialogPetBio.setText(dog.getPetBio());
 
     }
+
+    public void addToFavorites() {
+        AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().insert(favorite));
+
+        Toast.makeText(getContext(), dog.getPetName() + " has been marked as Favorite", Toast.LENGTH_SHORT).show();
+
+
+    }
+
+    public void removeFromFavorites() {
+        AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().delete(favorite));
+
+        Toast.makeText(getContext(), dog.getPetName() + " has been removed from Favorites", Toast.LENGTH_SHORT).show();
+    }
+
 
 }
