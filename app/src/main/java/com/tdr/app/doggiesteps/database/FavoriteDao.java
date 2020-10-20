@@ -23,4 +23,7 @@ public interface FavoriteDao {
 
     @Delete
     void delete(Favorite favorite);
+
+    @Query("SELECT * FROM favorites WHERE id = :id")
+    LiveData<Favorite> getFavoriteById(int id);
 }

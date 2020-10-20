@@ -6,20 +6,27 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.tdr.app.doggiesteps.model.Dog;
+import com.tdr.app.doggiesteps.model.Favorite;
 
 import java.util.List;
 
-public class DogListViewModel extends AndroidViewModel {
+public class MainViewModel extends AndroidViewModel {
 
     private LiveData<List<Dog>> mAllDogs;
+    private LiveData<List<Favorite>> mAllFavorites;
 
-    public DogListViewModel(Application application) {
+    public MainViewModel(Application application) {
         super(application);
         DogDatabase database = DogDatabase.getInstance(this.getApplication());
         mAllDogs = database.dogDao().getAllDogs();
+        mAllFavorites = database.favoriteDao().getAllFavorites();
     }
 
     public LiveData<List<Dog>> getDogs() {
         return mAllDogs;
+    }
+
+    public LiveData<List<Favorite>> getFavorites() {
+        return mAllFavorites;
     }
 }

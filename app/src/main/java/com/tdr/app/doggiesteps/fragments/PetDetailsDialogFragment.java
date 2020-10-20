@@ -13,11 +13,15 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.database.DogDatabase;
+import com.tdr.app.doggiesteps.database.FavoritesViewModel;
+import com.tdr.app.doggiesteps.database.FavoritesViewModelFactory;
 import com.tdr.app.doggiesteps.model.Dog;
 import com.tdr.app.doggiesteps.model.Favorite;
 import com.tdr.app.doggiesteps.utils.AppExecutors;
@@ -75,24 +79,26 @@ public class PetDetailsDialogFragment extends DialogFragment {
 
         database = DogDatabase.getInstance(getContext());
 
-         favorite = new Favorite(petId, photoPath);
+        favorite = new Favorite(petId, photoPath);
 
-         favoriteButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-             @Override
-             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                 if (isChecked){
-                     addToFavorites();
-                 } else {
-                     removeFromFavorites();
-                 }
+        favoriteButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    addToFavorites();
+                } else {
+                    removeFromFavorites();
+                }
 
-             }
-         });
+            }
+        });
         takeWalkButton.setOnClickListener(v -> {
 
         });
 
         setPetData();
+
+        initiateViewModel();
 
         return rootView;
     }
@@ -113,16 +119,33 @@ public class PetDetailsDialogFragment extends DialogFragment {
     public void addToFavorites() {
         AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().insert(favorite));
 
-        Toast.makeText(getContext(), dog.getPetName() + " has been marked as Favorite", Toast.LENGTH_SHORT).show();
-
-
     }
 
     public void removeFromFavorites() {
         AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().delete(favorite));
-
-        Toast.makeText(getContext(), dog.getPetName() + " has been removed from Favorites", Toast.LENGTH_SHORT).show();
+        Toast.makeText(
+                getContext(),
+                dog.getPetName() + " has been removed from Favorites",
+                Toast.LENGTH_SHORT).show();
     }
 
+    private void initiateViewModel() {
+        FavoritesViewModelFactory factory = new FavoritesViewModelFactory(database, favorite.getId());
+        FavoritesViewModel viewModel = new ViewModelProvider(this, factory).get(FavoritesViewModel.class);
+        viewModel.getFavorite().observe(getViewLifecycleOwner(), new Observer<Favorite>() {
+            @Override
+            public void onChanged(Favorite favoriteData) {
+                viewModel.getFavorite().removeObserver(this);
+                if (favoriteData == null) {
+                    favoriteButton.setChecked(false);
+                } else if ((favorite.getId() == dog.getPetId()) && !favoriteButton.isChecked()) {
+                    favoriteButton.setChecked(true);
+                } else {
+                    favoriteButton.setChecked(false);
+                }
 
+            }
+        });
+
+    }
 }

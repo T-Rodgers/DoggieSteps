@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.adapters.DogListAdapter;
-import com.tdr.app.doggiesteps.database.DogListViewModel;
+import com.tdr.app.doggiesteps.database.MainViewModel;
 import com.tdr.app.doggiesteps.model.Dog;
 import com.tdr.app.doggiesteps.utils.Constants;
 
@@ -79,7 +79,7 @@ public class PetListFragment extends Fragment implements DogListAdapter.DogListA
     }
 
     private void initiateViewModel() {
-        DogListViewModel viewModel = new ViewModelProvider(this).get(DogListViewModel.class);
+        MainViewModel viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         viewModel.getDogs().observe(getViewLifecycleOwner(), dogs -> {
             if (dogs.size() != 0) {
                 emptyViewText.setVisibility(View.GONE);

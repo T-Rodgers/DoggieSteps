@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.adapters.FavoritesAdapter;
-import com.tdr.app.doggiesteps.database.FavoritesViewModel;
+import com.tdr.app.doggiesteps.database.MainViewModel;
 import com.tdr.app.doggiesteps.model.Favorite;
 
 import butterknife.BindView;
@@ -46,7 +46,7 @@ public class FavoritesListFragment extends Fragment implements FavoritesAdapter.
 
 
     private void initiateViewModel() {
-        FavoritesViewModel viewModel = new ViewModelProvider(this).get(FavoritesViewModel.class);
+        MainViewModel viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         viewModel.getFavorites().observe(getViewLifecycleOwner(), favorites -> {
             adapter.setFavoriteList(favorites);
         });

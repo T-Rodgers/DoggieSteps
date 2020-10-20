@@ -1,25 +1,22 @@
 package com.tdr.app.doggiesteps.database;
 
-import android.app.Application;
-
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.tdr.app.doggiesteps.model.Favorite;
 
-import java.util.List;
+public class FavoritesViewModel extends ViewModel {
 
-public class FavoritesViewModel extends AndroidViewModel {
+    private LiveData<Favorite> favorite;
 
-    private LiveData<List<Favorite>> mAllFavorites;
-
-    public FavoritesViewModel(Application application) {
-        super(application);
-        DogDatabase database = DogDatabase.getInstance(this.getApplication());
-        mAllFavorites = database.favoriteDao().getAllFavorites();
+    public FavoritesViewModel(DogDatabase database, int favoriteId) {
+        favorite = database.favoriteDao().getFavoriteById(favoriteId);
     }
 
-    public LiveData<List<Favorite>> getFavorites() {
-        return mAllFavorites;
+    public LiveData<Favorite> getFavorite() {
+        return favorite;
     }
 }
+
+
+
