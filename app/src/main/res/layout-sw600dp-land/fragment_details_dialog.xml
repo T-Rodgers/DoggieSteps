@@ -3,25 +3,25 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/dialog_width"
-    android:layout_height="@dimen/dialog_height">
+    android:layout_width="@dimen/tablet_dialog_width"
+    android:layout_height="@dimen/tablet_dialog_height"
+    android:layout_gravity="center">
 
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="@dimen/tablet_dialog_width"
+        android:layout_height="@dimen/tablet_dialog_height">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="@dimen/dialog_width"
-            android:layout_height="@dimen/dialog_height">
+            android:layout_width="@dimen/tablet_dialog_width"
+            android:layout_height="@dimen/tablet_dialog_height">
 
 
             <ImageView
                 android:id="@+id/dialog_pet_image"
-                android:layout_width="0dp"
-                android:layout_height="194dp"
+                android:layout_width="450dp"
+                android:layout_height="@dimen/tablet_dialog_height"
                 android:scaleType="centerCrop"
                 android:src="@drawable/dog_photo"
-                app:layout_constraintBottom_toTopOf="@+id/title_container"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -33,10 +33,11 @@
                 android:layout_height="wrap_content"
                 android:background="@color/primaryLightColor"
                 android:padding="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/dialog_pet_image">
+                app:layout_constraintStart_toEndOf="@+id/dialog_pet_image"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0">
 
 
                 <TextView
@@ -74,29 +75,30 @@
 
 
             <TextView
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
                 android:id="@+id/dialog_pet_bio"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                android:padding="8dp"
                 android:layout_marginRight="16dp"
+                android:layout_marginBottom="16dp"
                 android:isScrollContainer="true"
+                app:layout_constraintBottom_toTopOf="@+id/walk_button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/title_container"
                 app:layout_constraintTop_toBottomOf="@id/title_container"
+                app:layout_constraintVertical_bias="0.0"
                 tools:text="Miniature-Schnauzer" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/walk_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginBottom="16dp"
@@ -104,19 +106,17 @@
                 app:icon="@drawable/ic_action_pet_favorites"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/dialog_pet_bio"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintStart_toStartOf="@+id/dialog_pet_bio" />
 
             <ToggleButton
                 android:id="@+id/dialog_favorite_button"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 android:background="@android:color/transparent"
-                android:button="@drawable/favorite_button_24dp"
+                android:button="@drawable/favorite_button_48dp"
                 android:textOff=""
                 android:textOn=""
                 app:buttonTint="@color/primaryDarkColor"

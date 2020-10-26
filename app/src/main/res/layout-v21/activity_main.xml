@@ -8,25 +8,19 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/extended_app_bar"
+        android:layout_height="?actionBarSize"
         android:layout_marginBottom="8dp"
         android:background="@color/primaryLightColor"
         android:elevation="16dp"
         app:liftOnScroll="true">
 
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:elevation="16dp"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
-
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/main_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
+                android:layout_height="match_parent"
                 android:layout_gravity="bottom"
                 app:layout_collapseMode="pin"
-                app:layout_scrollFlags="scroll">
+                app:layout_scrollFlags="noScroll">
 
                 <TextView
                     android:id="@+id/main_toolbar_title"
@@ -36,8 +30,6 @@
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
                     android:textColor="@android:color/white" />
             </com.google.android.material.appbar.MaterialToolbar>
-
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 

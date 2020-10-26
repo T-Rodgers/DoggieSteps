@@ -1,6 +1,7 @@
 package com.tdr.app.doggiesteps.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,8 @@ import butterknife.ButterKnife;
 
 public class PetDetailsDialogFragment extends DialogFragment {
 
+    private static final String TAG = PetDetailsDialogFragment.class.getSimpleName();
+
     private Dog dog;
     private Favorite favorite;
     private int petId;
@@ -58,6 +61,8 @@ public class PetDetailsDialogFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Log.d(TAG, "onCreate: ");
+
         Bundle args = getArguments();
         if (args != null) {
             dog = args.getParcelable(Constants.EXTRA_SELECTED_PET);
@@ -65,7 +70,6 @@ public class PetDetailsDialogFragment extends DialogFragment {
                 petId = dog.getPetId();
                 photoPath = dog.getPhotoPath();
             }
-
         }
     }
 
@@ -73,6 +77,8 @@ public class PetDetailsDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
+        Log.d(TAG, "onCreateView: ");
 
         View rootView = inflater.inflate(R.layout.fragment_details_dialog, container, false);
         ButterKnife.bind(this, rootView);
@@ -85,6 +91,7 @@ public class PetDetailsDialogFragment extends DialogFragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+
                     addToFavorites();
                 } else {
                     removeFromFavorites();
@@ -92,12 +99,12 @@ public class PetDetailsDialogFragment extends DialogFragment {
 
             }
         });
+
         takeWalkButton.setOnClickListener(v -> {
 
         });
 
         setPetData();
-
         initiateViewModel();
 
         return rootView;
@@ -113,12 +120,12 @@ public class PetDetailsDialogFragment extends DialogFragment {
         dialogPetBreed.setText(dog.getBreed());
         dialogPetAge.setText(dog.getAge());
         dialogPetBio.setText(dog.getPetBio());
-
     }
 
     public void addToFavorites() {
-        AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().insert(favorite));
 
+        favorite = new Favorite(petId, photoPath);
+        AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().insert(favorite));
     }
 
     public void removeFromFavorites() {
@@ -130,6 +137,7 @@ public class PetDetailsDialogFragment extends DialogFragment {
     }
 
     private void initiateViewModel() {
+        Log.d(TAG, "initiateViewModel: ");
         FavoritesViewModelFactory factory = new FavoritesViewModelFactory(database, favorite.getId());
         FavoritesViewModel viewModel = new ViewModelProvider(this, factory).get(FavoritesViewModel.class);
         viewModel.getFavorite().observe(getViewLifecycleOwner(), new Observer<Favorite>() {
@@ -139,13 +147,10 @@ public class PetDetailsDialogFragment extends DialogFragment {
                 if (favoriteData == null) {
                     favoriteButton.setChecked(false);
                 } else if ((favorite.getId() == dog.getPetId()) && !favoriteButton.isChecked()) {
+                    favoriteData.setId(dog.getPetId());
                     favoriteButton.setChecked(true);
-                } else {
-                    favoriteButton.setChecked(false);
                 }
-
             }
         });
-
     }
 }

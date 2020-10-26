@@ -1,9 +1,6 @@
 package com.tdr.app.doggiesteps.activities;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,15 +11,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.snackbar.Snackbar;
 import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.model.Dog;
 import com.tdr.app.doggiesteps.utils.Constants;
-import com.tdr.app.doggiesteps.utils.ImageProperties;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,12 +30,13 @@ import java.util.Date;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
+
 public class PetEntryActivity extends AppCompatActivity {
 
     private static final String TAG = PetEntryActivity.class.getSimpleName();
 
     private String currentPhotoPath;
-    private Uri mUri;
 
     @BindView(R.id.empty_add_photo_background)
     View emptyViewBackground;
@@ -57,12 +56,32 @@ public class PetEntryActivity extends AppCompatActivity {
     Button saveButton;
     @BindView(R.id.add_photo_button)
     Button addPhotoButton;
+    @BindView(R.id.entry_toolbar)
+    MaterialToolbar materialToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pet_entry);
         ButterKnife.bind(this);
+
+        materialToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        if (savedInstanceState != null) {
+            petImageView.setVisibility(View.VISIBLE);
+            currentPhotoPath = savedInstanceState.getString("photo_path");
+            Glide.with(this)
+                    .load(currentPhotoPath)
+                    .transition(withCrossFade())
+                    .placeholder(R.drawable.ic_action_pet_favorites)
+                    .circleCrop()
+                    .into(petImageView);
+        }
 
         saveButton.setOnClickListener(v -> savePet());
         addPhotoButton.setOnClickListener(v -> {
@@ -89,7 +108,6 @@ public class PetEntryActivity extends AppCompatActivity {
     }
 
 
-
     private void dispatchTakePictureIntent() {
         File photoFile = null;
         try {
@@ -107,9 +125,6 @@ public class PetEntryActivity extends AppCompatActivity {
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(takePictureIntent, Constants.REQUEST_IMAGE_CAPTURE);
     }
-
-
-
 
 
     private File createImageFile() throws IOException {
@@ -133,18 +148,33 @@ public class PetEntryActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
-            Bitmap imageBitmap = BitmapFactory.decodeFile(currentPhotoPath);
-
-            Bitmap transformedBitmap =
-                    new ImageProperties()
-                            .rotateAndScaleImage(imageBitmap);
-
             emptyViewBackground.setVisibility(View.GONE);
             addPhotoButton.setVisibility(View.GONE);
             petImageView.setVisibility(View.VISIBLE);
             Glide.with(this)
-                    .load(transformedBitmap)
+                    .load(currentPhotoPath)
+                    .placeholder(R.drawable.ic_action_pet_favorites)
+                    .circleCrop()
                     .into(petImageView);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("add_button_visibility", addPhotoButton.getVisibility());
+        outState.putInt("empty_background_visibility", emptyViewBackground.getVisibility());
+        outState.putInt("pet_photo_visibility", petImageView.getVisibility());
+        outState.putString("photo_path", currentPhotoPath);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            addPhotoButton.setVisibility(savedInstanceState.getInt("add_button_visibility"));
+            emptyViewBackground.setVisibility(savedInstanceState.getInt("empty_background_visibility"));
+            petImageView.setVisibility(savedInstanceState.getInt("pet_photo_visibility"));
         }
     }
 }

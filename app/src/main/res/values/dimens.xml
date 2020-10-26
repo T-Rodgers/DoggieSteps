@@ -6,4 +6,6 @@
     <dimen name="recycler_view_bottom_margin">64dp</dimen>
     <dimen name="dialog_width">344dp</dimen>
     <dimen name="dialog_height">510dp</dimen>
+    <dimen name="tablet_dialog_width">900dp</dimen>
+    <dimen name="tablet_dialog_height">600dp</dimen>
 </resources>

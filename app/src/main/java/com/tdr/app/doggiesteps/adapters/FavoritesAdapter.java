@@ -39,7 +39,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
     @Override
     public FavoriteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = inflater.inflate(R.layout.favorite_list_item, parent, false);
+        View view = inflater.inflate(R.layout.grid_list_item, parent, false);
 
         return new FavoriteViewHolder(view);
     }
@@ -53,7 +53,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
         holder.petId.setText(String.valueOf(currentFavorite.getId()));
         Glide.with(context)
                 .load(favoriteImagePath)
-                .error(R.drawable.ic_action_pet_favorites)
+                .error(R.drawable.dog_photo)
                 .into(holder.favoritePetImage);
     }
 

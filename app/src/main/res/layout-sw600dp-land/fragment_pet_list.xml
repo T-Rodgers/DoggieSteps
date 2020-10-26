@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primaryLightColor"
-    android:orientation="vertical">
+    android:paddingBottom="8dp">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/favorite_list_recycler_view"
+        android:id="@+id/pet_list_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
-        tools:listitem="@layout/grid_list_item" />
+        tools:listitem="@layout/pet_list_item" />
 
     <ImageView
         android:id="@+id/empty_view_photo"
