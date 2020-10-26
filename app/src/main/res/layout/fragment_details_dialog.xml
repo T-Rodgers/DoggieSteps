@@ -74,7 +74,6 @@
 
 
             <TextView
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
                 android:id="@+id/dialog_pet_bio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -84,6 +83,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 android:isScrollContainer="true"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -99,14 +99,26 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginBottom="16dp"
                 android:text="@string/take_a_walk_button_text"
                 app:icon="@drawable/ic_action_pet_favorites"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/stop_button"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/dialog_pet_bio"
                 app:layout_constraintVertical_bias="1.0" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/stop_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="@string/stop_button_text"
+                app:icon="@drawable/ic_action_pet_favorites"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/walk_button"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/walk_button" />
 
             <ToggleButton
                 android:id="@+id/dialog_favorite_button"
@@ -123,6 +135,19 @@
                 app:layout_constraintEnd_toEndOf="@+id/title_container"
                 app:layout_constraintTop_toTopOf="@+id/title_container"
                 tools:checked="true" />
+
+            <TextView
+                android:id="@+id/steps_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:text="TextView"
+                app:layout_constraintBaseline_toBaselineOf="@+id/walk_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/walk_button" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

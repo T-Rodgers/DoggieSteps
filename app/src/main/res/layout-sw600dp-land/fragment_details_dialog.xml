@@ -97,16 +97,34 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/walk_button"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginBottom="16dp"
                 android:text="@string/take_a_walk_button_text"
                 app:icon="@drawable/ic_action_pet_favorites"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
                 app:layout_constraintStart_toStartOf="@+id/dialog_pet_bio" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/stop_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/stop_button_text"
+                app:icon="@drawable/ic_action_pet_favorites"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/dialog_pet_bio"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/guideline" />
 
             <ToggleButton
                 android:id="@+id/dialog_favorite_button"
@@ -123,6 +141,13 @@
                 app:layout_constraintEnd_toEndOf="@+id/title_container"
                 app:layout_constraintTop_toTopOf="@+id/title_container"
                 tools:checked="true" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="672dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

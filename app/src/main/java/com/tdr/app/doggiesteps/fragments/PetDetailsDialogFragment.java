@@ -1,5 +1,10 @@
 package com.tdr.app.doggiesteps.fragments;
 
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,17 +28,25 @@ import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.database.DogDatabase;
 import com.tdr.app.doggiesteps.database.FavoritesViewModel;
 import com.tdr.app.doggiesteps.database.FavoritesViewModelFactory;
+import com.tdr.app.doggiesteps.interfaces.StepListener;
 import com.tdr.app.doggiesteps.model.Dog;
 import com.tdr.app.doggiesteps.model.Favorite;
 import com.tdr.app.doggiesteps.utils.AppExecutors;
 import com.tdr.app.doggiesteps.utils.Constants;
+import com.tdr.app.doggiesteps.utils.StepDetector;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PetDetailsDialogFragment extends DialogFragment {
+public class PetDetailsDialogFragment extends DialogFragment implements SensorEventListener, StepListener {
 
     private static final String TAG = PetDetailsDialogFragment.class.getSimpleName();
+
+    private SensorManager sensorManager;
+    private StepDetector stepDetector;
+    private Sensor sensor;
+    private int numOfSteps;
+
 
     private Dog dog;
     private Favorite favorite;
@@ -44,6 +57,8 @@ public class PetDetailsDialogFragment extends DialogFragment {
     ToggleButton favoriteButton;
     @BindView(R.id.walk_button)
     MaterialButton takeWalkButton;
+    @BindView(R.id.stop_button)
+    MaterialButton stopButton;
     @BindView(R.id.dialog_pet_image)
     ImageView dialogPetImage;
     @BindView(R.id.dialog_pet_name)
@@ -54,6 +69,8 @@ public class PetDetailsDialogFragment extends DialogFragment {
     TextView dialogPetAge;
     @BindView(R.id.dialog_pet_bio)
     TextView dialogPetBio;
+    @BindView(R.id.steps_text_view)
+    TextView stepsTextView;
 
     private DogDatabase database;
 
@@ -71,6 +88,8 @@ public class PetDetailsDialogFragment extends DialogFragment {
                 photoPath = dog.getPhotoPath();
             }
         }
+
+
     }
 
     @Nullable
@@ -87,6 +106,11 @@ public class PetDetailsDialogFragment extends DialogFragment {
 
         favorite = new Favorite(petId, photoPath);
 
+        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        stepDetector = new StepDetector();
+        stepDetector.registerListener(this);
+
         favoriteButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -101,7 +125,14 @@ public class PetDetailsDialogFragment extends DialogFragment {
         });
 
         takeWalkButton.setOnClickListener(v -> {
+            numOfSteps = 0;
 
+            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
+
+        });
+
+        stopButton.setOnClickListener(v -> {
+            sensorManager.unregisterListener(this);
         });
 
         setPetData();
@@ -152,5 +183,28 @@ public class PetDetailsDialogFragment extends DialogFragment {
                 }
             }
         });
+    }
+
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            stepDetector.updateAccel(
+                    event.timestamp,
+                    event.values[0],
+                    event.values[1],
+                    event.values[2]);
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
+    public void step(long timeNs) {
+        numOfSteps++;
+        stepsTextView.setText(String.valueOf(numOfSteps));
     }
 }
