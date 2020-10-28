@@ -71,6 +71,7 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
                     AppExecutors.getInstance().diskIO().execute(() -> {
                         DogDatabase database = DogDatabase.getInstance(context.getApplicationContext());
                         database.dogDao().delete(currentDog);
+                        
                     });
 
                 }
