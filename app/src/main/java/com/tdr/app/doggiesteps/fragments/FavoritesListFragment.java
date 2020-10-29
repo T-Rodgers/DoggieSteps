@@ -35,7 +35,7 @@ public class FavoritesListFragment extends Fragment implements FavoritesAdapter.
         ButterKnife.bind(this, rootView);
 
         adapter = new FavoritesAdapter(getContext(), this);
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), calculateNoOfColumns(getContext()));
         favoritesRecyclerView.setLayoutManager(layoutManager);
         favoritesRecyclerView.setAdapter(adapter);
 
@@ -61,7 +61,7 @@ public class FavoritesListFragment extends Fragment implements FavoritesAdapter.
     public static int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-        int scalingFactor = 90;
+        int scalingFactor = 150;
         int noOfColumns = (int) (dpWidth / scalingFactor);
         return noOfColumns;
     }

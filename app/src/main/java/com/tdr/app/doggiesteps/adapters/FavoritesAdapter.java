@@ -50,9 +50,10 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
         Favorite currentFavorite = favoriteList.get(position);
         String favoriteImagePath = currentFavorite.getPhotoPath();
 
-        holder.petId.setText(String.valueOf(currentFavorite.getId()));
+        holder.petNameTextView.setText(String.valueOf(currentFavorite.getFavoritePetName()));
         Glide.with(context)
                 .load(favoriteImagePath)
+                .circleCrop()
                 .error(R.drawable.dog_photo)
                 .into(holder.favoritePetImage);
     }
@@ -78,12 +79,12 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
 
     public class FavoriteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private final TextView petId;
+        private final TextView petNameTextView;
         private final ImageView favoritePetImage;
 
         private FavoriteViewHolder(View itemView) {
             super(itemView);
-            petId = itemView.findViewById(R.id.favorite_petid);
+            petNameTextView = itemView.findViewById(R.id.favorite_pet_name);
             favoritePetImage = itemView.findViewById(R.id.favorite_pet_photo);
             itemView.setOnClickListener(this);
 

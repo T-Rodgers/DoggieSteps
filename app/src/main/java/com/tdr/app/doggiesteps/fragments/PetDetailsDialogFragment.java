@@ -52,6 +52,7 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
     private Favorite favorite;
     private int petId;
     private String photoPath;
+    private String favoritePetName;
 
     @BindView(R.id.dialog_favorite_button)
     ToggleButton favoriteButton;
@@ -86,6 +87,7 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
             if (dog != null) {
                 petId = dog.getPetId();
                 photoPath = dog.getPhotoPath();
+                favoritePetName = dog.getPetName();
             }
         }
 
@@ -104,7 +106,7 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
 
         database = DogDatabase.getInstance(getContext());
 
-        favorite = new Favorite(petId, photoPath);
+        favorite = new Favorite(petId, photoPath, favoritePetName);
 
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -145,6 +147,7 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
         String dogPhotoPath = dog.getPhotoPath();
         Glide.with(this)
                 .load(dogPhotoPath)
+                .circleCrop()
                 .error(R.drawable.ic_action_pet_favorites)
                 .into(dialogPetImage);
         dialogPetName.setText(dog.getPetName());
@@ -155,7 +158,7 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
 
     public void addToFavorites() {
 
-        favorite = new Favorite(petId, photoPath);
+        favorite = new Favorite(petId, photoPath, favoritePetName);
         AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().insert(favorite));
     }
 

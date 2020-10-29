@@ -19,6 +19,8 @@ public class Favorite {
 
     private String photoPath;
 
+    private String favoritePetName;
+
     public String getPhotoPath() {
         return photoPath;
     }
@@ -27,9 +29,18 @@ public class Favorite {
         this.photoPath = photoPath;
     }
 
-    public Favorite(int id, String photoPath) {
+    public String getFavoritePetName() {
+        return favoritePetName;
+    }
+
+    public void setFavoritePetName(String favoritePetName) {
+        this.favoritePetName = favoritePetName;
+    }
+
+    public Favorite(int id, String photoPath, String favoritePetName) {
         this.id = id;
         this.photoPath = photoPath;
+        this.favoritePetName = favoritePetName;
     }
 
     public int getId() {
