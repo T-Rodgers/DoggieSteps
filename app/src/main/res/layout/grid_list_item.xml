@@ -27,9 +27,10 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="8dp"
+        android:textColor="@android:color/white"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/favorite_pet_photo"
-        tools:text="10" />
+        tools:text="Diesel" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,6 @@
 package com.tdr.app.doggiesteps.fragments;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -10,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -113,16 +113,12 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
         stepDetector = new StepDetector();
         stepDetector.registerListener(this);
 
-        favoriteButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
+        favoriteButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
 
-                    addToFavorites();
-                } else {
-                    removeFromFavorites();
-                }
-
+                addToFavorites();
+            } else {
+                removeFromFavorites();
             }
         });
 
@@ -130,12 +126,10 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
             numOfSteps = 0;
 
             sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
-
         });
 
-        stopButton.setOnClickListener(v -> {
-            sensorManager.unregisterListener(this);
-        });
+        stopButton.setOnClickListener(v ->
+                sensorManager.unregisterListener(this));
 
         setPetData();
         initiateViewModel();
@@ -208,6 +202,18 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
     @Override
     public void step(long timeNs) {
         numOfSteps++;
-        stepsTextView.setText(String.valueOf(numOfSteps));
+        String stepCount = getString(R.string.steps_count_format, String.valueOf(numOfSteps));
+        stepsTextView.setText(stepCount);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            int width = ViewGroup.LayoutParams.MATCH_PARENT;
+            int height = ViewGroup.LayoutParams.MATCH_PARENT;
+            dialog.getWindow().setLayout(width, height);
+        }
     }
 }
