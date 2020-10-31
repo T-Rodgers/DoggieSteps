@@ -99,8 +99,6 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        Log.d(TAG, "onCreateView: ");
-
         View rootView = inflater.inflate(R.layout.fragment_details_dialog, container, false);
         ButterKnife.bind(this, rootView);
 
@@ -141,9 +139,11 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
         String dogPhotoPath = dog.getPhotoPath();
         Glide.with(this)
                 .load(dogPhotoPath)
-                .circleCrop()
+                .centerCrop()
                 .error(R.drawable.ic_action_pet_favorites)
                 .into(dialogPetImage);
+        dialogPetImage.setContentDescription(
+                getString(R.string.dialog_image_content_description, dog.getPetName()));
         dialogPetName.setText(dog.getPetName());
         dialogPetBreed.setText(dog.getBreed());
         dialogPetAge.setText(dog.getAge());
@@ -165,7 +165,6 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
     }
 
     private void initiateViewModel() {
-        Log.d(TAG, "initiateViewModel: ");
         FavoritesViewModelFactory factory = new FavoritesViewModelFactory(database, favorite.getId());
         FavoritesViewModel viewModel = new ViewModelProvider(this, factory).get(FavoritesViewModel.class);
         viewModel.getFavorite().observe(getViewLifecycleOwner(), new Observer<Favorite>() {

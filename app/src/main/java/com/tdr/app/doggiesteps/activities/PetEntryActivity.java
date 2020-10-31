@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -65,12 +66,7 @@ public class PetEntryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pet_entry);
         ButterKnife.bind(this);
 
-        materialToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        materialToolbar.setNavigationOnClickListener(v -> finish());
 
         if (savedInstanceState != null) {
             petImageView.setVisibility(View.VISIBLE);
@@ -79,14 +75,12 @@ public class PetEntryActivity extends AppCompatActivity {
                     .load(currentPhotoPath)
                     .transition(withCrossFade())
                     .placeholder(R.drawable.ic_action_pet_favorites)
-                    .circleCrop()
+                    .centerCrop()
                     .into(petImageView);
         }
 
         saveButton.setOnClickListener(v -> savePet());
-        addPhotoButton.setOnClickListener(v -> {
-            dispatchTakePictureIntent();
-        });
+        addPhotoButton.setOnClickListener(v -> dispatchTakePictureIntent());
     }
 
     public void savePet() {
@@ -118,7 +112,10 @@ public class PetEntryActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         Uri imageUri =
-                FileProvider.getUriForFile(this, "com.tdr.app.doggiesteps.fileprovider", photoFile);
+                null;
+        if (photoFile != null) {
+            imageUri = FileProvider.getUriForFile(this, "com.tdr.app.doggiesteps.fileprovider", photoFile);
+        }
 
 
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -129,7 +126,7 @@ public class PetEntryActivity extends AppCompatActivity {
 
     private File createImageFile() throws IOException {
         // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File imageFile = File.createTempFile(
@@ -154,7 +151,7 @@ public class PetEntryActivity extends AppCompatActivity {
             Glide.with(this)
                     .load(currentPhotoPath)
                     .placeholder(R.drawable.ic_action_pet_favorites)
-                    .circleCrop()
+                    .centerCrop()
                     .into(petImageView);
         }
     }
@@ -171,10 +168,8 @@ public class PetEntryActivity extends AppCompatActivity {
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState != null) {
-            addPhotoButton.setVisibility(savedInstanceState.getInt("add_button_visibility"));
-            emptyViewBackground.setVisibility(savedInstanceState.getInt("empty_background_visibility"));
-            petImageView.setVisibility(savedInstanceState.getInt("pet_photo_visibility"));
-        }
+        addPhotoButton.setVisibility(savedInstanceState.getInt("add_button_visibility"));
+        emptyViewBackground.setVisibility(savedInstanceState.getInt("empty_background_visibility"));
+        petImageView.setVisibility(savedInstanceState.getInt("pet_photo_visibility"));
     }
 }

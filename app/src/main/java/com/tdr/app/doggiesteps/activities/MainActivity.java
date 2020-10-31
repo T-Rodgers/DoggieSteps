@@ -1,9 +1,6 @@
 package com.tdr.app.doggiesteps.activities;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,11 +19,13 @@ import com.tdr.app.doggiesteps.database.DogDatabase;
 import com.tdr.app.doggiesteps.model.Dog;
 import com.tdr.app.doggiesteps.utils.AppExecutors;
 import com.tdr.app.doggiesteps.utils.Constants;
+import com.tdr.app.doggiesteps.utils.ReminderUtilities;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
+
     private static final String TAG = MainActivity.class.getSimpleName();
 
     @BindView(R.id.main_toolbar_title)
@@ -50,11 +49,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        if (isTablet(getApplicationContext())) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
+        ReminderUtilities.scheduleChargingReminder(this);
 
         fab.setOnClickListener(v -> addPet());
 
@@ -111,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                         dogDatabase.dogDao().insert(dog));
 
                 Snackbar.make(snackBarView,
-                        dog.getPetName() + " has been added to list.",
+                        dog.getPetName() + getResources().getString(R.string.pet_added_snackbar_message),
                         Snackbar.LENGTH_SHORT)
                         .setAnchorView(fab)
                         .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
@@ -120,11 +115,5 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "Dog from PetEntry " + dog.getPetName());
             }
         }
-    }
-
-    public static boolean isTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK)
-                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 }
