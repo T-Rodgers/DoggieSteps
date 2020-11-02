@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.room.Entity;
-import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "my_pets")
@@ -23,24 +22,28 @@ public class Dog implements Parcelable {
 
     private String photoPath;
 
+    private int numOfSteps;
+
 
     public Dog() {
     }
 
-    public Dog(String petName, String breed, String age, String petBio, String photoPath) {
+    public Dog(String petName, String breed, String age, String petBio, String photoPath, int numOfSteps) {
         this.petName = petName;
         this.breed = breed;
         this.age = age;
         this.petBio = petBio;
         this.photoPath = photoPath;
+        this.numOfSteps = numOfSteps;
     }
 
-    public Dog(int petId, String petName, String breed, String age, String petBio) {
+    public Dog(int petId, String petName, String breed, String age, String petBio, int numOfSteps) {
         this.petId = petId;
         this.petName = petName;
         this.breed = breed;
         this.age = age;
         this.petBio = petBio;
+        this.numOfSteps = numOfSteps;
     }
 
     protected Dog(Parcel in) {
@@ -50,6 +53,7 @@ public class Dog implements Parcelable {
         age = in.readString();
         petBio = in.readString();
         photoPath = in.readString();
+        numOfSteps = in.readInt();
     }
 
     @Override
@@ -60,6 +64,7 @@ public class Dog implements Parcelable {
         dest.writeString(age);
         dest.writeString(petBio);
         dest.writeString(photoPath);
+        dest.writeInt(numOfSteps);
     }
 
     @Override
@@ -127,4 +132,11 @@ public class Dog implements Parcelable {
         this.photoPath = photoPath;
     }
 
+    public int getNumOfSteps() {
+        return numOfSteps;
+    }
+
+    public void setNumOfSteps(int numOfSteps) {
+        this.numOfSteps = numOfSteps;
+    }
 }

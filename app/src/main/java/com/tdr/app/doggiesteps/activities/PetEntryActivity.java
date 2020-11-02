@@ -94,7 +94,8 @@ public class PetEntryActivity extends AppCompatActivity {
             String breed = breedEntry.getText().toString().trim();
             String age = ageEntry.getText().toString().trim();
             String bio = bioEntry.getText().toString().trim();
-            Dog newDog = new Dog(dogName, breed, age, bio, currentPhotoPath);
+            int numOfSteps = 0;
+            Dog newDog = new Dog(dogName, breed, age, bio, currentPhotoPath, numOfSteps);
             savedPetDataIntent.putExtra(Constants.EXTRA_SAVED_PET, newDog);
             setResult(RESULT_OK, savedPetDataIntent);
             finish();
