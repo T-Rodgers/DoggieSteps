@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ReminderUtilities {
 
-    private static final int REMINDER_INTERVAL_MINUTES = 15;
+    private static final int REMINDER_INTERVAL_MINUTES = 60;
     private static final int REMINDER_INTERVAL_SECONDS = (int) (TimeUnit.MINUTES.toSeconds(REMINDER_INTERVAL_MINUTES));
     private static final int SYNC_FLEXTIME_SECONDS = REMINDER_INTERVAL_SECONDS;
 
@@ -29,9 +29,9 @@ public class ReminderUtilities {
         Job constraintReminderJob = dispatcher.newJobBuilder()
                 .setService(WalkReminderJobService.class)
                 .setTag(REMINDER_JOB_TAG)
-                .setConstraints(Constraint.DEVICE_CHARGING)
-                .setLifetime(Lifetime.FOREVER)
-                .setRecurring(true)
+                .setConstraints(Constraint.DEVICE_IDLE)
+                .setLifetime(Lifetime.UNTIL_NEXT_BOOT)
+                .setRecurring(false)
                 .setTrigger(Trigger.executionWindow(
                         REMINDER_INTERVAL_SECONDS,
                         REMINDER_INTERVAL_SECONDS + SYNC_FLEXTIME_SECONDS))
