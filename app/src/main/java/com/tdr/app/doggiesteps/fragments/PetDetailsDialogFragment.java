@@ -46,6 +46,7 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
     private StepDetector stepDetector;
     private Sensor sensor;
     private int numOfSteps;
+    private int totalSteps;
 
 
     private Dog dog;
@@ -72,6 +73,8 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
     TextView dialogPetBio;
     @BindView(R.id.steps_text_view)
     TextView stepsTextView;
+    @BindView(R.id.total_steps_text_view)
+    TextView totalStepsTextView;
 
     private DogDatabase database;
 
@@ -90,7 +93,6 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
                 favoritePetName = dog.getPetName();
             }
         }
-
 
     }
 
@@ -122,12 +124,17 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
 
         takeWalkButton.setOnClickListener(v -> {
             numOfSteps = 0;
-
+            String stepCount = getString(R.string.steps_count_format, String.valueOf(numOfSteps));
+            stepsTextView.setText(stepCount);
             sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
         });
 
-        stopButton.setOnClickListener(v ->
-                sensorManager.unregisterListener(this));
+        stopButton.setOnClickListener(v -> {
+            totalSteps = numOfSteps + totalSteps;
+            String allTimeTotalSteps = getResources().getString(R.string.all_time_total_format, String.valueOf(totalSteps));
+            totalStepsTextView.setText(allTimeTotalSteps);
+            sensorManager.unregisterListener(this);
+        });
 
         setPetData();
         initiateViewModel();

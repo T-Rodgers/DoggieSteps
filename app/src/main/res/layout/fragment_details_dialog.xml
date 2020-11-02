@@ -144,6 +144,16 @@
                 app:layout_constraintEnd_toEndOf="@+id/walk_button"
                 app:layout_constraintStart_toStartOf="@+id/walk_button" />
 
+            <TextView
+                android:id="@+id/total_steps_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="@string/all_time_total_label_text"
+                app:layout_constraintBottom_toTopOf="@+id/stop_button"
+                app:layout_constraintEnd_toEndOf="@+id/stop_button"
+                app:layout_constraintStart_toStartOf="@+id/stop_button" />
+
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline2"
                 android:layout_width="wrap_content"
