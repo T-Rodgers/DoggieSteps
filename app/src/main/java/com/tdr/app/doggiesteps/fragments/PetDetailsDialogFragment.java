@@ -107,6 +107,12 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
         database = DogDatabase.getInstance(getContext());
 
         favorite = new Favorite(petId, photoPath, favoritePetName);
+        if (savedInstanceState != null && savedInstanceState.containsKey("STOP_BUTTON_STATE")) {
+            stopButton.setEnabled(savedInstanceState.getBoolean("STOP_BUTTON_STATE"));
+        } else {
+            stopButton.setEnabled(false);
+        }
+
 
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -127,15 +133,23 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
             String stepCount = getString(R.string.steps_count_format, String.valueOf(numOfSteps));
             stepsTextView.setText(stepCount);
             sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
+
+            stopButton.setEnabled(true);
+
         });
 
         stopButton.setOnClickListener(v -> {
             totalSteps = dog.getNumOfSteps();
             totalSteps = totalSteps + numOfSteps;
             dog.setNumOfSteps(totalSteps);
-            String allTimeTotalSteps = getResources().getString(R.string.all_time_total_format, String.valueOf(totalSteps));
+            String allTimeTotalSteps = getResources().getString(
+                    R.string.all_time_total_format,
+                    String.valueOf(totalSteps));
             totalStepsTextView.setText(allTimeTotalSteps);
+            stepsTextView.setText(R.string.steps_label_text);
             sensorManager.unregisterListener(this);
+
+            stopButton.setEnabled(false);
 
             AppExecutors.getInstance().diskIO().execute(new Runnable() {
                 @Override
@@ -233,5 +247,11 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
             int height = ViewGroup.LayoutParams.MATCH_PARENT;
             dialog.getWindow().setLayout(width, height);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("STOP_STATE", stopButton.isChecked());
     }
 }
