@@ -25,4 +25,7 @@ public interface DogDao {
 
     @Delete
     void delete(Dog dog);
+
+    @Query("UPDATE my_pets SET numOfSteps = :num_steps WHERE petId = :id")
+    void updateSteps(int id, int num_steps);
 }

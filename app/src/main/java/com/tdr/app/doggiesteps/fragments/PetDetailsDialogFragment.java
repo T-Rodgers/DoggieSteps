@@ -130,10 +130,19 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
         });
 
         stopButton.setOnClickListener(v -> {
-            totalSteps = numOfSteps + totalSteps;
+            totalSteps = dog.getNumOfSteps();
+            totalSteps = totalSteps + numOfSteps;
+            dog.setNumOfSteps(totalSteps);
             String allTimeTotalSteps = getResources().getString(R.string.all_time_total_format, String.valueOf(totalSteps));
             totalStepsTextView.setText(allTimeTotalSteps);
             sensorManager.unregisterListener(this);
+
+            AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                @Override
+                public void run() {
+                    database.dogDao().updateSteps(dog.getPetId(), dog.getNumOfSteps());
+                }
+            });
         });
 
         setPetData();
@@ -155,6 +164,9 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
         dialogPetBreed.setText(dog.getBreed());
         dialogPetAge.setText(dog.getAge());
         dialogPetBio.setText(dog.getPetBio());
+        totalStepsTextView.setText(getResources().getString(
+                R.string.all_time_total_format,
+                String.valueOf(dog.getNumOfSteps())));
     }
 
     public void addToFavorites() {

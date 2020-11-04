@@ -135,6 +135,7 @@
                 tools:checked="true" />
 
             <TextView
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 android:id="@+id/steps_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -145,6 +146,7 @@
                 app:layout_constraintStart_toStartOf="@+id/walk_button" />
 
             <TextView
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 android:id="@+id/total_steps_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
