@@ -22,7 +22,7 @@
     <string name="steps_count_format">Steps: %1$s</string>
     <string name="steps_label_text">Steps: 0</string>
     <string name="main_notification_channel_name">main_notification</string>
-    <string name="dialog_image_content_description">Image of the pet %1$s</string>
+    <string name="details_image_content_description">Image of the pet %1$s</string>
     <string name="pet_added_snackbar_message">" has been added to the list."</string>
     <string name="all_time_total_label_text">All-Time Total:</string>
     <string name="all_time_total_format">All-Time Total: %1$s</string>

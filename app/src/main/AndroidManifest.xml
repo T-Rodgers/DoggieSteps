@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tdr.app.doggiesteps">
-    <uses-feature android:name="android.hardware.camera"
+
+    <uses-feature
+        android:name="android.hardware.camera"
         android:required="true" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
@@ -13,6 +16,7 @@
         android:roundIcon="@mipmap/dsteps_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".activities.PetDetailsActivity"></activity>
         <activity android:name=".activities.PetEntryActivity" />
         <activity
             android:name=".activities.MainActivity"
@@ -38,7 +42,6 @@
         <service
             android:name=".services.WalkReminderIntentService"
             android:exported="false" />
-
         <service
             android:name=".services.WalkReminderJobService"
             android:exported="false">

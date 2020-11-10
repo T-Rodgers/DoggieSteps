@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,6 +6,7 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/materialCardView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -16,18 +16,18 @@
 
 
             <ImageView
-                android:id="@+id/dialog_pet_image"
-                android:layout_width="0dp"
-                android:layout_height="250dp"
-                android:scaleType="centerCrop"
+                android:id="@+id/details_pet_image"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:background="@color/parentBackgroundColor"
+                android:contentDescription="@string/details_image_content_description"
+                android:scaleType="centerCrop"
                 android:src="@drawable/dog_photo"
-                app:layout_constraintBottom_toTopOf="@+id/title_container"
+                app:layout_constraintBottom_toTopOf="@+id/guideline"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                android:contentDescription="@string/dialog_image_content_description"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
 
             <RelativeLayout
                 android:id="@+id/title_container"
@@ -38,11 +38,11 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/dialog_pet_image">
+                app:layout_constraintTop_toTopOf="@+id/guideline">
 
 
                 <TextView
-                    android:id="@+id/dialog_pet_name"
+                    android:id="@+id/details_pet_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
@@ -50,23 +50,23 @@
                     tools:text="Diesel" />
 
                 <TextView
-                    android:id="@+id/dialog_pet_breed"
+                    android:id="@+id/details_pet_breed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/dialog_pet_name"
+                    android:layout_below="@id/details_pet_name"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                     android:textColor="@android:color/white"
                     android:textStyle="italic"
                     tools:text="Miniature-Schnauzer" />
 
                 <TextView
-                    android:id="@+id/dialog_pet_age"
+                    android:id="@+id/details_pet_age"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp"
-                    android:layout_toEndOf="@id/dialog_pet_name"
-                    android:layout_toRightOf="@id/dialog_pet_name"
+                    android:layout_toEndOf="@id/details_pet_name"
+                    android:layout_toRightOf="@id/details_pet_name"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
                     android:textColor="@android:color/white"
                     tools:text="12" />
@@ -76,7 +76,7 @@
 
 
             <TextView
-                android:id="@+id/dialog_pet_bio"
+                android:id="@+id/details_pet_bio"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginStart="16dp"
@@ -95,7 +95,7 @@
                 tools:text="Miniature-Schnauzer" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/walk_button"
+                android:id="@+id/details_walk_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -106,7 +106,7 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/stop_button"
+                android:id="@+id/details_stop_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -117,7 +117,7 @@
                 app:layout_constraintStart_toStartOf="@+id/guideline2" />
 
             <ToggleButton
-                android:id="@+id/dialog_favorite_button"
+                android:id="@+id/details_favorite_button"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_marginTop="8dp"
@@ -135,26 +135,26 @@
                 tools:checked="true" />
 
             <TextView
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 android:id="@+id/steps_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:text="@string/steps_label_text"
-                app:layout_constraintBottom_toTopOf="@+id/walk_button"
-                app:layout_constraintEnd_toEndOf="@+id/walk_button"
-                app:layout_constraintStart_toStartOf="@+id/walk_button" />
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                app:layout_constraintBottom_toTopOf="@+id/details_walk_button"
+                app:layout_constraintEnd_toEndOf="@+id/details_walk_button"
+                app:layout_constraintStart_toStartOf="@+id/details_walk_button" />
 
             <TextView
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 android:id="@+id/total_steps_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:text="@string/all_time_total_label_text"
-                app:layout_constraintBottom_toTopOf="@+id/stop_button"
-                app:layout_constraintEnd_toEndOf="@+id/stop_button"
-                app:layout_constraintStart_toStartOf="@+id/stop_button" />
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                app:layout_constraintBottom_toTopOf="@+id/details_stop_button"
+                app:layout_constraintEnd_toEndOf="@+id/details_stop_button"
+                app:layout_constraintStart_toStartOf="@+id/details_stop_button" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline2"
@@ -164,7 +164,16 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent=".5" />
 
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent=".40" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>
+
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

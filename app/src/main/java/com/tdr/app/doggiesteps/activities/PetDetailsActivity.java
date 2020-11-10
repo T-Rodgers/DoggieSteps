@@ -1,24 +1,19 @@
-package com.tdr.app.doggiesteps.fragments;
+package com.tdr.app.doggiesteps.activities;
 
-import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -38,9 +33,9 @@ import com.tdr.app.doggiesteps.utils.StepDetector;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PetDetailsDialogFragment extends DialogFragment implements SensorEventListener, StepListener {
+public class PetDetailsActivity extends AppCompatActivity implements SensorEventListener, StepListener {
 
-    private static final String TAG = PetDetailsDialogFragment.class.getSimpleName();
+    private static final String TAG = PetDetailsActivity.class.getSimpleName();
 
     private SensorManager sensorManager;
     private StepDetector stepDetector;
@@ -49,28 +44,29 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
     private int totalSteps;
 
 
+    private int existingSteps;
     private Dog dog;
     private Favorite favorite;
     private int petId;
     private String photoPath;
     private String favoritePetName;
 
-    @BindView(R.id.dialog_favorite_button)
+    @BindView(R.id.details_favorite_button)
     ToggleButton favoriteButton;
-    @BindView(R.id.walk_button)
+    @BindView(R.id.details_walk_button)
     MaterialButton takeWalkButton;
-    @BindView(R.id.stop_button)
+    @BindView(R.id.details_stop_button)
     MaterialButton stopButton;
-    @BindView(R.id.dialog_pet_image)
-    ImageView dialogPetImage;
-    @BindView(R.id.dialog_pet_name)
-    TextView dialogPetName;
-    @BindView(R.id.dialog_pet_breed)
-    TextView dialogPetBreed;
-    @BindView(R.id.dialog_pet_age)
-    TextView dialogPetAge;
-    @BindView(R.id.dialog_pet_bio)
-    TextView dialogPetBio;
+    @BindView(R.id.details_pet_image)
+    ImageView detailsPetImage;
+    @BindView(R.id.details_pet_name)
+    TextView detailsPetName;
+    @BindView(R.id.details_pet_breed)
+    TextView detailsPetBreed;
+    @BindView(R.id.details_pet_age)
+    TextView detailsPetAge;
+    @BindView(R.id.details_pet_bio)
+    TextView detailsPetBio;
     @BindView(R.id.steps_text_view)
     TextView stepsTextView;
     @BindView(R.id.total_steps_text_view)
@@ -79,42 +75,20 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
     private DogDatabase database;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_pet_details);
+        ButterKnife.bind(this);
 
-        Log.d(TAG, "onCreate: ");
-
-        Bundle args = getArguments();
-        if (args != null) {
-            dog = args.getParcelable(Constants.EXTRA_SELECTED_PET);
-            if (dog != null) {
-                petId = dog.getPetId();
-                photoPath = dog.getPhotoPath();
-                favoritePetName = dog.getPetName();
-            }
+        Intent petData = getIntent();
+        if (petData != null) {
+            dog = petData.getParcelableExtra(Constants.EXTRA_SELECTED_PET);
         }
 
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-
-        View rootView = inflater.inflate(R.layout.fragment_details_dialog, container, false);
-        ButterKnife.bind(this, rootView);
-
-        database = DogDatabase.getInstance(getContext());
-
+        database = DogDatabase.getInstance(this);
         favorite = new Favorite(petId, photoPath, favoritePetName);
-        if (savedInstanceState != null && savedInstanceState.containsKey("STOP_BUTTON_STATE")) {
-            stopButton.setEnabled(savedInstanceState.getBoolean("STOP_BUTTON_STATE"));
-        } else {
-            stopButton.setEnabled(false);
-        }
 
-
-        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         stepDetector = new StepDetector();
         stepDetector.registerListener(this);
@@ -129,7 +103,7 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
         });
 
         takeWalkButton.setOnClickListener(v -> {
-            numOfSteps = 0;
+            numOfSteps = existingSteps;
             String stepCount = getString(R.string.steps_count_format, String.valueOf(numOfSteps));
             stepsTextView.setText(stepCount);
             sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
@@ -151,33 +125,26 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
 
             stopButton.setEnabled(false);
 
-            AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                @Override
-                public void run() {
-                    database.dogDao().updateSteps(dog.getPetId(), dog.getNumOfSteps());
-                }
-            });
+            AppExecutors.getInstance().diskIO().execute(() -> database.dogDao().updateSteps(dog.getPetId(), dog.getNumOfSteps()));
         });
 
-        setPetData();
+        setPetData(dog);
         initiateViewModel();
-
-        return rootView;
     }
 
-    public void setPetData() {
+    public void setPetData(Dog dog) {
         String dogPhotoPath = dog.getPhotoPath();
         Glide.with(this)
                 .load(dogPhotoPath)
                 .centerCrop()
                 .error(R.drawable.ic_action_pet_favorites)
-                .into(dialogPetImage);
-        dialogPetImage.setContentDescription(
-                getString(R.string.dialog_image_content_description, dog.getPetName()));
-        dialogPetName.setText(dog.getPetName());
-        dialogPetBreed.setText(dog.getBreed());
-        dialogPetAge.setText(dog.getAge());
-        dialogPetBio.setText(dog.getPetBio());
+                .into(detailsPetImage);
+        detailsPetImage.setContentDescription(
+                getString(R.string.details_image_content_description, dog.getPetName()));
+        detailsPetName.setText(dog.getPetName());
+        detailsPetBreed.setText(dog.getBreed());
+        detailsPetAge.setText(dog.getAge());
+        detailsPetBio.setText(dog.getPetBio());
         totalStepsTextView.setText(getResources().getString(
                 R.string.all_time_total_format,
                 String.valueOf(dog.getNumOfSteps())));
@@ -192,7 +159,7 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
     public void removeFromFavorites() {
         AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().delete(favorite));
         Toast.makeText(
-                getContext(),
+                this,
                 dog.getPetName() + " has been removed from Favorites",
                 Toast.LENGTH_SHORT).show();
     }
@@ -200,7 +167,7 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
     private void initiateViewModel() {
         FavoritesViewModelFactory factory = new FavoritesViewModelFactory(database, favorite.getId());
         FavoritesViewModel viewModel = new ViewModelProvider(this, factory).get(FavoritesViewModel.class);
-        viewModel.getFavorite().observe(getViewLifecycleOwner(), new Observer<Favorite>() {
+        viewModel.getFavorite().observe(this, new Observer<Favorite>() {
             @Override
             public void onChanged(Favorite favoriteData) {
                 viewModel.getFavorite().removeObserver(this);
@@ -213,7 +180,6 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
             }
         });
     }
-
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -239,19 +205,12 @@ public class PetDetailsDialogFragment extends DialogFragment implements SensorEv
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            int width = ViewGroup.LayoutParams.MATCH_PARENT;
-            int height = ViewGroup.LayoutParams.MATCH_PARENT;
-            dialog.getWindow().setLayout(width, height);
-        }
-    }
-
-    @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean("STOP_STATE", stopButton.isChecked());
+
+        outState.putInt("BUNDLE_ID", petId);
+        outState.putInt("BUNDLE_STEPS", numOfSteps);
     }
+
+
 }

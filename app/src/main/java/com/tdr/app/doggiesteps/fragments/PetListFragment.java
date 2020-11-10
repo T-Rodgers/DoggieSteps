@@ -1,5 +1,6 @@
 package com.tdr.app.doggiesteps.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,12 +11,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tdr.app.doggiesteps.R;
+import com.tdr.app.doggiesteps.activities.PetDetailsActivity;
 import com.tdr.app.doggiesteps.adapters.DogListAdapter;
 import com.tdr.app.doggiesteps.database.MainViewModel;
 import com.tdr.app.doggiesteps.model.Dog;
@@ -55,27 +56,10 @@ public class PetListFragment extends Fragment implements DogListAdapter.DogListA
 
     @Override
     public void onClick(Dog dogData) {
-        showDialog(dogData);
-    }
-
-    private void showDialog(Dog dogData) {
-
-        FragmentTransaction ft = getParentFragmentManager().beginTransaction();
-        Fragment prev = getParentFragmentManager().findFragmentByTag("dialog");
-        if (prev != null) {
-            ft.remove(prev);
-        }
-
-        ft.addToBackStack(null);
-
-
-        Bundle petData = new Bundle();
-        petData.putParcelable(Constants.EXTRA_SELECTED_PET, dogData);
-        petData.putInt("SELECTED_ID", dogData.getPetId());
-
-        PetDetailsDialogFragment newFragment = new PetDetailsDialogFragment();
-        newFragment.setArguments(petData);
-        newFragment.show((ft), "dialog");
+        Intent petDetailsIntent = new Intent(getContext(), PetDetailsActivity.class);
+        petDetailsIntent.putExtra(Constants.EXTRA_SELECTED_PET, dogData);
+        petDetailsIntent.putExtra("SELECTED_ID", dogData.getPetId());
+        startActivity(petDetailsIntent);
     }
 
     private void initiateViewModel() {
@@ -89,7 +73,6 @@ public class PetListFragment extends Fragment implements DogListAdapter.DogListA
                 emptyViewPhoto.setVisibility(View.VISIBLE);
             }
             adapter.setDogList(dogs);
-
 
         });
 
