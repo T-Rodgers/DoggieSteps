@@ -27,8 +27,6 @@ public class FavoritesListFragment extends Fragment implements FavoritesAdapter.
     RecyclerView favoritesRecyclerView;
     private FavoritesAdapter adapter;
 
-    // TODO: FIX ADDING TO FAVORITES
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

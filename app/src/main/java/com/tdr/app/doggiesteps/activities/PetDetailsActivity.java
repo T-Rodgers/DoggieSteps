@@ -83,6 +83,9 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
         Intent petData = getIntent();
         if (petData != null) {
             dog = petData.getParcelableExtra(Constants.EXTRA_SELECTED_PET);
+            petId = dog.getPetId();
+            photoPath = dog.getPhotoPath();
+            favoritePetName = dog.getPetName();
         }
 
         database = DogDatabase.getInstance(this);
