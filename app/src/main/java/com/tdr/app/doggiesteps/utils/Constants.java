@@ -9,4 +9,7 @@ public class Constants {
     public static final int WALK_REMINDER_PENDING_INTENT_ID = 3;
     public static final String WALK_REMINDER_NOTIFICATION_CHANNEL_ID = "reminder_notification_channel";
     public static final int WALK_REMINDER_NOTIFICATION_ID = 4;
+    public static final String BUNDLE_STEPS = "num_of_steps";
+    public static final String BUNDLE_ID = "active_id";
+    public static final String EXTRA_SELECTED_ID = "selected_id";
 }

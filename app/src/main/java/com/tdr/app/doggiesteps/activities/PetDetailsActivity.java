@@ -2,6 +2,7 @@ package com.tdr.app.doggiesteps.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -12,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -43,8 +43,6 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
     private int numOfSteps;
     private int totalSteps;
 
-
-    private int existingSteps;
     private Dog dog;
     private Favorite favorite;
     private int petId;
@@ -80,6 +78,12 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
         setContentView(R.layout.activity_pet_details);
         ButterKnife.bind(this);
 
+        stopButton.setEnabled(false);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        stepDetector = new StepDetector();
+        stepDetector.registerListener(this);
+
         Intent petData = getIntent();
         if (petData != null) {
             dog = petData.getParcelableExtra(Constants.EXTRA_SELECTED_PET);
@@ -88,13 +92,19 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
             favoritePetName = dog.getPetName();
         }
 
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        int savedID = sharedPreferences.getInt(Constants.BUNDLE_ID, 0);
+        int savedSteps = sharedPreferences.getInt(Constants.BUNDLE_STEPS, numOfSteps);
+        if (savedID == petId) {
+            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
+            numOfSteps = savedSteps;
+            loadNumOfSteps();
+        }
+
+        setPetData(dog);
+
         database = DogDatabase.getInstance(this);
         favorite = new Favorite(petId, photoPath, favoritePetName);
-
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        stepDetector = new StepDetector();
-        stepDetector.registerListener(this);
 
         favoriteButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
@@ -106,11 +116,8 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
         });
 
         takeWalkButton.setOnClickListener(v -> {
-            numOfSteps = existingSteps;
-            String stepCount = getString(R.string.steps_count_format, String.valueOf(numOfSteps));
-            stepsTextView.setText(stepCount);
+            stepsTextView.setText(String.valueOf(numOfSteps));
             sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
-
             stopButton.setEnabled(true);
 
         });
@@ -118,12 +125,10 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
         stopButton.setOnClickListener(v -> {
             totalSteps = dog.getNumOfSteps();
             totalSteps = totalSteps + numOfSteps;
+            numOfSteps = 0;
             dog.setNumOfSteps(totalSteps);
-            String allTimeTotalSteps = getResources().getString(
-                    R.string.all_time_total_format,
-                    String.valueOf(totalSteps));
-            totalStepsTextView.setText(allTimeTotalSteps);
-            stepsTextView.setText(R.string.steps_label_text);
+            totalStepsTextView.setText(String.valueOf(totalSteps));
+            stepsTextView.setText("");
             sensorManager.unregisterListener(this);
 
             stopButton.setEnabled(false);
@@ -131,7 +136,7 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
             AppExecutors.getInstance().diskIO().execute(() -> database.dogDao().updateSteps(dog.getPetId(), dog.getNumOfSteps()));
         });
 
-        setPetData(dog);
+
         initiateViewModel();
     }
 
@@ -148,9 +153,7 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
         detailsPetBreed.setText(dog.getBreed());
         detailsPetAge.setText(dog.getAge());
         detailsPetBio.setText(dog.getPetBio());
-        totalStepsTextView.setText(getResources().getString(
-                R.string.all_time_total_format,
-                String.valueOf(dog.getNumOfSteps())));
+        totalStepsTextView.setText(String.valueOf(dog.getNumOfSteps()));
     }
 
     public void addToFavorites() {
@@ -203,17 +206,33 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
     @Override
     public void step(long timeNs) {
         numOfSteps++;
-        String stepCount = getString(R.string.steps_count_format, String.valueOf(numOfSteps));
-        stepsTextView.setText(stepCount);
+        stepsTextView.setText(String.valueOf(numOfSteps));
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
+    public void onBackPressed() {
+        saveStepsAndId();
+        super.onBackPressed();
 
-        outState.putInt("BUNDLE_ID", petId);
-        outState.putInt("BUNDLE_STEPS", numOfSteps);
     }
 
+    public void saveStepsAndId() {
+        sensorManager.unregisterListener(this);
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(Constants.BUNDLE_STEPS, numOfSteps);
+        editor.putInt(Constants.BUNDLE_ID, dog.getPetId());
+        editor.apply();
+    }
 
+    public void loadNumOfSteps() {
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        int savedSteps = sharedPreferences.getInt(Constants.BUNDLE_STEPS, numOfSteps);
+        if (savedSteps == 0) {
+            stepsTextView.setText("");
+        } else {
+            stepsTextView.setText(String.valueOf(savedSteps));
+            stopButton.setEnabled(true);
+        }
+    }
 }

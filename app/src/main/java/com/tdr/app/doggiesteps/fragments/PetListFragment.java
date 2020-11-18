@@ -58,7 +58,7 @@ public class PetListFragment extends Fragment implements DogListAdapter.DogListA
     public void onClick(Dog dogData) {
         Intent petDetailsIntent = new Intent(getContext(), PetDetailsActivity.class);
         petDetailsIntent.putExtra(Constants.EXTRA_SELECTED_PET, dogData);
-        petDetailsIntent.putExtra("SELECTED_ID", dogData.getPetId());
+        petDetailsIntent.putExtra(Constants.EXTRA_SELECTED_ID, dogData.getPetId());
         startActivity(petDetailsIntent);
     }
 

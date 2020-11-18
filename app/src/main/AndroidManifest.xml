@@ -16,7 +16,9 @@
         android:roundIcon="@mipmap/dsteps_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.PetDetailsActivity"></activity>
+        <activity
+            android:name=".activities.PetDetailsActivity"
+            android:screenOrientation="portrait"></activity>
         <activity android:name=".activities.PetEntryActivity" />
         <activity
             android:name=".activities.MainActivity"
