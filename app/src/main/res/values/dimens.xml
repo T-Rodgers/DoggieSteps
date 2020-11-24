@@ -2,10 +2,6 @@
 <resources>
     <dimen name="linear_list_item_padding">8dp</dimen>
     <dimen name="linear_list_item_height">72dp</dimen>
-    <dimen name="extended_app_bar">128dp</dimen>
-    <dimen name="recycler_view_bottom_margin">64dp</dimen>
-    <dimen name="dialog_width">344dp</dimen>
-    <dimen name="dialog_height">510dp</dimen>
-    <dimen name="tablet_dialog_width">900dp</dimen>
-    <dimen name="tablet_dialog_height">600dp</dimen>
+    <dimen name="widget_image_measure">64dp</dimen>
+
 </resources>
