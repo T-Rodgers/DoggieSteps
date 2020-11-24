@@ -1,5 +1,7 @@
 package com.tdr.app.doggiesteps.activities;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +10,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,7 +23,9 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.database.DogDatabase;
 import com.tdr.app.doggiesteps.database.FavoritesViewModel;
@@ -28,10 +35,19 @@ import com.tdr.app.doggiesteps.model.Dog;
 import com.tdr.app.doggiesteps.model.Favorite;
 import com.tdr.app.doggiesteps.utils.AppExecutors;
 import com.tdr.app.doggiesteps.utils.Constants;
+import com.tdr.app.doggiesteps.utils.DogAppWidget;
 import com.tdr.app.doggiesteps.utils.StepDetector;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_ID;
+import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_STEPS;
+import static com.tdr.app.doggiesteps.utils.Constants.EXTRA_SELECTED_PET;
+import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCE_ID;
+import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PET_NAME;
+import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PHOTO_PATH;
+import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_TOTAL_STEPS;
 
 public class PetDetailsActivity extends AppCompatActivity implements SensorEventListener, StepListener {
 
@@ -49,6 +65,10 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
     private String photoPath;
     private String favoritePetName;
 
+    @BindView(R.id.details_snackbar_view)
+    View snackBarView;
+    @BindView(R.id.add_widget_icon)
+    ImageView addWidgetIcon;
     @BindView(R.id.details_favorite_button)
     ToggleButton favoriteButton;
     @BindView(R.id.details_walk_button)
@@ -69,7 +89,10 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
     TextView stepsTextView;
     @BindView(R.id.total_steps_text_view)
     TextView totalStepsTextView;
+    @BindView(R.id.details_toolbar)
+    MaterialToolbar toolbar;
 
+    private SharedPreferences preferences;
     private DogDatabase database;
 
     @Override
@@ -77,6 +100,10 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pet_details);
         ButterKnife.bind(this);
+
+        toolbar.setNavigationOnClickListener(v -> finish());
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         stopButton.setEnabled(false);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -86,15 +113,14 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
 
         Intent petData = getIntent();
         if (petData != null) {
-            dog = petData.getParcelableExtra(Constants.EXTRA_SELECTED_PET);
+            dog = petData.getParcelableExtra(EXTRA_SELECTED_PET);
             petId = dog.getPetId();
             photoPath = dog.getPhotoPath();
             favoritePetName = dog.getPetName();
         }
 
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-        int savedID = sharedPreferences.getInt(Constants.BUNDLE_ID, 0);
-        int savedSteps = sharedPreferences.getInt(Constants.BUNDLE_STEPS, numOfSteps);
+        int savedID = preferences.getInt(BUNDLE_ID, 0);
+        int savedSteps = preferences.getInt(BUNDLE_STEPS, numOfSteps);
         if (savedID == petId) {
             sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
             numOfSteps = savedSteps;
@@ -105,6 +131,14 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
 
         database = DogDatabase.getInstance(this);
         favorite = new Favorite(petId, photoPath, favoritePetName);
+
+        addWidgetIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addToWidgets();
+
+            }
+        });
 
         favoriteButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
@@ -218,21 +252,43 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
 
     public void saveStepsAndId() {
         sensorManager.unregisterListener(this);
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt(Constants.BUNDLE_STEPS, numOfSteps);
-        editor.putInt(Constants.BUNDLE_ID, dog.getPetId());
-        editor.apply();
+        preferences.edit()
+                .putInt(Constants.BUNDLE_STEPS, numOfSteps)
+                .putInt(Constants.BUNDLE_ID, dog.getPetId())
+                .apply();
     }
 
     public void loadNumOfSteps() {
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-        int savedSteps = sharedPreferences.getInt(Constants.BUNDLE_STEPS, numOfSteps);
+        int savedSteps = preferences.getInt(Constants.BUNDLE_STEPS, numOfSteps);
         if (savedSteps == 0) {
             stepsTextView.setText("");
         } else {
             stepsTextView.setText(String.valueOf(savedSteps));
             stopButton.setEnabled(true);
         }
+    }
+
+    public void addToWidgets() {
+        preferences.edit()
+                .putInt(PREFERENCE_ID, dog.getPetId())
+                .putString(WIDGET_PET_NAME, dog.getPetName())
+                .putString(WIDGET_TOTAL_STEPS, String.valueOf(dog.getNumOfSteps()))
+                .putString(WIDGET_PHOTO_PATH, dog.getPhotoPath())
+                .apply();
+
+        Log.d(TAG, "addToWidgets: " + preferences.getString(Constants.WIDGET_PET_NAME, ""));
+
+        ComponentName provider = new ComponentName(this, DogAppWidget.class);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        int[] ids = appWidgetManager.getAppWidgetIds(provider);
+        DogAppWidget dogAppWidget = new DogAppWidget();
+        dogAppWidget.onUpdate(this, appWidgetManager, ids);
+
+        Snackbar.make(snackBarView,
+                dog.getPetName() + getResources().getString(R.string.added_to_widgets_message),
+                Snackbar.LENGTH_SHORT)
+                .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
+                .show();
+
     }
 }

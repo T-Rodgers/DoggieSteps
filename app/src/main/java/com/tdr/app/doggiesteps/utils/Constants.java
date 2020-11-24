@@ -12,4 +12,8 @@ public class Constants {
     public static final String BUNDLE_STEPS = "num_of_steps";
     public static final String BUNDLE_ID = "active_id";
     public static final String EXTRA_SELECTED_ID = "selected_id";
+    public static final String WIDGET_TOTAL_STEPS = "widget_total_steps";
+    public static final String WIDGET_PET_NAME = "widget_pet_name";
+    public static final String WIDGET_PHOTO_PATH = "widget_photo_path";
+    public static final String PREFERENCE_ID = "preference_id";
 }

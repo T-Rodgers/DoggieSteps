@@ -26,4 +26,6 @@
     <string name="pet_added_snackbar_message">" has been added to the list."</string>
     <string name="all_time_total_label_text">All-Time Total: </string>
     <string name="all_time_total_format">All-Time Total: %1$s</string>
+    <string name="added_to_widgets_message">" has been added to widgets"</string>
+    <string name="widgets_empty_text_view">Widgets are empty</string>
 </resources>

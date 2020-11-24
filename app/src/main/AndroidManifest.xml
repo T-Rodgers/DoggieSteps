@@ -16,6 +16,15 @@
         android:roundIcon="@mipmap/dsteps_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <receiver android:name=".utils.DogAppWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/dog_app_widget_info" />
+        </receiver>
+
         <activity
             android:name=".activities.PetDetailsActivity"
             android:screenOrientation="portrait"></activity>
@@ -52,14 +61,6 @@
             </intent-filter>
         </service>
 
-        <receiver android:name=".utils.DogAppWidget">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/dog_app_widget_info" />
-        </receiver>
     </application>
 
 </manifest>

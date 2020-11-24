@@ -5,25 +5,56 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/materialCardView"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="?actionBarSize"
+        android:background="@android:color/transparent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/details_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/primaryLightColor"
+            app:navigationIcon="@drawable/ic_close_white">
 
-
-            <ImageView
-                android:id="@+id/details_pet_image"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:background="@color/parentBackgroundColor"
-                android:contentDescription="@string/details_image_content_description"
-                android:scaleType="centerCrop"
-                android:src="@drawable/dog_photo"
-                app:layout_constraintBottom_toTopOf="@+id/guideline"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/add_widget_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_margin="16dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:focusable="true"
+                    android:src="@drawable/add_to_widgets_icon" />
+            </RelativeLayout>
+        </com.google.android.material.appbar.MaterialToolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <View
+        android:id="@+id/details_snackbar_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <ImageView
+            android:id="@+id/details_pet_image"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/parentBackgroundColor"
+            android:contentDescription="@string/details_image_content_description"
+            android:scaleType="centerCrop"
+            android:src="@drawable/dog_photo"
+            app:layout_constraintBottom_toTopOf="@+id/guideline"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -191,8 +222,4 @@
                 app:layout_constraintGuide_percent=".40" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </com.google.android.material.card.MaterialCardView>
-
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
