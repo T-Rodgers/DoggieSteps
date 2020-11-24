@@ -55,7 +55,6 @@ public class FavoritesListFragment extends Fragment implements FavoritesAdapter.
 
     @Override
     public void onClick(Favorite favoriteData) {
-
     }
 
     public static int calculateNoOfColumns(Context context) {

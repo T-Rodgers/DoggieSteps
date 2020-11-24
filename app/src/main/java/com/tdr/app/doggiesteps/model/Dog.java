@@ -24,7 +24,6 @@ public class Dog implements Parcelable {
 
     private int numOfSteps;
 
-
     public Dog() {
     }
 
