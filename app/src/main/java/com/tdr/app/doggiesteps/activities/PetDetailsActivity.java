@@ -2,13 +2,8 @@ package com.tdr.app.doggiesteps.activities;
 
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -18,13 +13,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.FitnessOptions;
+import com.google.android.gms.fitness.data.DataSet;
+import com.google.android.gms.fitness.data.DataSource;
 import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.fitness.data.Field;
+import com.google.android.gms.fitness.request.DataSourcesRequest;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -32,13 +38,13 @@ import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.database.DogDatabase;
 import com.tdr.app.doggiesteps.database.FavoritesViewModel;
 import com.tdr.app.doggiesteps.database.FavoritesViewModelFactory;
-import com.tdr.app.doggiesteps.interfaces.StepListener;
 import com.tdr.app.doggiesteps.model.Dog;
 import com.tdr.app.doggiesteps.model.Favorite;
 import com.tdr.app.doggiesteps.utils.AppExecutors;
 import com.tdr.app.doggiesteps.utils.Constants;
 import com.tdr.app.doggiesteps.utils.DogAppWidget;
-import com.tdr.app.doggiesteps.utils.StepDetector;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,13 +57,11 @@ import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PET_NAME;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PHOTO_PATH;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_TOTAL_STEPS;
 
-public class PetDetailsActivity extends AppCompatActivity implements SensorEventListener, StepListener {
+public class PetDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = PetDetailsActivity.class.getSimpleName();
+    private static final int REQUEST_OAUTH_REQUEST_CODE = 0x6884;
 
-    private SensorManager sensorManager;
-    private StepDetector stepDetector;
-    private Sensor sensor;
     private int numOfSteps;
     private int totalSteps;
 
@@ -66,6 +70,7 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
     private int petId;
     private String photoPath;
     private String favoritePetName;
+    private FitnessOptions fitnessOptions;
 
     @BindView(R.id.details_snackbar_view)
     View snackBarView;
@@ -103,11 +108,21 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
         setContentView(R.layout.activity_pet_details);
         ButterKnife.bind(this);
 
-        FitnessOptions fitnessOptions =
+        fitnessOptions =
                 FitnessOptions.builder()
                         .addDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE)
                         .addDataType(DataType.TYPE_STEP_COUNT_DELTA)
                         .build();
+        if (!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(this), fitnessOptions)) {
+            GoogleSignIn.requestPermissions(
+                    this,
+                    REQUEST_OAUTH_REQUEST_CODE,
+                    GoogleSignIn.getLastSignedInAccount(this),
+                    fitnessOptions);
+        } else {
+            subscribe();
+        }
+
 
         // TODO BUILD FITNESS API! YOU CAN DO IT!
 
@@ -116,10 +131,6 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         stopButton.setEnabled(false);
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        stepDetector = new StepDetector();
-        stepDetector.registerListener(this);
 
         Intent petData = getIntent();
         if (petData != null) {
@@ -132,7 +143,6 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
         int savedID = preferences.getInt(BUNDLE_ID, 0);
         int savedSteps = preferences.getInt(BUNDLE_STEPS, numOfSteps);
         if (savedID == petId) {
-            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
             numOfSteps = savedSteps;
             loadNumOfSteps();
         }
@@ -160,24 +170,41 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
         });
 
         takeWalkButton.setOnClickListener(v -> {
-            stepsTextView.setText(String.valueOf(numOfSteps));
-            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
+            Fitness.getSensorsClient(this, GoogleSignIn.getAccountForExtension(this, fitnessOptions))
+                    .findDataSources(
+                            new DataSourcesRequest.Builder()
+                                    .setDataTypes(DataType.TYPE_STEP_COUNT_CUMULATIVE)
+                                    .setDataSourceTypes(DataSource.TYPE_RAW)
+                                    .build())
+                    .addOnSuccessListener(this, new OnSuccessListener<List<DataSource>>() {
+                        @Override
+                        public void onSuccess(List<DataSource> dataSources) {
+                            for (DataSource dataSource : dataSources) {
+                                Log.i(TAG, "Data source found " + dataSource);
+                                Log.i(TAG, "Data source type: " + dataSource.getDataType());
+                                if (dataSource.getDataType() == DataType.TYPE_STEP_COUNT_CUMULATIVE) {
+                                    Log.i(TAG, "Data source for STEP_COUNT_CUMULATIVE");
+                                }
+
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, "Finding data sources request failed", e);
+                        }
+                    });
+
+
             stopButton.setEnabled(true);
 
         });
 
         stopButton.setOnClickListener(v -> {
-            totalSteps = dog.getNumOfSteps();
-            totalSteps = totalSteps + numOfSteps;
-            numOfSteps = 0;
-            dog.setNumOfSteps(totalSteps);
-            totalStepsTextView.setText(String.valueOf(totalSteps));
-            stepsTextView.setText("");
-            sensorManager.unregisterListener(this);
-
+            unsubscribe();
             stopButton.setEnabled(false);
-
-            AppExecutors.getInstance().diskIO().execute(() -> database.dogDao().updateSteps(dog.getPetId(), dog.getNumOfSteps()));
+//            AppExecutors.getInstance().diskIO().execute(() -> database.dogDao().updateSteps(dog.getPetId(), dog.getNumOfSteps()));
         });
 
 
@@ -232,28 +259,6 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
     }
 
     @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            stepDetector.updateAccel(
-                    event.timestamp,
-                    event.values[0],
-                    event.values[1],
-                    event.values[2]);
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
-
-    @Override
-    public void step(long timeNs) {
-        numOfSteps++;
-        stepsTextView.setText(String.valueOf(numOfSteps));
-    }
-
-    @Override
     public void onBackPressed() {
         saveStepsAndId();
         super.onBackPressed();
@@ -261,7 +266,6 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
     }
 
     public void saveStepsAndId() {
-        sensorManager.unregisterListener(this);
         preferences.edit()
                 .putInt(Constants.BUNDLE_STEPS, numOfSteps)
                 .putInt(Constants.BUNDLE_ID, dog.getPetId())
@@ -300,5 +304,66 @@ public class PetDetailsActivity extends AppCompatActivity implements SensorEvent
                 .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
                 .show();
 
+    }
+
+    public void subscribe() {
+        // To create a subscription, invoke the Recording API. As soon as the subscription is
+        // active, fitness data will start recording.
+        Fitness.getRecordingClient(this, GoogleSignIn.getLastSignedInAccount(this))
+                .subscribe(DataType.TYPE_STEP_COUNT_CUMULATIVE)
+                .addOnCompleteListener(
+                        new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Log.i(TAG, "Successfully subscribed!");
+                                } else {
+                                    Log.w(TAG, "There was a problem subscribing.", task.getException());
+                                }
+                            }
+                        });
+    }
+
+    public void unsubscribe() {
+        Fitness.getRecordingClient(this, GoogleSignIn.getAccountForExtension(this, fitnessOptions))
+                // This example shows unsubscribing from a DataType. A DataSource should be used where the
+                // subscription was to a DataSource. Alternatively, a Subscription object can be used.
+                .unsubscribe(DataType.TYPE_STEP_COUNT_DELTA)
+                .addOnSuccessListener(this, new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.i(TAG, "Successfully unsubscribed");
+                    }
+                })
+                .addOnFailureListener(this,
+                        new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "There was a problem getting the step count.", e);
+                            }
+                        });
+    }
+
+    private void readData() {
+        Fitness.getHistoryClient(this, GoogleSignIn.getLastSignedInAccount(this))
+                .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
+                .addOnSuccessListener(
+                        new OnSuccessListener<DataSet>() {
+                            @Override
+                            public void onSuccess(DataSet dataSet) {
+                                long total =
+                                        dataSet.isEmpty()
+                                                ? 0
+                                                : dataSet.getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
+                                Toast.makeText(getApplicationContext(), "Total steps: " + total, Toast.LENGTH_LONG).show();
+                            }
+                        })
+                .addOnFailureListener(
+                        new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "There was a problem getting the step count.", e);
+                            }
+                        });
     }
 }
