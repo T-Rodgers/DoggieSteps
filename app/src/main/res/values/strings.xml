@@ -28,4 +28,7 @@
     <string name="all_time_total_format">All-Time Total: %1$s</string>
     <string name="added_to_widgets_message">" has been added to widgets"</string>
     <string name="widgets_empty_text_view">Widgets are empty</string>
+    <string name="pet_removal_message">\" has been removed from Favorites\"</string>
+    <string name="sensor_client_success">SensorClient Retrieved</string>
+    <string name="sensor_client_error">SensorClient not created successfully</string>
 </resources>
