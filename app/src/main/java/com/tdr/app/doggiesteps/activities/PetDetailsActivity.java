@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -28,6 +29,8 @@ import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.data.Value;
 import com.google.android.gms.fitness.request.OnDataPointListener;
 import com.google.android.gms.fitness.request.SensorRequest;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -46,6 +49,7 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_ACTIVE_STATE;
 import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_ID;
 import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_STEPS;
 import static com.tdr.app.doggiesteps.utils.Constants.EXTRA_SELECTED_PET;
@@ -64,6 +68,7 @@ public class PetDetailsActivity extends AppCompatActivity {
     private OnDataPointListener myStepCountListener;
 
     private Dog dog;
+    private boolean isActive;
     private Favorite favorite;
     private int petId;
     private String photoPath;
@@ -108,7 +113,7 @@ public class PetDetailsActivity extends AppCompatActivity {
 
         GoogleSignInOptionsExtension fitnessOptions =
                 FitnessOptions.builder()
-                        .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
+                        .addDataType(DataType.TYPE_STEP_COUNT_DELTA)
                         .build();
 
         googleSignInAccount = GoogleSignIn.getAccountForExtension(this, fitnessOptions);
@@ -122,7 +127,16 @@ public class PetDetailsActivity extends AppCompatActivity {
         }
         // TODO BUILD FITNESS API! YOU CAN DO IT!
 
-        toolbar.setNavigationOnClickListener(v -> finish());
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isActive) {
+                    unregisterSensorListener();
+                }
+                finish();
+            }
+        });
+
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -138,7 +152,8 @@ public class PetDetailsActivity extends AppCompatActivity {
 
         int savedID = preferences.getInt(BUNDLE_ID, 0);
         int savedSteps = preferences.getInt(BUNDLE_STEPS, numOfSteps);
-        if (savedID == petId) {
+        isActive = preferences.getBoolean(BUNDLE_ACTIVE_STATE, false);
+        if (savedID == petId && isActive) {
             numOfSteps = savedSteps;
             loadNumOfSteps();
         }
@@ -160,21 +175,29 @@ public class PetDetailsActivity extends AppCompatActivity {
         });
 
         takeWalkButton.setOnClickListener(v -> {
-            createSensorRequest();
+            registerSensorListener();
+            isActive = true;
+            preferences.edit()
+                    .putBoolean(BUNDLE_ACTIVE_STATE, isActive)
+                    .apply();
             stopButton.setEnabled(true);
 
         });
 
         stopButton.setOnClickListener(v -> {
+            isActive = false;
+            preferences.edit()
+                    .putBoolean(BUNDLE_ACTIVE_STATE, isActive)
+                    .apply();
             totalSteps = dog.getNumOfSteps();
             totalSteps = totalSteps + numOfSteps;
             numOfSteps = 0;
             dog.setNumOfSteps(totalSteps);
             totalStepsTextView.setText(String.valueOf(totalSteps));
             stopButton.setEnabled(false);
-            unregisterStepCountListener();
+            unregisterSensorListener();
             AppExecutors.getInstance().diskIO().execute(() -> database.dogDao().updateSteps(dog.getPetId(), dog.getNumOfSteps()));
-            stepsTextView.setText(String.valueOf(0));
+            stepsTextView.setText("");
         });
 
 
@@ -194,7 +217,6 @@ public class PetDetailsActivity extends AppCompatActivity {
         detailsPetBreed.setText(dog.getBreed());
         detailsPetAge.setText(dog.getAge());
         detailsPetBio.setText(dog.getPetBio());
-        stepsTextView.setText(String.valueOf(0));
         totalStepsTextView.setText(String.valueOf(dog.getNumOfSteps()));
     }
 
@@ -212,12 +234,11 @@ public class PetDetailsActivity extends AppCompatActivity {
                 Toast.LENGTH_SHORT).show();
     }
 
-    public void createSensorRequest() {
+    public void registerSensorListener() {
         myStepCountListener = dataPoint -> {
             for (Field field : dataPoint.getDataType().getFields()) {
-                field = Field.FIELD_STEPS;
                 Value value = dataPoint.getValue(field);
-                Log.d(TAG, "Step Count: " + value.asInt());
+                Log.i(TAG, "Step Count: " + value.asInt());
                 int step = value.asInt();
                 numOfSteps += step;
                 stepsTextView.setText(String.valueOf(numOfSteps));
@@ -253,7 +274,11 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        saveStepsAndId();
+        if (!stopButton.isEnabled()) {
+            finish();
+        } else {
+            saveStepsAndId();
+        }
         super.onBackPressed();
 
     }
@@ -263,14 +288,16 @@ public class PetDetailsActivity extends AppCompatActivity {
                 .putInt(Constants.BUNDLE_STEPS, numOfSteps)
                 .putInt(Constants.BUNDLE_ID, dog.getPetId())
                 .apply();
+        unregisterSensorListener();
     }
 
     public void loadNumOfSteps() {
         int savedSteps = preferences.getInt(Constants.BUNDLE_STEPS, numOfSteps);
         if (savedSteps == 0) {
-            stepsTextView.setText(String.valueOf(0));
+            stepsTextView.setText("");
         } else {
             stepsTextView.setText(String.valueOf(savedSteps));
+            registerSensorListener();
             stopButton.setEnabled(true);
         }
     }
@@ -297,10 +324,16 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     }
 
-    private void unregisterStepCountListener() {
+    private void unregisterSensorListener() {
         Fitness.getSensorsClient(this, googleSignInAccount)
                 .remove(myStepCountListener)
-                .addOnSuccessListener(this, aBoolean -> Log.i(TAG, "Listener was unregistered"))
-                .addOnFailureListener(e -> Log.e(TAG, "Unable to remove registered listener", e));
+                .addOnCompleteListener(this, new OnCompleteListener<Boolean>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Boolean> task) {
+                        if (task.isSuccessful()) {
+                            Log.i(TAG, "Listener was unregistered successfully");
+                        }
+                    }
+                });
     }
 }

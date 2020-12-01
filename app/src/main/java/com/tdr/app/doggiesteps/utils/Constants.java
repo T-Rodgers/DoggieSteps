@@ -16,4 +16,5 @@ public class Constants {
     public static final String WIDGET_PET_NAME = "widget_pet_name";
     public static final String WIDGET_PHOTO_PATH = "widget_photo_path";
     public static final String PREFERENCE_ID = "preference_id";
+    public static final String BUNDLE_ACTIVE_STATE = "active_state";
 }
