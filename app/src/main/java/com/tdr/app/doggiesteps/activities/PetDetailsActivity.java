@@ -238,10 +238,23 @@ public class PetDetailsActivity extends AppCompatActivity {
         myStepCountListener = dataPoint -> {
             for (Field field : dataPoint.getDataType().getFields()) {
                 Value value = dataPoint.getValue(field);
-                Log.i(TAG, "Step Count: " + value.asInt());
-                int step = value.asInt();
-                numOfSteps += step;
-                stepsTextView.setText(String.valueOf(numOfSteps));
+                int previousSteps = value.asInt();
+                // Previous steps returned will be steps that are from last read. Therefore
+                // We have to set them to "0" or else our initial value will be the total of all
+                // prior steps from sensors.
+                if (previousSteps > 0) {
+                    previousSteps = 0;
+                    previousSteps++;
+                    Log.i(TAG, "Initial Step Count: " + previousSteps);
+                }
+                numOfSteps = numOfSteps + previousSteps;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        stepsTextView.setText(String.valueOf(numOfSteps));
+                    }
+                });
             }
         };
         Fitness.getSensorsClient(this, googleSignInAccount)
