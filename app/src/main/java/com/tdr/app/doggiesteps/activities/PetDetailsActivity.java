@@ -13,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -29,8 +28,6 @@ import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.data.Value;
 import com.google.android.gms.fitness.request.OnDataPointListener;
 import com.google.android.gms.fitness.request.SensorRequest;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -127,14 +124,11 @@ public class PetDetailsActivity extends AppCompatActivity {
         }
         // TODO BUILD FITNESS API! YOU CAN DO IT!
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isActive) {
-                    unregisterSensorListener();
-                }
-                finish();
+        toolbar.setNavigationOnClickListener(v -> {
+            if (isActive) {
+                unregisterSensorListener();
             }
+            finish();
         });
 
 
@@ -248,13 +242,7 @@ public class PetDetailsActivity extends AppCompatActivity {
                     Log.i(TAG, "Initial Step Count: " + previousSteps);
                 }
                 numOfSteps = numOfSteps + previousSteps;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        stepsTextView.setText(String.valueOf(numOfSteps));
-                    }
-                });
+                runOnUiThread(() -> stepsTextView.setText(String.valueOf(numOfSteps)));
             }
         };
         Fitness.getSensorsClient(this, googleSignInAccount)
@@ -340,12 +328,9 @@ public class PetDetailsActivity extends AppCompatActivity {
     private void unregisterSensorListener() {
         Fitness.getSensorsClient(this, googleSignInAccount)
                 .remove(myStepCountListener)
-                .addOnCompleteListener(this, new OnCompleteListener<Boolean>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Boolean> task) {
-                        if (task.isSuccessful()) {
-                            Log.i(TAG, "Listener was unregistered successfully");
-                        }
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        Log.i(TAG, "Listener was unregistered successfully");
                     }
                 });
     }

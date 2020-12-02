@@ -29,7 +29,7 @@ public class ReminderUtilities {
         Job constraintReminderJob = dispatcher.newJobBuilder()
                 .setService(WalkReminderJobService.class)
                 .setTag(REMINDER_JOB_TAG)
-                .setConstraints(Constraint.DEVICE_IDLE)
+                .setConstraints(Constraint.DEVICE_CHARGING)
                 .setLifetime(Lifetime.UNTIL_NEXT_BOOT)
                 .setRecurring(false)
                 .setTrigger(Trigger.executionWindow(
