@@ -35,8 +35,6 @@ import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOption
 
 public class PetEntryActivity extends AppCompatActivity {
 
-    private static final String TAG = PetEntryActivity.class.getSimpleName();
-
     private String currentPhotoPath;
 
     @BindView(R.id.empty_add_photo_background)
@@ -102,7 +100,6 @@ public class PetEntryActivity extends AppCompatActivity {
         }
     }
 
-
     private void dispatchTakePictureIntent() {
         File photoFile = null;
         try {
@@ -118,12 +115,10 @@ public class PetEntryActivity extends AppCompatActivity {
             imageUri = FileProvider.getUriForFile(this, "com.tdr.app.doggiesteps.fileprovider", photoFile);
         }
 
-
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(takePictureIntent, Constants.REQUEST_IMAGE_CAPTURE);
     }
-
 
     private File createImageFile() throws IOException {
         // Create an image file name

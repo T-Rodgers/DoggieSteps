@@ -17,4 +17,14 @@ public class Constants {
     public static final String WIDGET_PHOTO_PATH = "widget_photo_path";
     public static final String PREFERENCE_ID = "preference_id";
     public static final String BUNDLE_ACTIVE_STATE = "active_state";
+
+    // Constants for testing
+    public static final String TEST_PET_OBJECT = "test_pet";
+    public static final int TEST_PET_ID = 50;
+    public static final String TEST_PET_NAME = "Scooby-Doo";
+    public static final String TEST_PET_BREED = "Great Dane";
+    public static final String TEST_PET_AGE = "10";
+    public static final String TEST_PET_BIO = "This is a test message";
+    public static final String TEST_PHOTO_PATH = "photo_path";
+    public static final int TEST_STEP_COUNT = 123;
 }
