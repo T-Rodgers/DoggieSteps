@@ -25,7 +25,7 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
 
     private final LayoutInflater inflater;
     private List<Dog> dogList;
-    private Context context;
+    private final Context context;
     private DogListAdapterClickHandler mclickhandler;
 
     public interface DogListAdapterClickHandler {
@@ -58,6 +58,7 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
         Glide.with(context)
                 .load(photoPath)
                 .error(R.drawable.ic_action_pet_favorites)
+                .fallback(R.drawable.ic_action_pet_favorites)
                 .into(holder.petPhotoImageView);
         holder.options.setOnClickListener(view -> {
 

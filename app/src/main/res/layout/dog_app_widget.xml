@@ -1,27 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/widget_background"
-    android:orientation="vertical"
     android:padding="@dimen/linear_list_item_padding">
+
 
     <ImageView
         android:id="@+id/widget_pet_photo"
         android:layout_width="@dimen/widget_image_measure"
         android:layout_height="@dimen/widget_image_measure"
-        tools:src="@drawable/dog_photo" />
+        tools:src="@drawable/dog_photo"
+        android:layout_margin="8dp" />
 
-    <TextView
-        android:id="@+id/widget_total_steps"
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/widget_pet_photo"
-        android:layout_centerHorizontal="true"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
-        android:textColor="@android:color/white"
-        tools:text="2000" />
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="8dp">
+
+        <TextView
+            android:id="@+id/widget_pet_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+            android:textColor="@android:color/white"
+            tools:text="Diesel" />
+
+        <TextView
+            android:layout_below="@id/widget_pet_name"
+            android:id="@+id/widget_total_steps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+            android:textColor="@android:color/white"
+            tools:text="2000" />
+
+    </RelativeLayout>
 
 
-</RelativeLayout>
+</LinearLayout>

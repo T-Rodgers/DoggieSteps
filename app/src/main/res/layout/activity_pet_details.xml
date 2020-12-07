@@ -21,17 +21,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/add_widget_icon"
+                    android:padding="16dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:layout_margin="16dp"
                     android:background="?selectableItemBackgroundBorderless"
-                    android:focusable="true"
-                    android:src="@drawable/add_to_widgets_icon" />
+                    android:clickable="true"
+                    android:src="@drawable/add_to_widgets_icon"
+                    android:focusable="true" />
             </RelativeLayout>
         </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>

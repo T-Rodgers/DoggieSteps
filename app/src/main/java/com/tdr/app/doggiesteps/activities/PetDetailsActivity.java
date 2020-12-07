@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +52,7 @@ import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_ID;
 import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_STEPS;
 import static com.tdr.app.doggiesteps.utils.Constants.EXTRA_SELECTED_PET;
 import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCE_ID;
+import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PET_NAME;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PHOTO_PATH;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_TOTAL_STEPS;
 
@@ -74,7 +76,7 @@ public class PetDetailsActivity extends AppCompatActivity {
     @BindView(R.id.details_snackbar_view)
     View snackBarView;
     @BindView(R.id.add_widget_icon)
-    ImageView addWidgetIcon;
+    ImageButton addWidgetIcon;
     @BindView(R.id.details_favorite_button)
     ToggleButton favoriteButton;
     @BindView(R.id.details_walk_button)
@@ -123,7 +125,7 @@ public class PetDetailsActivity extends AppCompatActivity {
                     googleSignInAccount,
                     fitnessOptions);
         }
-        // TODO BUILD FITNESS API! YOU CAN DO IT!
+        // TODO: IMPLEMENT SERVICE TO KEEP STEPS COUNTING IN BACKGROUND. FOREGROUND SERVICE.
 
         toolbar.setNavigationOnClickListener(v -> {
             if (isActive) {
@@ -203,6 +205,7 @@ public class PetDetailsActivity extends AppCompatActivity {
                 .load(dogPhotoPath)
                 .centerCrop()
                 .error(R.drawable.ic_action_pet_favorites)
+                .fallback(R.drawable.ic_action_pet_favorites)
                 .into(detailsPetImage);
         detailsPetImage.setContentDescription(
                 getString(R.string.details_image_content_description, dog.getPetName()));
@@ -305,7 +308,9 @@ public class PetDetailsActivity extends AppCompatActivity {
     public void addToWidgets() {
         preferences.edit()
                 .putInt(PREFERENCE_ID, dog.getPetId())
+                .putString(WIDGET_PET_NAME, dog.getPetName())
                 .putString(WIDGET_TOTAL_STEPS, String.valueOf(dog.getNumOfSteps()))
+                .putInt("Fallback Photo", R.drawable.ic_action_pet_favorites)
                 .putString(WIDGET_PHOTO_PATH, dog.getPhotoPath())
                 .apply();
 

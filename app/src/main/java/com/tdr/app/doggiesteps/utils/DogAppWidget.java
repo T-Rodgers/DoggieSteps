@@ -16,6 +16,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.activities.MainActivity;
 
+import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PET_NAME;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PHOTO_PATH;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_TOTAL_STEPS;
 
@@ -27,27 +28,40 @@ public class DogAppWidget extends AppWidgetProvider {
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.dog_app_widget);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String photoPath = preferences.getString(WIDGET_PHOTO_PATH, null);
         AppWidgetTarget appWidgetTarget = new AppWidgetTarget(context, R.id.widget_pet_photo, views, appWidgetId) {
             @Override
             public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                views.setImageViewBitmap(R.id.widget_pet_photo, resource);
                 super.onResourceReady(resource, transition);
             }
         };
+        if (photoPath != null) {
+            Glide
+                    .with(context.getApplicationContext())
+                    .asBitmap()
+                    .circleCrop()
+                    .load(photoPath)
+                    .into(appWidgetTarget);
 
-        Glide
-                .with(context.getApplicationContext())
-                .asBitmap()
-                .placeholder(R.drawable.ic_action_pet_favorites)
-                .error(R.drawable.dog_photo)
-                .load(preferences.getString(WIDGET_PHOTO_PATH, ""))
-                .circleCrop()
-                .into(appWidgetTarget);
+        } else {
+            Glide
+                    .with(context.getApplicationContext())
+                    .asBitmap()
+                    .circleCrop()
+                    .load(preferences.getInt("Fallback Photo", R.drawable.ic_action_pet_favorites))
+                    .into(appWidgetTarget);
 
+        }
+
+
+        views.setTextViewText(R.id.widget_pet_name, preferences.getString(WIDGET_PET_NAME, ""));
         views.setTextViewText(R.id.widget_total_steps, preferences.getString(WIDGET_TOTAL_STEPS, ""));
 
         Intent petDetailsIntent = new Intent(context, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, petDetailsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, petDetailsIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         views.setOnClickPendingIntent(R.id.widget_pet_photo, pendingIntent);
+        views.setOnClickPendingIntent(R.id.widget_pet_name, pendingIntent);
         views.setOnClickPendingIntent(R.id.widget_total_steps, pendingIntent);
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
