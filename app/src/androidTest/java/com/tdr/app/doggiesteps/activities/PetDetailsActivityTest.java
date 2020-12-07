@@ -31,7 +31,5 @@ public class PetDetailsActivityTest {
                 .perform(click());
         onView(withId(R.id.details_favorite_button))
                 .perform(click());
-
-
     }
 }
