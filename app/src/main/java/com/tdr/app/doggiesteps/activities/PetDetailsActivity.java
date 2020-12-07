@@ -50,6 +50,9 @@ import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_ACTIVE_STATE;
 import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_ID;
 import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_STEPS;
 import static com.tdr.app.doggiesteps.utils.Constants.EXTRA_SELECTED_PET;
+import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_AGE;
+import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_BIO;
+import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_BREED;
 import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCE_ID;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PET_NAME;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PHOTO_PATH;
@@ -108,6 +111,8 @@ public class PetDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pet_details);
         ButterKnife.bind(this);
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         GoogleSignInOptionsExtension fitnessOptions =
                 FitnessOptions.builder()
                         .addDataType(DataType.TYPE_STEP_COUNT_DELTA)
@@ -131,9 +136,6 @@ public class PetDetailsActivity extends AppCompatActivity {
             }
             finish();
         });
-
-
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         stopButton.setEnabled(false);
 
@@ -308,6 +310,9 @@ public class PetDetailsActivity extends AppCompatActivity {
         preferences.edit()
                 .putInt(PREFERENCE_ID, dog.getPetId())
                 .putString(WIDGET_PET_NAME, dog.getPetName())
+                .putString(PREFERENCES_BREED, dog.getBreed())
+                .putString(PREFERENCES_AGE, dog.getAge())
+                .putString(PREFERENCES_BIO, dog.getPetBio())
                 .putString(WIDGET_TOTAL_STEPS, String.valueOf(dog.getNumOfSteps()))
                 .putString(WIDGET_PHOTO_PATH, dog.getPhotoPath())
                 .apply();
