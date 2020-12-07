@@ -17,6 +17,10 @@ public class Constants {
     public static final String WIDGET_PHOTO_PATH = "widget_photo_path";
     public static final String PREFERENCE_ID = "preference_id";
     public static final String BUNDLE_ACTIVE_STATE = "active_state";
+    public static final String PREFERENCES_BIO = "bio";
+    public static final String PREFERENCES_BREED = "breed";
+    public static final String PREFERENCES_AGE = "age";
+    public static final String PREFERENCES_STEPS = "steps";
 
     // Constants for testing
     public static final String TEST_PET_OBJECT = "test_pet";
