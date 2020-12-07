@@ -126,6 +126,7 @@ public class PetDetailsActivity extends AppCompatActivity {
 
         toolbar.setNavigationOnClickListener(v -> {
             if (isActive) {
+                saveStepsAndId();
                 unregisterSensorListener();
             }
             finish();
@@ -275,7 +276,7 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (!stopButton.isEnabled()) {
+        if (!stopButton.isEnabled() && !isActive) {
             finish();
         } else {
             saveStepsAndId();

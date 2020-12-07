@@ -36,6 +36,7 @@ public class DogAppWidget extends AppWidgetProvider {
                 .with(context.getApplicationContext())
                 .asBitmap()
                 .placeholder(R.drawable.ic_action_pet_favorites)
+                .error(R.drawable.dog_photo)
                 .load(preferences.getString(WIDGET_PHOTO_PATH, ""))
                 .circleCrop()
                 .into(appWidgetTarget);
