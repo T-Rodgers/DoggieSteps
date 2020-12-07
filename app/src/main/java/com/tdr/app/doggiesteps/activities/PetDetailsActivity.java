@@ -336,7 +336,7 @@ public class PetDetailsActivity extends AppCompatActivity {
                 .remove(myStepCountListener)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        Log.i(TAG, "Listener was unregistered successfully");
+                        Log.i(TAG, getString(R.string.unregistered_listener_message));
                     }
                 });
     }

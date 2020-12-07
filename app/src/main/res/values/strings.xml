@@ -31,4 +31,9 @@
     <string name="pet_removal_message">\" has been removed from Favorites\"</string>
     <string name="sensor_client_success">SensorClient Retrieved</string>
     <string name="sensor_client_error">SensorClient not created successfully</string>
+    <string name="unregistered_listener_message">Listener was unregistered successfully</string>
+    <string name="empty_name_message">Must have Name entered</string>
+    <string name="empty_breed_message">Unknown Breed</string>
+    <string name="empty_age_message">Age Unknown</string>
+    <string name="empty_bio_message">No bio listed.</string>
 </resources>

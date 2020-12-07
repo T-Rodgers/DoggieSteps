@@ -11,6 +11,7 @@ public class Constants {
     public static final int WALK_REMINDER_NOTIFICATION_ID = 4;
     public static final String BUNDLE_STEPS = "num_of_steps";
     public static final String BUNDLE_ID = "active_id";
+    public static final String BUNDLE_PHOTO_PATH = "photo_path";
     public static final String EXTRA_SELECTED_ID = "selected_id";
     public static final String WIDGET_TOTAL_STEPS = "widget_total_steps";
     public static final String WIDGET_PET_NAME = "widget_pet_name";
@@ -29,6 +30,6 @@ public class Constants {
     public static final String TEST_PET_BREED = "Great Dane";
     public static final String TEST_PET_AGE = "10";
     public static final String TEST_PET_BIO = "This is a test message";
-    public static final String TEST_PHOTO_PATH = "photo_path";
+    public static final String TEST_PHOTO_PATH = "_test_photo_path";
     public static final int TEST_STEP_COUNT = 123;
 }

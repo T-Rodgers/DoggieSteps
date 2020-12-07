@@ -32,6 +32,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
+import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_PHOTO_PATH;
 
 public class PetEntryActivity extends AppCompatActivity {
 
@@ -68,7 +69,7 @@ public class PetEntryActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             petImageView.setVisibility(View.VISIBLE);
-            currentPhotoPath = savedInstanceState.getString("photo_path");
+            currentPhotoPath = savedInstanceState.getString(BUNDLE_PHOTO_PATH);
             Glide.with(this)
                     .load(currentPhotoPath)
                     .transition(withCrossFade())
@@ -83,15 +84,24 @@ public class PetEntryActivity extends AppCompatActivity {
 
     public void savePet() {
         Intent savedPetDataIntent = new Intent();
-        if (TextUtils.isEmpty(nameEntry.getText()) ||
-                TextUtils.isEmpty(breedEntry.getText())) {
-            Snackbar.make(contextView, "Must have Name and Breed", Snackbar.LENGTH_LONG).show();
+        if (TextUtils.isEmpty(nameEntry.getText())) {
+
+            Snackbar.make(contextView, getString(R.string.empty_name_message), Snackbar.LENGTH_LONG).show();
 
         } else {
             String dogName = nameEntry.getText().toString().trim();
             String breed = breedEntry.getText().toString().trim();
+            if (breed.equals("")) {
+                breed = getString(R.string.empty_breed_message);
+            }
             String age = ageEntry.getText().toString().trim();
+            if (age.equals("")) {
+                age = getString(R.string.empty_age_message);
+            }
             String bio = bioEntry.getText().toString().trim();
+            if (bio.equals("")) {
+                bio = getString(R.string.empty_bio_message);
+            }
             int numOfSteps = 0;
             Dog newDog = new Dog(dogName, breed, age, bio, currentPhotoPath, numOfSteps);
             savedPetDataIntent.putExtra(Constants.EXTRA_SAVED_PET, newDog);

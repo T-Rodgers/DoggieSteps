@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -129,8 +128,6 @@ public class MainActivity extends AppCompatActivity {
                         .setAnchorView(fab)
                         .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
                         .show();
-
-                Log.d(TAG, "Dog from PetEntry " + dog.getPetName());
             }
         }
     }
