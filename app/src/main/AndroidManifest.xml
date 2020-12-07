@@ -28,7 +28,11 @@
 
         <activity
             android:name=".activities.PetDetailsActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainActivity" />
+        </activity>
         <activity android:name=".activities.PetEntryActivity" />
 
         <activity
