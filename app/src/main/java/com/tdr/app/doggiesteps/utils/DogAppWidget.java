@@ -14,16 +14,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.AppWidgetTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.tdr.app.doggiesteps.R;
-import com.tdr.app.doggiesteps.activities.PetDetailsActivity;
-import com.tdr.app.doggiesteps.model.Dog;
+import com.tdr.app.doggiesteps.activities.MainActivity;
 
-import static com.tdr.app.doggiesteps.utils.Constants.EXTRA_SELECTED_PET;
-import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_AGE;
-import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_BIO;
-import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_BREED;
-import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_STEPS;
-import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCE_ID;
-import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PET_NAME;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PHOTO_PATH;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_TOTAL_STEPS;
 
@@ -51,22 +43,11 @@ public class DogAppWidget extends AppWidgetProvider {
                 .circleCrop()
                 .into(appWidgetTarget);
 
-        views.setTextViewText(R.id.widget_pet_name, preferences.getString(WIDGET_PET_NAME, ""));
         views.setTextViewText(R.id.widget_total_steps, preferences.getString(WIDGET_TOTAL_STEPS, ""));
 
-        Dog dog = new Dog(
-                preferences.getInt(PREFERENCE_ID, 0),
-                preferences.getString(WIDGET_PET_NAME, ""),
-                preferences.getString(PREFERENCES_BREED, ""),
-                preferences.getString(PREFERENCES_AGE, ""),
-                preferences.getString(PREFERENCES_BIO, ""),
-                preferences.getInt(PREFERENCES_STEPS, 0)
-        );
-        Intent petDetailsIntent = new Intent(context, PetDetailsActivity.class);
-        petDetailsIntent.putExtra(EXTRA_SELECTED_PET, dog);
+        Intent petDetailsIntent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, petDetailsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.widget_pet_photo, pendingIntent);
-        views.setOnClickPendingIntent(R.id.widget_pet_name, pendingIntent);
         views.setOnClickPendingIntent(R.id.widget_total_steps, pendingIntent);
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }

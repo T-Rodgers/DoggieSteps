@@ -55,6 +55,7 @@ public class Dog implements Parcelable {
         numOfSteps = in.readInt();
     }
 
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(petId);
