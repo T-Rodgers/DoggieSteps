@@ -36,4 +36,7 @@
     <string name="empty_breed_message">Unknown Breed</string>
     <string name="empty_age_message">Age Unknown</string>
     <string name="empty_bio_message">No bio listed.</string>
+    <string name="active_notification_channel_name">active_notification</string>
+    <string name="active_notification_big_text">Out on a walk with Terrence! %1$s</string>
+    <string name="custom_toast_message">What a great walk with %1$s!</string>
 </resources>

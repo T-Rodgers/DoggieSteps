@@ -18,6 +18,9 @@ public class Constants {
     public static final String WIDGET_PHOTO_PATH = "widget_photo_path";
     public static final String PREFERENCE_ID = "preference_id";
     public static final String BUNDLE_ACTIVE_STATE = "active_state";
+    public static final String ACTIVE_NOTIFICATION_CHANNEL_ID = "active_notification_channel";
+    public static final int ACTIVE_NOTIFICATION_ID = 351;
+    public static final String NOTIFICATION_PET_NAME = "notification_pet_name";
 
     // Constants for testing
     public static final String TEST_PET_OBJECT = "test_pet";

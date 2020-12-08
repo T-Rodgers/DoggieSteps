@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -38,6 +41,7 @@ import com.tdr.app.doggiesteps.database.FavoritesViewModel;
 import com.tdr.app.doggiesteps.database.FavoritesViewModelFactory;
 import com.tdr.app.doggiesteps.model.Dog;
 import com.tdr.app.doggiesteps.model.Favorite;
+import com.tdr.app.doggiesteps.services.StepCounterService;
 import com.tdr.app.doggiesteps.utils.AppExecutors;
 import com.tdr.app.doggiesteps.utils.Constants;
 import com.tdr.app.doggiesteps.utils.DogAppWidget;
@@ -51,6 +55,7 @@ import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_ACTIVE_STATE;
 import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_ID;
 import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_STEPS;
 import static com.tdr.app.doggiesteps.utils.Constants.EXTRA_SELECTED_PET;
+import static com.tdr.app.doggiesteps.utils.Constants.NOTIFICATION_PET_NAME;
 import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCE_ID;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PET_NAME;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PHOTO_PATH;
@@ -172,6 +177,9 @@ public class PetDetailsActivity extends AppCompatActivity {
         });
 
         takeWalkButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, StepCounterService.class);
+            intent.putExtra(NOTIFICATION_PET_NAME, dog.getPetName());
+            ContextCompat.startForegroundService(this, intent);
             registerSensorListener();
             isActive = true;
             preferences.edit()
@@ -182,6 +190,8 @@ public class PetDetailsActivity extends AppCompatActivity {
         });
 
         stopButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, StepCounterService.class);
+            stopService(intent);
             isActive = false;
             preferences.edit()
                     .putBoolean(BUNDLE_ACTIVE_STATE, isActive)
@@ -193,6 +203,19 @@ public class PetDetailsActivity extends AppCompatActivity {
             totalStepsTextView.setText(String.valueOf(totalSteps));
             stopButton.setEnabled(false);
             unregisterSensorListener();
+            LayoutInflater inflater = getLayoutInflater();
+            View layout = inflater.inflate(
+                    R.layout.custom_toast,
+                    findViewById(R.id.custom_toast_parent));
+            ImageView icon = layout.findViewById(R.id.toast_icon);
+            icon.setImageResource(R.drawable.ic_action_pet_favorites);
+            TextView text = layout.findViewById(R.id.toast_message);
+            text.setText(getString(R.string.custom_toast_message, dog.getPetName()));
+            Toast toast = new Toast(this);
+            toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
+            toast.setDuration(Toast.LENGTH_LONG);
+            toast.setView(layout);
+            toast.show();
             AppExecutors.getInstance().diskIO().execute(() -> database.dogDao().updateSteps(dog.getPetId(), dog.getNumOfSteps()));
             stepsTextView.setText("");
         });
@@ -357,5 +380,15 @@ public class PetDetailsActivity extends AppCompatActivity {
             loadNumOfSteps();
         }
         super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (!stopButton.isEnabled()) {
+            finish();
+        } else {
+            saveStepsAndId();
+        }
+        super.onDestroy();
     }
 }

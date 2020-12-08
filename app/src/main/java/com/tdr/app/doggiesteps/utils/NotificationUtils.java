@@ -17,6 +17,9 @@ import androidx.core.content.ContextCompat;
 import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.activities.MainActivity;
 
+import static com.tdr.app.doggiesteps.utils.Constants.ACTIVE_NOTIFICATION_CHANNEL_ID;
+import static com.tdr.app.doggiesteps.utils.Constants.ACTIVE_NOTIFICATION_ID;
+
 public class NotificationUtils {
 
     private static PendingIntent contentIntent(Context context) {
@@ -71,6 +74,48 @@ public class NotificationUtils {
         }
 
         notificationManager.notify(Constants.WALK_REMINDER_NOTIFICATION_ID, notificationBuilder.build());
+    }
+
+    public static Notification createStepCounterNotification(Context context, PendingIntent intent, String petName) {
+
+        NotificationManager notificationManager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        NotificationChannel mChannel = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            mChannel = new NotificationChannel(
+                    ACTIVE_NOTIFICATION_CHANNEL_ID,
+                    context.getString(R.string.active_notification_channel_name),
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            notificationManager.createNotificationChannel(mChannel);
+        }
+
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context,
+                ACTIVE_NOTIFICATION_CHANNEL_ID)
+                .setColor(ContextCompat.getColor(context, R.color.primaryLightColor))
+                .setSmallIcon(R.drawable.ic_action_pet_favorites)
+                .setLargeIcon(largeIcon(context))
+                .setContentTitle("Currently Walking...")
+                .setContentText(context.getResources().getString(R.string.active_notification_big_text, petName))
+                .setContentIntent(intent)
+                .setStyle(
+                        new NotificationCompat.BigTextStyle()
+                                .bigText(context.getString(R.string.active_notification_big_text, petName)))
+                .setDefaults(Notification.DEFAULT_VIBRATE)
+                .setAutoCancel(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
+                && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
+        }
+
+        Notification notification = notificationBuilder.build();
+
+        notificationManager.notify(ACTIVE_NOTIFICATION_ID, notification);
+
+        return notification;
     }
 
 
