@@ -61,6 +61,8 @@ public class PetDetailsActivity extends AppCompatActivity {
     private static final String TAG = PetDetailsActivity.class.getSimpleName();
     private static final int REQUEST_OAUTH_REQUEST_CODE = 0x6884;
 
+    private int savedID;
+    private int savedSteps;
     private int numOfSteps;
     private int totalSteps;
     private OnDataPointListener myStepCountListener;
@@ -130,7 +132,7 @@ public class PetDetailsActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> {
             if (isActive) {
                 saveStepsAndId();
-                unregisterSensorListener();
+
             }
             finish();
         });
@@ -145,8 +147,8 @@ public class PetDetailsActivity extends AppCompatActivity {
             favoritePetName = dog.getPetName();
         }
 
-        int savedID = preferences.getInt(BUNDLE_ID, 0);
-        int savedSteps = preferences.getInt(BUNDLE_STEPS, numOfSteps);
+        savedID = preferences.getInt(BUNDLE_ID, 0);
+        savedSteps = preferences.getInt(BUNDLE_STEPS, numOfSteps);
         isActive = preferences.getBoolean(BUNDLE_ACTIVE_STATE, false);
         if (savedID == petId && isActive) {
             numOfSteps = savedSteps;
@@ -231,6 +233,7 @@ public class PetDetailsActivity extends AppCompatActivity {
     }
 
     public void registerSensorListener() {
+        stepsTextView.setText(String.valueOf(numOfSteps));
         myStepCountListener = dataPoint -> {
             for (Field field : dataPoint.getDataType().getFields()) {
                 Value value = dataPoint.getValue(field);
@@ -277,7 +280,7 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (!stopButton.isEnabled() && !isActive) {
+        if (!stopButton.isEnabled()) {
             finish();
         } else {
             saveStepsAndId();
@@ -291,7 +294,6 @@ public class PetDetailsActivity extends AppCompatActivity {
                 .putInt(Constants.BUNDLE_STEPS, numOfSteps)
                 .putInt(Constants.BUNDLE_ID, dog.getPetId())
                 .apply();
-        unregisterSensorListener();
     }
 
     public void loadNumOfSteps() {
@@ -336,5 +338,24 @@ public class PetDetailsActivity extends AppCompatActivity {
                         Log.i(TAG, getString(R.string.unregistered_listener_message));
                     }
                 });
+    }
+
+    @Override
+    protected void onPause() {
+        if (!stopButton.isEnabled()) {
+            finish();
+        } else {
+            saveStepsAndId();
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        if (savedID == petId && isActive) {
+            numOfSteps = savedSteps;
+            loadNumOfSteps();
+        }
+        super.onResume();
     }
 }
