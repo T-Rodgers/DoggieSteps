@@ -17,10 +17,16 @@
         android:roundIcon="@mipmap/dsteps_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <service
+            android:name=".services.StepCounterService"
+            android:enabled="false"
+            android:exported="false"></service>
+
         <receiver android:name=".utils.DogAppWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
+
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/dog_app_widget_info" />
@@ -34,7 +40,6 @@
                 android:value=".activities.MainActivity" />
         </activity>
         <activity android:name=".activities.PetEntryActivity" />
-
         <activity
             android:name=".activities.MainActivity"
             android:launchMode="singleTop"
@@ -66,7 +71,6 @@
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
             </intent-filter>
         </service>
-
     </application>
 
 </manifest>
