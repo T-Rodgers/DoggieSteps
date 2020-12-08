@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:icon="@mipmap/dsteps_launcher"
@@ -19,8 +20,7 @@
         android:theme="@style/AppTheme">
         <service
             android:name=".services.StepCounterService"
-            android:enabled="false"
-            android:exported="false"></service>
+            android:exported="false" />
 
         <receiver android:name=".utils.DogAppWidget">
             <intent-filter>
