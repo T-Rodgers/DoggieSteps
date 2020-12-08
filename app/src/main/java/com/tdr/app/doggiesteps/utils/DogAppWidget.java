@@ -32,7 +32,6 @@ public class DogAppWidget extends AppWidgetProvider {
         AppWidgetTarget appWidgetTarget = new AppWidgetTarget(context, R.id.widget_pet_photo, views, appWidgetId) {
             @Override
             public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                views.setImageViewBitmap(R.id.widget_pet_photo, resource);
                 super.onResourceReady(resource, transition);
             }
         };
@@ -42,14 +41,18 @@ public class DogAppWidget extends AppWidgetProvider {
                     .asBitmap()
                     .circleCrop()
                     .load(photoPath)
+                    .override(480, 342)
                     .into(appWidgetTarget);
 
         } else {
+            int resource =
+                    preferences.getInt("Fallback Photo", R.drawable.ic_action_pet_favorites);
             Glide
                     .with(context.getApplicationContext())
                     .asBitmap()
                     .circleCrop()
-                    .load(preferences.getInt("Fallback Photo", R.drawable.ic_action_pet_favorites))
+                    .load(resource)
+                    .override(480, 342)
                     .into(appWidgetTarget);
 
         }
