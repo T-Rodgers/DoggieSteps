@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
@@ -25,13 +26,12 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptionsExtension;
-import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.FitnessOptions;
+import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.data.Value;
 import com.google.android.gms.fitness.request.OnDataPointListener;
-import com.google.android.gms.fitness.request.SensorRequest;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -45,8 +45,7 @@ import com.tdr.app.doggiesteps.services.StepCounterService;
 import com.tdr.app.doggiesteps.utils.AppExecutors;
 import com.tdr.app.doggiesteps.utils.Constants;
 import com.tdr.app.doggiesteps.utils.DogAppWidget;
-
-import java.util.concurrent.TimeUnit;
+import com.tdr.app.doggiesteps.utils.FitnessUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -175,7 +174,6 @@ public class PetDetailsActivity extends AppCompatActivity {
                 removeFromFavorites();
             }
         });
-
         takeWalkButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, StepCounterService.class);
             intent.putExtra(NOTIFICATION_PET_NAME, dog.getPetName());
@@ -203,19 +201,7 @@ public class PetDetailsActivity extends AppCompatActivity {
             totalStepsTextView.setText(String.valueOf(totalSteps));
             stopButton.setEnabled(false);
             unregisterSensorListener();
-            LayoutInflater inflater = getLayoutInflater();
-            View layout = inflater.inflate(
-                    R.layout.custom_toast,
-                    findViewById(R.id.custom_toast_parent));
-            ImageView icon = layout.findViewById(R.id.toast_icon);
-            icon.setImageResource(R.drawable.ic_action_pet_favorites);
-            TextView text = layout.findViewById(R.id.toast_message);
-            text.setText(getString(R.string.custom_toast_message, dog.getPetName()));
-            Toast toast = new Toast(this);
-            toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
-            toast.setDuration(Toast.LENGTH_LONG);
-            toast.setView(layout);
-            toast.show();
+            showFinishedToast();
             AppExecutors.getInstance().diskIO().execute(() -> database.dogDao().updateSteps(dog.getPetId(), dog.getNumOfSteps()));
             stepsTextView.setText("");
         });
@@ -257,31 +243,27 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     public void registerSensorListener() {
         stepsTextView.setText(String.valueOf(numOfSteps));
-        myStepCountListener = dataPoint -> {
-            for (Field field : dataPoint.getDataType().getFields()) {
-                Value value = dataPoint.getValue(field);
-                int previousSteps = value.asInt();
-                // Previous steps returned will be steps that are from last read. Therefore
-                // We have to set them to "0" or else our initial value will be the total of all
-                // prior steps from sensors.
-                if (previousSteps > 0) {
-                    previousSteps = 0;
-                    previousSteps++;
-                    Log.i(TAG, "Initial Step Count: " + previousSteps);
+        myStepCountListener = new OnDataPointListener() {
+            @Override
+            public void onDataPoint(@NonNull DataPoint dataPoint) {
+                for (Field field : dataPoint.getDataType().getFields()) {
+                    Value value = dataPoint.getValue(field);
+                    int previousSteps = value.asInt();
+                    // Previous steps returned will be steps that are from last read. Therefore
+                    // We have to set them to "0" or else our initial value will be the total of all
+                    // prior steps from sensors.
+                    if (previousSteps > 0) {
+                        previousSteps = 0;
+                        previousSteps++;
+                        Log.i(TAG, "Initial Step Count: " + previousSteps);
+                    }
+                    numOfSteps = numOfSteps + previousSteps;
                 }
-                numOfSteps = numOfSteps + previousSteps;
-                runOnUiThread(() -> stepsTextView.setText(String.valueOf(numOfSteps)));
+                stepsTextView.setText(String.valueOf(numOfSteps));
             }
         };
-        Fitness.getSensorsClient(this, googleSignInAccount)
-                .add(
-                        new SensorRequest.Builder()
-                                .setDataType(DataType.TYPE_STEP_COUNT_DELTA)
-                                .setSamplingRate(1, TimeUnit.SECONDS)
-                                .build(),
-                        myStepCountListener)
-                .addOnSuccessListener(this, aVoid -> Log.i(TAG, getString(R.string.sensor_client_success)))
-                .addOnFailureListener(e -> Log.e(TAG, getString(R.string.sensor_client_error), e));
+
+        FitnessUtils.registerListener(this, googleSignInAccount, myStepCountListener);
     }
 
     private void initiateViewModel() {
@@ -309,7 +291,6 @@ public class PetDetailsActivity extends AppCompatActivity {
             saveStepsAndId();
         }
         super.onBackPressed();
-
     }
 
     public void saveStepsAndId() {
@@ -317,6 +298,7 @@ public class PetDetailsActivity extends AppCompatActivity {
                 .putInt(Constants.BUNDLE_STEPS, numOfSteps)
                 .putInt(Constants.BUNDLE_ID, dog.getPetId())
                 .apply();
+        unregisterSensorListener();
     }
 
     public void loadNumOfSteps() {
@@ -354,13 +336,23 @@ public class PetDetailsActivity extends AppCompatActivity {
     }
 
     private void unregisterSensorListener() {
-        Fitness.getSensorsClient(this, googleSignInAccount)
-                .remove(myStepCountListener)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        Log.i(TAG, getString(R.string.unregistered_listener_message));
-                    }
-                });
+        FitnessUtils.unregisterListener(this, googleSignInAccount, myStepCountListener);
+    }
+
+    private void showFinishedToast() {
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(R.layout.custom_toast, findViewById(R.id.custom_toast_parent));
+
+        ImageView icon = layout.findViewById(R.id.toast_icon);
+        icon.setImageResource(R.drawable.ic_action_pet_favorites);
+        TextView text = layout.findViewById(R.id.toast_message);
+        text.setText(getString(R.string.custom_toast_message, dog.getPetName()));
+
+        Toast toast = new Toast(this);
+        toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.show();
     }
 
     @Override
@@ -372,6 +364,8 @@ public class PetDetailsActivity extends AppCompatActivity {
         }
         super.onPause();
     }
+
+    // TODO: FIX ISSUE CAUSING SENSOR CLIENT TO BE RETRIEVED TWICE
 
     @Override
     protected void onResume() {
