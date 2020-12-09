@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
@@ -27,7 +26,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptionsExtension;
 import com.google.android.gms.fitness.FitnessOptions;
-import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.data.Value;
@@ -114,6 +112,7 @@ public class PetDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pet_details);
         ButterKnife.bind(this);
+        Log.d(TAG, "onCreate: ");
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -131,7 +130,6 @@ public class PetDetailsActivity extends AppCompatActivity {
                     googleSignInAccount,
                     fitnessOptions);
         }
-        // TODO: IMPLEMENT SERVICE TO KEEP STEPS COUNTING IN BACKGROUND. FOREGROUND SERVICE.
 
         toolbar.setNavigationOnClickListener(v -> {
             if (isActive) {
@@ -146,9 +144,11 @@ public class PetDetailsActivity extends AppCompatActivity {
         Intent petData = getIntent();
         if (petData != null) {
             dog = petData.getParcelableExtra(EXTRA_SELECTED_PET);
-            petId = dog.getPetId();
-            photoPath = dog.getPhotoPath();
-            favoritePetName = dog.getPetName();
+            if (dog != null) {
+                petId = dog.getPetId();
+                photoPath = dog.getPhotoPath();
+                favoritePetName = dog.getPetName();
+            }
         }
 
         savedID = preferences.getInt(BUNDLE_ID, 0);
@@ -175,6 +175,7 @@ public class PetDetailsActivity extends AppCompatActivity {
             }
         });
         takeWalkButton.setOnClickListener(v -> {
+
             Intent intent = new Intent(this, StepCounterService.class);
             intent.putExtra(NOTIFICATION_PET_NAME, dog.getPetName());
             ContextCompat.startForegroundService(this, intent);
@@ -188,6 +189,7 @@ public class PetDetailsActivity extends AppCompatActivity {
         });
 
         stopButton.setOnClickListener(v -> {
+
             Intent intent = new Intent(this, StepCounterService.class);
             stopService(intent);
             isActive = false;
@@ -243,24 +245,28 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     public void registerSensorListener() {
         stepsTextView.setText(String.valueOf(numOfSteps));
-        myStepCountListener = new OnDataPointListener() {
-            @Override
-            public void onDataPoint(@NonNull DataPoint dataPoint) {
-                for (Field field : dataPoint.getDataType().getFields()) {
-                    Value value = dataPoint.getValue(field);
-                    int previousSteps = value.asInt();
-                    // Previous steps returned will be steps that are from last read. Therefore
-                    // We have to set them to "0" or else our initial value will be the total of all
-                    // prior steps from sensors.
-                    if (previousSteps > 0) {
-                        previousSteps = 0;
-                        previousSteps++;
-                        Log.i(TAG, "Initial Step Count: " + previousSteps);
-                    }
-                    numOfSteps = numOfSteps + previousSteps;
+        myStepCountListener = dataPoint -> {
+            for (Field field : dataPoint.getDataType().getFields()) {
+                Value value = dataPoint.getValue(field);
+                int previousSteps = value.asInt();
+                // Previous steps returned will be steps that are from last read. Therefore
+                // We have to set them to "0" or else our initial value will be the total of all
+                // prior steps from sensors.
+                if (!isActive) {
+                    previousSteps = 0;
+                    previousSteps++;
+                    Log.i(TAG, "Initial Step Count: " + previousSteps);
+                } else {
+                    previousSteps++;
                 }
-                stepsTextView.setText(String.valueOf(numOfSteps));
+                numOfSteps = numOfSteps + previousSteps;
             }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    stepsTextView.setText(String.valueOf(numOfSteps));
+                }
+            });
         };
 
         FitnessUtils.registerListener(this, googleSignInAccount, myStepCountListener);
@@ -295,10 +301,10 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     public void saveStepsAndId() {
         preferences.edit()
+                .putBoolean(BUNDLE_ACTIVE_STATE, isActive)
                 .putInt(Constants.BUNDLE_STEPS, numOfSteps)
                 .putInt(Constants.BUNDLE_ID, dog.getPetId())
                 .apply();
-        unregisterSensorListener();
     }
 
     public void loadNumOfSteps() {
@@ -307,7 +313,6 @@ public class PetDetailsActivity extends AppCompatActivity {
             stepsTextView.setText("");
         } else {
             stepsTextView.setText(String.valueOf(savedSteps));
-            registerSensorListener();
             stopButton.setEnabled(true);
         }
     }
@@ -362,6 +367,7 @@ public class PetDetailsActivity extends AppCompatActivity {
         } else {
             saveStepsAndId();
         }
+        Log.d(TAG, "onPause: ");
         super.onPause();
     }
 
@@ -373,6 +379,7 @@ public class PetDetailsActivity extends AppCompatActivity {
             numOfSteps = savedSteps;
             loadNumOfSteps();
         }
+        Log.d(TAG, "onResume: ");
         super.onResume();
     }
 
@@ -382,7 +389,9 @@ public class PetDetailsActivity extends AppCompatActivity {
             finish();
         } else {
             saveStepsAndId();
+
         }
+        Log.d(TAG, "onDestroy: ");
         super.onDestroy();
     }
 }
