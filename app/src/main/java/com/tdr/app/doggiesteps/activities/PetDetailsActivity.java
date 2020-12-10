@@ -132,11 +132,7 @@ public class PetDetailsActivity extends AppCompatActivity {
         }
 
         toolbar.setNavigationOnClickListener(v -> {
-            if (isActive) {
-                saveStepsAndId();
-
-            }
-            finish();
+            onBackPressed();
         });
 
         stopButton.setEnabled(false);
@@ -154,10 +150,10 @@ public class PetDetailsActivity extends AppCompatActivity {
         savedID = preferences.getInt(BUNDLE_ID, 0);
         savedSteps = preferences.getInt(BUNDLE_STEPS, numOfSteps);
         isActive = preferences.getBoolean(BUNDLE_ACTIVE_STATE, false);
-        if (savedID == petId && isActive) {
+        if (savedID == petId && isActive && myStepCountListener == null) {
+            registerSensorListener();
             numOfSteps = savedSteps;
             loadNumOfSteps();
-            registerSensorListener();
         }
 
         setPetData(dog);
@@ -181,6 +177,7 @@ public class PetDetailsActivity extends AppCompatActivity {
             intent.putExtra(NOTIFICATION_PET_NAME, dog.getPetName());
             ContextCompat.startForegroundService(this, intent);
             registerSensorListener();
+            takeWalkButton.setEnabled(false);
             stopButton.setEnabled(true);
 
         });
@@ -194,6 +191,7 @@ public class PetDetailsActivity extends AppCompatActivity {
             numOfSteps = 0;
             dog.setNumOfSteps(totalSteps);
             totalStepsTextView.setText(String.valueOf(totalSteps));
+            takeWalkButton.setEnabled(true);
             stopButton.setEnabled(false);
             unregisterSensorListener();
             showFinishedToast();
@@ -251,18 +249,18 @@ public class PetDetailsActivity extends AppCompatActivity {
                 // We have to set them to "0" or else our initial value will be the total of all
                 // prior steps from sensors.
                 if (numOfSteps == 0) {
-                    previousSteps = 0;
-                    Log.i(TAG, "Initial Step Count: " + previousSteps);
-                    numOfSteps = previousSteps + 1;
-                } else {
-                    numOfSteps = numOfSteps + 1;
-                    Log.i(TAG, "Number of Steps: " + numOfSteps);
+                    numOfSteps += 1;
                 }
                 runOnUiThread(() -> stepsTextView.setText(String.valueOf(numOfSteps)));
             }
         };
 
         FitnessUtils.registerListener(this, googleSignInAccount, myStepCountListener);
+    }
+
+    private void unregisterSensorListener() {
+        Log.i(TAG, "Listener Unregistered");
+        FitnessUtils.unregisterListener(this, googleSignInAccount, myStepCountListener);
     }
 
     private void initiateViewModel() {
@@ -282,16 +280,6 @@ public class PetDetailsActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        if (!stopButton.isEnabled()) {
-            finish();
-        } else {
-            saveStepsAndId();
-        }
-        super.onBackPressed();
-    }
-
     public void saveStepsAndId() {
         preferences.edit()
                 .putBoolean(BUNDLE_ACTIVE_STATE, isActive)
@@ -302,13 +290,11 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     public void loadNumOfSteps() {
         int savedSteps = preferences.getInt(Constants.BUNDLE_STEPS, numOfSteps);
-        if (savedSteps == 0) {
-            stepsTextView.setText("");
-        } else {
             Log.i(TAG, "Loaded Steps");
-            stepsTextView.setText(String.valueOf(savedSteps));
-            stopButton.setEnabled(true);
-        }
+        stepsTextView.setText(String.valueOf(savedSteps));
+        takeWalkButton.setEnabled(false);
+        stopButton.setEnabled(true);
+
     }
 
     public void addToWidgets() {
@@ -334,15 +320,6 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     }
 
-    private void unregisterSensorListener() {
-        Log.i(TAG, "Listener Unregistered");
-        isActive = false;
-        preferences.edit()
-                .putBoolean(BUNDLE_ACTIVE_STATE, isActive)
-                .apply();
-        FitnessUtils.unregisterListener(this, googleSignInAccount, myStepCountListener);
-    }
-
     private void showFinishedToast() {
         LayoutInflater inflater = getLayoutInflater();
         View layout = inflater.inflate(R.layout.custom_toast, findViewById(R.id.custom_toast_parent));
@@ -359,16 +336,25 @@ public class PetDetailsActivity extends AppCompatActivity {
         toast.show();
     }
 
+
+    @Override
+    public void onBackPressed() {
+        onPause();
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onPause() {
+        if (isActive) {
+            saveStepsAndId();
+        }
+        super.onPause();
+    }
+
     @Override
     protected void onDestroy() {
-        if (!isActive) {
-            finish();
-        } else {
-            unregisterSensorListener();
-            saveStepsAndId();
-
-        }
-        Log.d(TAG, "onDestroy: ");
+        unregisterSensorListener();
         super.onDestroy();
     }
 }
+

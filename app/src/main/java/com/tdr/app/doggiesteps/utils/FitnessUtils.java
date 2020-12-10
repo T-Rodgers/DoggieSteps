@@ -18,8 +18,7 @@ public class FitnessUtils {
     private static final String TAG = FitnessUtils.class.getSimpleName();
 
     public static void registerListener(Context context, GoogleSignInAccount account, OnDataPointListener listener) {
-        // Previous steps returned will be steps that are from last read. Therefore
-        // We have to set them to "0" or else our initial value will be the total of all
+
         Fitness.getSensorsClient(context, account)
                 .add(
                         new SensorRequest.Builder()
