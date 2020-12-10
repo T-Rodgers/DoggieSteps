@@ -157,6 +157,7 @@ public class PetDetailsActivity extends AppCompatActivity {
         if (savedID == petId && isActive) {
             numOfSteps = savedSteps;
             loadNumOfSteps();
+            registerSensorListener();
         }
 
         setPetData(dog);
@@ -180,10 +181,6 @@ public class PetDetailsActivity extends AppCompatActivity {
             intent.putExtra(NOTIFICATION_PET_NAME, dog.getPetName());
             ContextCompat.startForegroundService(this, intent);
             registerSensorListener();
-            isActive = true;
-            preferences.edit()
-                    .putBoolean(BUNDLE_ACTIVE_STATE, isActive)
-                    .apply();
             stopButton.setEnabled(true);
 
         });
@@ -192,10 +189,6 @@ public class PetDetailsActivity extends AppCompatActivity {
 
             Intent intent = new Intent(this, StepCounterService.class);
             stopService(intent);
-            isActive = false;
-            preferences.edit()
-                    .putBoolean(BUNDLE_ACTIVE_STATE, isActive)
-                    .apply();
             totalSteps = dog.getNumOfSteps();
             totalSteps = totalSteps + numOfSteps;
             numOfSteps = 0;
@@ -244,6 +237,11 @@ public class PetDetailsActivity extends AppCompatActivity {
     }
 
     public void registerSensorListener() {
+        isActive = true;
+        preferences.edit()
+                .putBoolean(BUNDLE_ACTIVE_STATE, isActive)
+                .apply();
+        Log.i(TAG, "Listener Registered");
         stepsTextView.setText(String.valueOf(numOfSteps));
         myStepCountListener = dataPoint -> {
             for (Field field : dataPoint.getDataType().getFields()) {
@@ -252,21 +250,16 @@ public class PetDetailsActivity extends AppCompatActivity {
                 // Previous steps returned will be steps that are from last read. Therefore
                 // We have to set them to "0" or else our initial value will be the total of all
                 // prior steps from sensors.
-                if (!isActive) {
+                if (numOfSteps == 0) {
                     previousSteps = 0;
-                    previousSteps++;
                     Log.i(TAG, "Initial Step Count: " + previousSteps);
+                    numOfSteps = previousSteps + 1;
                 } else {
-                    previousSteps++;
+                    numOfSteps = numOfSteps + 1;
+                    Log.i(TAG, "Number of Steps: " + numOfSteps);
                 }
-                numOfSteps = numOfSteps + previousSteps;
+                runOnUiThread(() -> stepsTextView.setText(String.valueOf(numOfSteps)));
             }
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    stepsTextView.setText(String.valueOf(numOfSteps));
-                }
-            });
         };
 
         FitnessUtils.registerListener(this, googleSignInAccount, myStepCountListener);
@@ -312,6 +305,7 @@ public class PetDetailsActivity extends AppCompatActivity {
         if (savedSteps == 0) {
             stepsTextView.setText("");
         } else {
+            Log.i(TAG, "Loaded Steps");
             stepsTextView.setText(String.valueOf(savedSteps));
             stopButton.setEnabled(true);
         }
@@ -341,6 +335,11 @@ public class PetDetailsActivity extends AppCompatActivity {
     }
 
     private void unregisterSensorListener() {
+        Log.i(TAG, "Listener Unregistered");
+        isActive = false;
+        preferences.edit()
+                .putBoolean(BUNDLE_ACTIVE_STATE, isActive)
+                .apply();
         FitnessUtils.unregisterListener(this, googleSignInAccount, myStepCountListener);
     }
 
@@ -361,33 +360,11 @@ public class PetDetailsActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        if (!stopButton.isEnabled()) {
-            finish();
-        } else {
-            saveStepsAndId();
-        }
-        Log.d(TAG, "onPause: ");
-        super.onPause();
-    }
-
-    // TODO: FIX ISSUE CAUSING SENSOR CLIENT TO BE RETRIEVED TWICE
-
-    @Override
-    protected void onResume() {
-        if (savedID == petId && isActive) {
-            numOfSteps = savedSteps;
-            loadNumOfSteps();
-        }
-        Log.d(TAG, "onResume: ");
-        super.onResume();
-    }
-
-    @Override
     protected void onDestroy() {
-        if (!stopButton.isEnabled()) {
+        if (!isActive) {
             finish();
         } else {
+            unregisterSensorListener();
             saveStepsAndId();
 
         }
