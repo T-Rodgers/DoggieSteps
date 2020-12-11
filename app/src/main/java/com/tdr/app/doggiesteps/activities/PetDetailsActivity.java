@@ -130,9 +130,7 @@ public class PetDetailsActivity extends AppCompatActivity {
                     fitnessOptions);
         }
 
-        toolbar.setNavigationOnClickListener(v -> {
-            onBackPressed();
-        });
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
         stopButton.setEnabled(false);
 
@@ -154,7 +152,6 @@ public class PetDetailsActivity extends AppCompatActivity {
             numOfSteps = savedSteps;
             loadNumOfSteps();
         }
-
         setPetData(dog);
 
         database = DogDatabase.getInstance(this);
@@ -170,6 +167,7 @@ public class PetDetailsActivity extends AppCompatActivity {
                 removeFromFavorites();
             }
         });
+
         takeWalkButton.setOnClickListener(v -> {
 
             Intent intent = new Intent(this, StepCounterService.class);
@@ -182,7 +180,10 @@ public class PetDetailsActivity extends AppCompatActivity {
         });
 
         stopButton.setOnClickListener(v -> {
-
+            isActive = false;
+            preferences.edit()
+                    .putBoolean(BUNDLE_ACTIVE_STATE, isActive)
+                    .apply();
             Intent intent = new Intent(this, StepCounterService.class);
             stopService(intent);
             totalSteps = dog.getNumOfSteps();
