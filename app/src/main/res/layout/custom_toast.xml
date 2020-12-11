@@ -18,8 +18,7 @@
             android:layout_margin="@dimen/linear_list_item_padding"
             android:id="@+id/toast_icon"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/custom_toast_message" />
+            android:layout_height="match_parent" />
 
         <TextView
             android:id="@+id/toast_message"

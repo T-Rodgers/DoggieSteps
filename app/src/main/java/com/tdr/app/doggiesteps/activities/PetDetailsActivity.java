@@ -1,5 +1,6 @@
 package com.tdr.app.doggiesteps.activities;
 
+import android.app.ActivityManager;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -42,6 +43,7 @@ import com.tdr.app.doggiesteps.model.Favorite;
 import com.tdr.app.doggiesteps.services.StepCounterService;
 import com.tdr.app.doggiesteps.utils.AppExecutors;
 import com.tdr.app.doggiesteps.utils.Constants;
+import com.tdr.app.doggiesteps.utils.CustomToastUtils;
 import com.tdr.app.doggiesteps.utils.DogAppWidget;
 import com.tdr.app.doggiesteps.utils.FitnessUtils;
 
@@ -50,6 +52,7 @@ import butterknife.ButterKnife;
 
 import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_ACTIVE_STATE;
 import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_ID;
+import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_PET_NAME;
 import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_STEPS;
 import static com.tdr.app.doggiesteps.utils.Constants.EXTRA_SELECTED_PET;
 import static com.tdr.app.doggiesteps.utils.Constants.NOTIFICATION_PET_NAME;
@@ -113,6 +116,10 @@ public class PetDetailsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         Log.d(TAG, "onCreate: ");
 
+        Log.i(TAG, "Service is Running: " + isServiceRunning());
+        ;
+
+
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         GoogleSignInOptionsExtension fitnessOptions =
@@ -147,10 +154,12 @@ public class PetDetailsActivity extends AppCompatActivity {
         int savedID = preferences.getInt(BUNDLE_ID, 0);
         int savedSteps = preferences.getInt(BUNDLE_STEPS, numOfSteps);
         isActive = preferences.getBoolean(BUNDLE_ACTIVE_STATE, false);
-        if (savedID == petId && isActive) {
+        if (savedID == petId && isActive && isServiceRunning()) {
             registerSensorListener();
             numOfSteps = savedSteps;
             loadNumOfSteps();
+        } else {
+            numOfSteps = 0;
         }
         setPetData(dog);
 
@@ -169,13 +178,22 @@ public class PetDetailsActivity extends AppCompatActivity {
         });
 
         takeWalkButton.setOnClickListener(v -> {
-
-            Intent intent = new Intent(this, StepCounterService.class);
-            intent.putExtra(NOTIFICATION_PET_NAME, dog.getPetName());
-            ContextCompat.startForegroundService(this, intent);
-            registerSensorListener();
-            takeWalkButton.setEnabled(false);
-            stopButton.setEnabled(true);
+            if (isServiceRunning() && petId != preferences.getInt(BUNDLE_ID, 0)) {
+                CustomToastUtils.buildCustomToast(this,
+                        getString(R.string.already_walking_toast_message,
+                                preferences.getString(BUNDLE_PET_NAME, "")));
+            } else {
+                Intent intent = new Intent(this, StepCounterService.class);
+                intent.putExtra(NOTIFICATION_PET_NAME, dog.getPetName());
+                preferences.edit()
+                        .putInt(BUNDLE_ID, dog.getPetId())
+                        .putString(BUNDLE_PET_NAME, dog.getPetName())
+                        .apply();
+                ContextCompat.startForegroundService(this, intent);
+                registerSensorListener();
+                takeWalkButton.setEnabled(false);
+                stopButton.setEnabled(true);
+            }
 
         });
 
@@ -194,9 +212,12 @@ public class PetDetailsActivity extends AppCompatActivity {
             takeWalkButton.setEnabled(true);
             stopButton.setEnabled(false);
             unregisterSensorListener();
-            showFinishedToast();
+
+            CustomToastUtils.buildCustomToast(this,
+                    getString(R.string.finished_toast_message, dog.getPetName()));
+
             AppExecutors.getInstance().diskIO().execute(() -> database.dogDao().updateSteps(dog.getPetId(), dog.getNumOfSteps()));
-            stepsTextView.setText("");
+            stepsTextView.setText(String.valueOf(0));
         });
 
 
@@ -217,6 +238,7 @@ public class PetDetailsActivity extends AppCompatActivity {
         detailsPetBreed.setText(dog.getBreed());
         detailsPetAge.setText(dog.getAge());
         detailsPetBio.setText(dog.getPetBio());
+        stepsTextView.setText(String.valueOf(numOfSteps));
         totalStepsTextView.setText(String.valueOf(dog.getNumOfSteps()));
     }
 
@@ -288,6 +310,7 @@ public class PetDetailsActivity extends AppCompatActivity {
     }
 
     public void saveStepsAndId() {
+        Log.i(TAG, "Saved Pet ID");
         preferences.edit()
                 .putBoolean(BUNDLE_ACTIVE_STATE, isActive)
                 .putInt(Constants.BUNDLE_STEPS, numOfSteps)
@@ -334,13 +357,41 @@ public class PetDetailsActivity extends AppCompatActivity {
         ImageView icon = layout.findViewById(R.id.toast_icon);
         icon.setImageResource(R.drawable.ic_action_pet_favorites);
         TextView text = layout.findViewById(R.id.toast_message);
-        text.setText(getString(R.string.custom_toast_message, dog.getPetName()));
+        text.setText(getString(R.string.finished_toast_message, dog.getPetName()));
 
         Toast toast = new Toast(this);
         toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
         toast.setDuration(Toast.LENGTH_SHORT);
         toast.setView(layout);
         toast.show();
+    }
+
+    private void showAlreadyActiveToast() {
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(R.layout.custom_toast, findViewById(R.id.custom_toast_parent));
+
+        ImageView icon = layout.findViewById(R.id.toast_icon);
+        icon.setImageResource(R.drawable.ic_action_pet_favorites);
+        TextView text = layout.findViewById(R.id.toast_message);
+        text.setText(getString(R.string.already_walking_toast_message, dog.getPetName()));
+
+        Toast toast = new Toast(this);
+        toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.show();
+    }
+
+    private boolean isServiceRunning() {
+        boolean serviceRunning = false;
+        ActivityManager manager = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo runningServiceInfo : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (StepCounterService.class.getName().equals(runningServiceInfo.service.getClassName())) {
+                serviceRunning = true;
+
+            }
+        }
+        return serviceRunning;
     }
 
 
@@ -352,7 +403,7 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        if (isActive) {
+        if (isActive && petId == preferences.getInt(BUNDLE_ID, 0)) {
             saveStepsAndId();
         }
         super.onPause();

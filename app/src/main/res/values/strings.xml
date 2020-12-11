@@ -38,5 +38,6 @@
     <string name="empty_bio_message">No bio listed.</string>
     <string name="active_notification_channel_name">active_notification</string>
     <string name="active_notification_big_text">Out on a walk with %1$s!</string>
-    <string name="custom_toast_message">What a great walk with %1$s!</string>
+    <string name="already_walking_toast_message">Sorry, Already walking with %1$s!</string>
+    <string name="finished_toast_message">What a great walk with %1$s!</string>
 </resources>
