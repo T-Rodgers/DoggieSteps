@@ -22,6 +22,7 @@ public class Constants {
     public static final int ACTIVE_NOTIFICATION_ID = 351;
     public static final String NOTIFICATION_PET_NAME = "notification_pet_name";
     public static final String BUNDLE_PET_NAME = "saved_name";
+    public static final String WIDGET_NULL_PHOTO = "null_photo";
 
     // Constants for testing
     public static final String TEST_PET_OBJECT = "test_pet";
