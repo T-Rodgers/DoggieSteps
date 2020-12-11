@@ -18,6 +18,7 @@ import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.adapters.FavoritesAdapter;
 import com.tdr.app.doggiesteps.database.MainViewModel;
 import com.tdr.app.doggiesteps.model.Favorite;
+import com.tdr.app.doggiesteps.utils.CustomToastUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,6 +56,9 @@ public class FavoritesListFragment extends Fragment implements FavoritesAdapter.
 
     @Override
     public void onClick(Favorite favoriteData) {
+        CustomToastUtils.buildCustomToast(getContext(),
+                getString(R.string.favorites_total_steps_toast_message,
+                        String.valueOf(favoriteData.getTotalSteps())));
     }
 
     public static int calculateNoOfColumns(Context context) {
