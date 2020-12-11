@@ -63,9 +63,8 @@ public class PetDetailsActivity extends AppCompatActivity {
     private static final String TAG = PetDetailsActivity.class.getSimpleName();
     private static final int REQUEST_OAUTH_REQUEST_CODE = 0x6884;
 
-    private int savedID;
-    private int savedSteps;
     private int numOfSteps;
+    private int resumedSteps;
     private int totalSteps;
     private OnDataPointListener myStepCountListener;
 
@@ -147,10 +146,10 @@ public class PetDetailsActivity extends AppCompatActivity {
             }
         }
 
-        savedID = preferences.getInt(BUNDLE_ID, 0);
-        savedSteps = preferences.getInt(BUNDLE_STEPS, numOfSteps);
+        int savedID = preferences.getInt(BUNDLE_ID, 0);
+        int savedSteps = preferences.getInt(BUNDLE_STEPS, numOfSteps);
         isActive = preferences.getBoolean(BUNDLE_ACTIVE_STATE, false);
-        if (savedID == petId && isActive && myStepCountListener == null) {
+        if (savedID == petId && isActive) {
             registerSensorListener();
             numOfSteps = savedSteps;
             loadNumOfSteps();
@@ -235,27 +234,34 @@ public class PetDetailsActivity extends AppCompatActivity {
     }
 
     public void registerSensorListener() {
-        isActive = true;
-        preferences.edit()
-                .putBoolean(BUNDLE_ACTIVE_STATE, isActive)
-                .apply();
+
         Log.i(TAG, "Listener Registered");
         stepsTextView.setText(String.valueOf(numOfSteps));
         myStepCountListener = dataPoint -> {
             for (Field field : dataPoint.getDataType().getFields()) {
                 Value value = dataPoint.getValue(field);
-                int previousSteps = value.asInt();
+                int steps = value.asInt();
                 // Previous steps returned will be steps that are from last read. Therefore
                 // We have to set them to "0" or else our initial value will be the total of all
                 // prior steps from sensors.
                 if (numOfSteps == 0) {
-                    numOfSteps += 1;
+                    steps = 0;
+                    steps++;
+                } else if (isActive) {
+                    resumedSteps = numOfSteps + steps;
+                    stepsTextView.setText(String.valueOf(resumedSteps));
                 }
+                numOfSteps = numOfSteps + steps;
+                Log.i(TAG, "Number of Steps: " + numOfSteps);
                 runOnUiThread(() -> stepsTextView.setText(String.valueOf(numOfSteps)));
             }
         };
 
         FitnessUtils.registerListener(this, googleSignInAccount, myStepCountListener);
+        isActive = true;
+        preferences.edit()
+                .putBoolean(BUNDLE_ACTIVE_STATE, isActive)
+                .apply();
     }
 
     private void unregisterSensorListener() {
@@ -290,7 +296,7 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     public void loadNumOfSteps() {
         int savedSteps = preferences.getInt(Constants.BUNDLE_STEPS, numOfSteps);
-            Log.i(TAG, "Loaded Steps");
+        Log.i(TAG, "Loaded Steps");
         stepsTextView.setText(String.valueOf(savedSteps));
         takeWalkButton.setEnabled(false);
         stopButton.setEnabled(true);
@@ -353,7 +359,9 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        unregisterSensorListener();
+        if (myStepCountListener != null) {
+            unregisterSensorListener();
+        }
         super.onDestroy();
     }
 }
