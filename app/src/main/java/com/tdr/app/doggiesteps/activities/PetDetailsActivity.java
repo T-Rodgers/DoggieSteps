@@ -8,13 +8,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -57,6 +54,7 @@ import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_STEPS;
 import static com.tdr.app.doggiesteps.utils.Constants.EXTRA_SELECTED_PET;
 import static com.tdr.app.doggiesteps.utils.Constants.NOTIFICATION_PET_NAME;
 import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCE_ID;
+import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_NULL_PHOTO;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PET_NAME;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PHOTO_PATH;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_TOTAL_STEPS;
@@ -114,11 +112,6 @@ public class PetDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pet_details);
         ButterKnife.bind(this);
-        Log.d(TAG, "onCreate: ");
-
-        Log.i(TAG, "Service is Running: " + isServiceRunning());
-        ;
-
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -164,13 +157,11 @@ public class PetDetailsActivity extends AppCompatActivity {
         setPetData(dog);
 
         database = DogDatabase.getInstance(this);
-        favorite = new Favorite(petId, photoPath, favoritePetName);
+        favorite = new Favorite(petId, photoPath, favoritePetName, dog.getNumOfSteps());
 
         addWidgetIcon.setOnClickListener(v -> addToWidgets());
-
         favoriteButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-
                 addToFavorites();
             } else {
                 removeFromFavorites();
@@ -216,10 +207,12 @@ public class PetDetailsActivity extends AppCompatActivity {
             CustomToastUtils.buildCustomToast(this,
                     getString(R.string.finished_toast_message, dog.getPetName()));
 
-            AppExecutors.getInstance().diskIO().execute(() -> database.dogDao().updateSteps(dog.getPetId(), dog.getNumOfSteps()));
+            AppExecutors.getInstance().diskIO().execute(() -> {
+                database.dogDao().updateSteps(dog.getPetId(), dog.getNumOfSteps());
+                database.favoriteDao().updateSteps(favorite.getId(), dog.getNumOfSteps());
+            });
             stepsTextView.setText(String.valueOf(0));
         });
-
 
         initiateViewModel();
     }
@@ -243,22 +236,17 @@ public class PetDetailsActivity extends AppCompatActivity {
     }
 
     public void addToFavorites() {
-
-        favorite = new Favorite(petId, photoPath, favoritePetName);
+        favorite = new Favorite(petId, photoPath, favoritePetName, totalSteps);
+        CustomToastUtils.buildCustomToast(this, getString(R.string.add_to_favorites_message, favoritePetName));
         AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().insert(favorite));
     }
 
     public void removeFromFavorites() {
+        CustomToastUtils.buildCustomToast(this, getString(R.string.removed_from_favorites_message, favoritePetName));
         AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().delete(favorite));
-        Toast.makeText(
-                this,
-                dog.getPetName() + R.string.pet_removal_message,
-                Toast.LENGTH_SHORT).show();
     }
 
     public void registerSensorListener() {
-
-        Log.i(TAG, "Listener Registered");
         stepsTextView.setText(String.valueOf(numOfSteps));
         myStepCountListener = dataPoint -> {
             for (Field field : dataPoint.getDataType().getFields()) {
@@ -288,7 +276,6 @@ public class PetDetailsActivity extends AppCompatActivity {
     }
 
     private void unregisterSensorListener() {
-        Log.i(TAG, "Listener Unregistered");
         FitnessUtils.unregisterListener(this, googleSignInAccount, myStepCountListener);
     }
 
@@ -310,7 +297,6 @@ public class PetDetailsActivity extends AppCompatActivity {
     }
 
     public void saveStepsAndId() {
-        Log.i(TAG, "Saved Pet ID");
         preferences.edit()
                 .putBoolean(BUNDLE_ACTIVE_STATE, isActive)
                 .putInt(Constants.BUNDLE_STEPS, numOfSteps)
@@ -320,7 +306,6 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     public void loadNumOfSteps() {
         int savedSteps = preferences.getInt(Constants.BUNDLE_STEPS, numOfSteps);
-        Log.i(TAG, "Loaded Steps");
         stepsTextView.setText(String.valueOf(savedSteps));
         takeWalkButton.setEnabled(false);
         stopButton.setEnabled(true);
@@ -332,7 +317,7 @@ public class PetDetailsActivity extends AppCompatActivity {
                 .putInt(PREFERENCE_ID, dog.getPetId())
                 .putString(WIDGET_PET_NAME, dog.getPetName())
                 .putString(WIDGET_TOTAL_STEPS, String.valueOf(dog.getNumOfSteps()))
-                .putInt("Fallback Photo", R.drawable.ic_action_pet_favorites)
+                .putInt(WIDGET_NULL_PHOTO, R.drawable.ic_action_pet_favorites)
                 .putString(WIDGET_PHOTO_PATH, dog.getPhotoPath())
                 .apply();
 
@@ -349,51 +334,16 @@ public class PetDetailsActivity extends AppCompatActivity {
                 .show();
 
     }
-
-    private void showFinishedToast() {
-        LayoutInflater inflater = getLayoutInflater();
-        View layout = inflater.inflate(R.layout.custom_toast, findViewById(R.id.custom_toast_parent));
-
-        ImageView icon = layout.findViewById(R.id.toast_icon);
-        icon.setImageResource(R.drawable.ic_action_pet_favorites);
-        TextView text = layout.findViewById(R.id.toast_message);
-        text.setText(getString(R.string.finished_toast_message, dog.getPetName()));
-
-        Toast toast = new Toast(this);
-        toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
-        toast.setDuration(Toast.LENGTH_SHORT);
-        toast.setView(layout);
-        toast.show();
-    }
-
-    private void showAlreadyActiveToast() {
-        LayoutInflater inflater = getLayoutInflater();
-        View layout = inflater.inflate(R.layout.custom_toast, findViewById(R.id.custom_toast_parent));
-
-        ImageView icon = layout.findViewById(R.id.toast_icon);
-        icon.setImageResource(R.drawable.ic_action_pet_favorites);
-        TextView text = layout.findViewById(R.id.toast_message);
-        text.setText(getString(R.string.already_walking_toast_message, dog.getPetName()));
-
-        Toast toast = new Toast(this);
-        toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
-        toast.setDuration(Toast.LENGTH_SHORT);
-        toast.setView(layout);
-        toast.show();
-    }
-
     private boolean isServiceRunning() {
         boolean serviceRunning = false;
         ActivityManager manager = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo runningServiceInfo : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (StepCounterService.class.getName().equals(runningServiceInfo.service.getClassName())) {
                 serviceRunning = true;
-
             }
         }
         return serviceRunning;
     }
-
 
     @Override
     public void onBackPressed() {
