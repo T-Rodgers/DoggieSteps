@@ -16,6 +16,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.activities.MainActivity;
 
+import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_NULL_PHOTO;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PET_NAME;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PHOTO_PATH;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_TOTAL_STEPS;
@@ -46,7 +47,7 @@ public class DogAppWidget extends AppWidgetProvider {
 
         } else {
             int resource =
-                    preferences.getInt("Fallback Photo", R.drawable.ic_action_pet_favorites);
+                    preferences.getInt(WIDGET_NULL_PHOTO, R.drawable.ic_action_pet_favorites);
             Glide
                     .with(context.getApplicationContext())
                     .asBitmap()
