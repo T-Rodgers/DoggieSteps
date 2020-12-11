@@ -21,6 +21,24 @@ public class Favorite {
 
     private String favoritePetName;
 
+    private int totalSteps;
+
+
+    public Favorite(int id, String photoPath, String favoritePetName, int totalSteps) {
+        this.id = id;
+        this.photoPath = photoPath;
+        this.favoritePetName = favoritePetName;
+        this.totalSteps = totalSteps;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getPhotoPath() {
         return photoPath;
     }
@@ -37,17 +55,11 @@ public class Favorite {
         this.favoritePetName = favoritePetName;
     }
 
-    public Favorite(int id, String photoPath, String favoritePetName) {
-        this.id = id;
-        this.photoPath = photoPath;
-        this.favoritePetName = favoritePetName;
+    public int getTotalSteps() {
+        return totalSteps;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public void setTotalSteps(int totalSteps) {
+        this.totalSteps = totalSteps;
     }
 }

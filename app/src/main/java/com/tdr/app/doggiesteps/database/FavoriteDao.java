@@ -26,4 +26,7 @@ public interface FavoriteDao {
 
     @Query("SELECT * FROM favorites WHERE id = :id")
     LiveData<Favorite> getFavoriteById(int id);
+
+    @Query("UPDATE favorites SET totalSteps = :num_steps WHERE id = :id")
+    void updateSteps(int id, int num_steps);
 }
