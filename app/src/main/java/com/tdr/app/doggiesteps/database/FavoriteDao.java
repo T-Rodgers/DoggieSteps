@@ -18,7 +18,7 @@ public interface FavoriteDao {
     @Query("SELECT * FROM favorites ORDER BY id ASC")
     LiveData<List<Favorite>> getAllFavorites();
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Favorite favorite);
 
     @Delete
@@ -30,3 +30,4 @@ public interface FavoriteDao {
     @Query("UPDATE favorites SET totalSteps = :num_steps WHERE id = :id")
     void updateSteps(int id, int num_steps);
 }
+

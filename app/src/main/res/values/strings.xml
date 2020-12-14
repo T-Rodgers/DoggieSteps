@@ -52,4 +52,7 @@
     <string name="empty_view_text">Looks empty in here…Add a Pet!</string>
     <string name="content_description_empty_list_image">Empty List Image</string>
     <string name="content_description_favorite_photo">Photo of %1s</string>
+    <string name="content_description_more_options">More Options</string>
+    <string name="content_descripiton_save_button">Save Button</string>
+    <string name="content_description_close_window">Close Window</string>
 </resources>

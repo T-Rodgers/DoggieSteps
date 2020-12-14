@@ -57,6 +57,7 @@ import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_ID;
 import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_PET_NAME;
 import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_STEPS;
 import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCE_ID;
+import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCE_ISFAVORITED;
 import static com.tdr.app.doggiesteps.utils.Constants.UPDATE_PET_REQUEST_CODE;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_NULL_PHOTO;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PET_NAME;
@@ -178,7 +179,9 @@ public class PetDetailsActivity extends AppCompatActivity {
             if (isServiceRunning()) {
                 CustomToastUtils.buildCustomToast(this, getString(R.string.edit_error_message));
             } else {
-
+                preferences.edit()
+                        .putBoolean(PREFERENCE_ISFAVORITED, favoriteButton.isChecked())
+                        .apply();
                 Intent editPetIntent = new Intent(PetDetailsActivity.this, PetEntryActivity.class);
                 editPetIntent.putExtra(EXTRA_PET_DETAILS, dog);
                 startActivityForResult(editPetIntent, UPDATE_PET_REQUEST_CODE);
@@ -220,10 +223,8 @@ public class PetDetailsActivity extends AppCompatActivity {
             takeWalkButton.setEnabled(true);
             stopButton.setEnabled(false);
             unregisterSensorListener();
-
             CustomToastUtils.buildCustomToast(this,
                     getString(R.string.finished_toast_message, dog.getPetName()));
-
             AppExecutors.getInstance().diskIO().execute(() -> {
                 dogDatabase.dogDao().updateSteps(dog.getPetId(), dog.getNumOfSteps());
                 dogDatabase.favoriteDao().updateSteps(favorite.getId(), totalSteps);
@@ -271,9 +272,7 @@ public class PetDetailsActivity extends AppCompatActivity {
             for (Field field : dataPoint.getDataType().getFields()) {
                 Value value = dataPoint.getValue(field);
                 int steps = value.asInt();
-                // Previous steps returned will be steps that are from last read. Therefore
-                // We have to set them to "0" or else our initial value will be the total of all
-                // prior steps from sensors.
+
                 if (isActive) {
                     resumedSteps = numOfSteps + steps;
                     stepsTextView.setText(String.valueOf(resumedSteps));
@@ -396,6 +395,17 @@ public class PetDetailsActivity extends AppCompatActivity {
                     dog = updatedDog;
 
                     setPetData(updatedDog);
+
+                    Log.d(TAG, "onActivityResult: " + preferences.getBoolean(PREFERENCE_ISFAVORITED, false));
+                    favoriteButton.setChecked(preferences.getBoolean(PREFERENCE_ISFAVORITED, false));
+                    if (favoriteButton.isChecked()) {
+                        favorite = new Favorite(
+                                updatedDog.getPetId(),
+                                updatedDog.getPhotoPath(),
+                                updatedDog.getPetName(),
+                                updatedDog.getNumOfSteps());
+                        AppExecutors.getInstance().diskIO().execute(() -> dogDatabase.favoriteDao().insert(favorite));
+                    }
 
                     Snackbar.make(snackBarView,
                             dog.getPetName() + getResources().getString(R.string.pet_updated_snackbar_message),
