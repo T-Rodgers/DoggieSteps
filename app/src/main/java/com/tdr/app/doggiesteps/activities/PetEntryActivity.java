@@ -32,7 +32,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
-import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_PHOTO_PATH;
+import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_PHOTO_PATH;
 
 public class PetEntryActivity extends AppCompatActivity {
 
@@ -69,7 +69,7 @@ public class PetEntryActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             petImageView.setVisibility(View.VISIBLE);
-            currentPhotoPath = savedInstanceState.getString(BUNDLE_PHOTO_PATH);
+            currentPhotoPath = savedInstanceState.getString(PREFERENCES_PHOTO_PATH);
             Glide.with(this)
                     .load(currentPhotoPath)
                     .transition(withCrossFade())

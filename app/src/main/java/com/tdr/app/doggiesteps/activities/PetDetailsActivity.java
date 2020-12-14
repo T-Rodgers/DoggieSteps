@@ -47,13 +47,14 @@ import com.tdr.app.doggiesteps.utils.FitnessUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_ACTIVE_STATE;
-import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_ID;
-import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_PET_NAME;
-import static com.tdr.app.doggiesteps.utils.Constants.BUNDLE_STEPS;
 import static com.tdr.app.doggiesteps.utils.Constants.EXTRA_SELECTED_PET;
 import static com.tdr.app.doggiesteps.utils.Constants.NOTIFICATION_PET_NAME;
+import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_ACTIVE_STATE;
+import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_ID;
+import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_PET_NAME;
+import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_STEPS;
 import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCE_ID;
+import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCE_ISFAVORITED;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_NULL_PHOTO;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PET_NAME;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PHOTO_PATH;
@@ -71,6 +72,7 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     private Dog dog;
     private boolean isActive;
+    private boolean isFavorite;
     private Favorite favorite;
     private int petId;
     private String photoPath;
@@ -144,9 +146,10 @@ public class PetDetailsActivity extends AppCompatActivity {
             }
         }
 
-        int savedID = preferences.getInt(BUNDLE_ID, 0);
-        int savedSteps = preferences.getInt(BUNDLE_STEPS, numOfSteps);
-        isActive = preferences.getBoolean(BUNDLE_ACTIVE_STATE, false);
+        int savedID = preferences.getInt(PREFERENCES_ID, 0);
+        int savedSteps = preferences.getInt(PREFERENCES_STEPS, numOfSteps);
+        isActive = preferences.getBoolean(PREFERENCES_ACTIVE_STATE, false);
+        isFavorite = preferences.getBoolean(PREFERENCE_ISFAVORITED, false);
         if (savedID == petId && isActive && isServiceRunning()) {
             registerSensorListener();
             numOfSteps = savedSteps;
@@ -160,8 +163,8 @@ public class PetDetailsActivity extends AppCompatActivity {
         favorite = new Favorite(petId, photoPath, favoritePetName, dog.getNumOfSteps());
 
         addWidgetIcon.setOnClickListener(v -> addToWidgets());
-        favoriteButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
+        favoriteButton.setOnClickListener(v -> {
+            if (!isFavorite) {
                 addToFavorites();
             } else {
                 removeFromFavorites();
@@ -169,16 +172,16 @@ public class PetDetailsActivity extends AppCompatActivity {
         });
 
         takeWalkButton.setOnClickListener(v -> {
-            if (isServiceRunning() && petId != preferences.getInt(BUNDLE_ID, 0)) {
+            if (isServiceRunning() && petId != preferences.getInt(PREFERENCES_ID, 0)) {
                 CustomToastUtils.buildCustomToast(this,
                         getString(R.string.already_walking_toast_message,
-                                preferences.getString(BUNDLE_PET_NAME, "")));
+                                preferences.getString(PREFERENCES_PET_NAME, "")));
             } else {
                 Intent intent = new Intent(this, StepCounterService.class);
                 intent.putExtra(NOTIFICATION_PET_NAME, dog.getPetName());
                 preferences.edit()
-                        .putInt(BUNDLE_ID, dog.getPetId())
-                        .putString(BUNDLE_PET_NAME, dog.getPetName())
+                        .putInt(PREFERENCES_ID, dog.getPetId())
+                        .putString(PREFERENCES_PET_NAME, dog.getPetName())
                         .apply();
                 ContextCompat.startForegroundService(this, intent);
                 registerSensorListener();
@@ -191,7 +194,7 @@ public class PetDetailsActivity extends AppCompatActivity {
         stopButton.setOnClickListener(v -> {
             isActive = false;
             preferences.edit()
-                    .putBoolean(BUNDLE_ACTIVE_STATE, isActive)
+                    .putBoolean(PREFERENCES_ACTIVE_STATE, isActive)
                     .apply();
             Intent intent = new Intent(this, StepCounterService.class);
             stopService(intent);
@@ -237,11 +240,19 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     public void addToFavorites() {
         favorite = new Favorite(petId, photoPath, favoritePetName, totalSteps);
+        isFavorite = true;
+        preferences.edit()
+                .putBoolean(PREFERENCE_ISFAVORITED, isFavorite)
+                .apply();
         CustomToastUtils.buildCustomToast(this, getString(R.string.add_to_favorites_message, favoritePetName));
         AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().insert(favorite));
     }
 
     public void removeFromFavorites() {
+        isFavorite = false;
+        preferences.edit()
+                .putBoolean(PREFERENCE_ISFAVORITED, isFavorite)
+                .apply();
         CustomToastUtils.buildCustomToast(this, getString(R.string.removed_from_favorites_message, favoritePetName));
         AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().delete(favorite));
     }
@@ -271,7 +282,7 @@ public class PetDetailsActivity extends AppCompatActivity {
         FitnessUtils.registerListener(this, googleSignInAccount, myStepCountListener);
         isActive = true;
         preferences.edit()
-                .putBoolean(BUNDLE_ACTIVE_STATE, isActive)
+                .putBoolean(PREFERENCES_ACTIVE_STATE, isActive)
                 .apply();
     }
 
@@ -298,14 +309,14 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     public void saveStepsAndId() {
         preferences.edit()
-                .putBoolean(BUNDLE_ACTIVE_STATE, isActive)
-                .putInt(Constants.BUNDLE_STEPS, numOfSteps)
-                .putInt(Constants.BUNDLE_ID, dog.getPetId())
+                .putBoolean(PREFERENCES_ACTIVE_STATE, isActive)
+                .putInt(Constants.PREFERENCES_STEPS, numOfSteps)
+                .putInt(Constants.PREFERENCES_ID, dog.getPetId())
                 .apply();
     }
 
     public void loadNumOfSteps() {
-        int savedSteps = preferences.getInt(Constants.BUNDLE_STEPS, numOfSteps);
+        int savedSteps = preferences.getInt(Constants.PREFERENCES_STEPS, numOfSteps);
         stepsTextView.setText(String.valueOf(savedSteps));
         takeWalkButton.setEnabled(false);
         stopButton.setEnabled(true);
@@ -353,7 +364,7 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        if (isActive && petId == preferences.getInt(BUNDLE_ID, 0)) {
+        if (isActive && petId == preferences.getInt(PREFERENCES_ID, 0)) {
             saveStepsAndId();
         }
         super.onPause();
