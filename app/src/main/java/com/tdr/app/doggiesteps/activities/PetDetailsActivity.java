@@ -212,7 +212,8 @@ public class PetDetailsActivity extends AppCompatActivity {
 
             AppExecutors.getInstance().diskIO().execute(() -> {
                 database.dogDao().updateSteps(dog.getPetId(), dog.getNumOfSteps());
-                database.favoriteDao().updateSteps(favorite.getId(), dog.getNumOfSteps());
+                database.favoriteDao().updateSteps(favorite.getId(), totalSteps);
+
             });
             stepsTextView.setText(String.valueOf(0));
         });
@@ -245,7 +246,10 @@ public class PetDetailsActivity extends AppCompatActivity {
                 .putBoolean(PREFERENCE_ISFAVORITED, isFavorite)
                 .apply();
         CustomToastUtils.buildCustomToast(this, getString(R.string.add_to_favorites_message, favoritePetName));
+
+        int totalFavoriteSteps = Integer.parseInt(totalStepsTextView.getText().toString());
         AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().insert(favorite));
+        AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().updateSteps(petId, totalFavoriteSteps));
     }
 
     public void removeFromFavorites() {
