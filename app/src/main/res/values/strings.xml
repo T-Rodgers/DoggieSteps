@@ -24,6 +24,7 @@
     <string name="main_notification_channel_name">main_notification</string>
     <string name="details_image_content_description">Image of the pet %1$s</string>
     <string name="pet_added_snackbar_message">" has been added to the list."</string>
+    <string name="pet_updated_snackbar_message">" has been updated</string>
     <string name="all_time_total_label_text">All-Time Total: </string>
     <string name="all_time_total_format">All-Time Total: %1$s</string>
     <string name="added_to_widgets_message">" has been added to widgets"</string>
@@ -43,4 +44,12 @@
     <string name="favorites_total_steps_toast_message">Total Steps: %1$s</string>
     <string name="add_to_favorites_message">%1$s added to Favorites</string>
     <string name="removed_from_favorites_message">%1$s removed from Favorites</string>
+    <string name="update_button_text">Update</string>
+    <string name="update_title_text">Update Pet</string>
+    <string name="edit_error_message">Please stop activity before editing Pet</string>
+    <string name="content_description_favorites_icon">Favorites Icon</string>
+    <string name="content_description_empty_view">empty_view</string>
+    <string name="empty_view_text">Looks empty in here…Add a Pet!</string>
+    <string name="content_description_empty_list_image">Empty List Image</string>
+    <string name="content_description_favorite_photo">Photo of %1s</string>
 </resources>
