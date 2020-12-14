@@ -20,6 +20,7 @@
         tools:listitem="@layout/pet_list_item" />
 
     <ImageView
+        android:contentDescription="@string/content_description_empty_list_image"
         android:id="@+id/empty_view_photo"
         android:layout_width="255dp"
         android:layout_height="255dp"
@@ -41,7 +42,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:gravity="center"
-        android:text="Looks empty in here...Add a Pet!"
+        android:text="@string/empty_view_text"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
         android:textColor="@android:color/black"
         android:visibility="invisible"

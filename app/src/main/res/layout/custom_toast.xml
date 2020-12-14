@@ -15,19 +15,22 @@
         android:background="@color/primaryColor">
 
         <ImageView
+            android:contentDescription="@string/content_description_favorites_icon"
             android:layout_margin="@dimen/linear_list_item_padding"
             android:id="@+id/toast_icon"
             android:layout_width="wrap_content"
             android:layout_height="match_parent" />
 
         <TextView
+            android:layout_marginLeft="@dimen/linear_list_item_padding"
             android:id="@+id/toast_message"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             tools:text="What a great walk with Diesel!"
             android:textColor="@android:color/white"
             android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle"
-            android:gravity="center_vertical" />
+            android:gravity="center_vertical"
+            android:layout_marginStart="@dimen/linear_list_item_padding" />
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

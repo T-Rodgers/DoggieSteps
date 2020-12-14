@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,12 +33,21 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
+import static com.tdr.app.doggiesteps.utils.Constants.ADD_BUTTON_VISIBILITY_STATE;
+import static com.tdr.app.doggiesteps.utils.Constants.EMPTY_BACKGROUND_VISIBILITY_STATE;
+import static com.tdr.app.doggiesteps.utils.Constants.EXTRA_PET_DETAILS;
+import static com.tdr.app.doggiesteps.utils.Constants.EXTRA_SAVED_PET;
+import static com.tdr.app.doggiesteps.utils.Constants.PET_PHOTO_VISIBILITY_STATE;
 import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_PHOTO_PATH;
 
 public class PetEntryActivity extends AppCompatActivity {
+    private static final String TAG = PetEntryActivity.class.getSimpleName();
 
     private String currentPhotoPath;
+    private Dog dogToBeUpdated;
 
+    @BindView(R.id.entry_toolbar_title)
+    TextView entryToolbarTitle;
     @BindView(R.id.empty_add_photo_background)
     View emptyViewBackground;
     @BindView(R.id.petImage)
@@ -67,6 +77,15 @@ public class PetEntryActivity extends AppCompatActivity {
 
         materialToolbar.setNavigationOnClickListener(v -> finish());
 
+        Intent petData = getIntent();
+        if (petData != null) {
+            dogToBeUpdated = petData.getParcelableExtra(EXTRA_PET_DETAILS);
+            if (dogToBeUpdated != null) {
+                setEntryDetails(dogToBeUpdated);
+            }
+        }
+
+
         if (savedInstanceState != null) {
             petImageView.setVisibility(View.VISIBLE);
             currentPhotoPath = savedInstanceState.getString(PREFERENCES_PHOTO_PATH);
@@ -83,7 +102,39 @@ public class PetEntryActivity extends AppCompatActivity {
     }
 
     public void savePet() {
-        Intent savedPetDataIntent = new Intent();
+        if (dogToBeUpdated != null) {
+            updatePet();
+        } else {
+            Intent savedPetDataIntent = new Intent();
+            if (TextUtils.isEmpty(nameEntry.getText())) {
+
+                Snackbar.make(contextView, getString(R.string.empty_name_message), Snackbar.LENGTH_LONG).show();
+
+            } else {
+                String dogName = nameEntry.getText().toString().trim();
+                String breed = breedEntry.getText().toString().trim();
+                if (breed.equals("")) {
+                    breed = getString(R.string.empty_breed_message);
+                }
+                String age = ageEntry.getText().toString().trim();
+                if (age.equals("")) {
+                    age = getString(R.string.empty_age_message);
+                }
+                String bio = bioEntry.getText().toString().trim();
+                if (bio.equals("")) {
+                    bio = getString(R.string.empty_bio_message);
+                }
+                int numOfSteps = 0;
+                Dog newDog = new Dog(dogName, breed, age, bio, currentPhotoPath, numOfSteps);
+                savedPetDataIntent.putExtra(Constants.EXTRA_SAVED_PET, newDog);
+                setResult(RESULT_OK, savedPetDataIntent);
+                finish();
+            }
+        }
+    }
+
+    private void updatePet() {
+        Intent updatePetDataIntent = new Intent();
         if (TextUtils.isEmpty(nameEntry.getText())) {
 
             Snackbar.make(contextView, getString(R.string.empty_name_message), Snackbar.LENGTH_LONG).show();
@@ -102,12 +153,16 @@ public class PetEntryActivity extends AppCompatActivity {
             if (bio.equals("")) {
                 bio = getString(R.string.empty_bio_message);
             }
-            int numOfSteps = 0;
-            Dog newDog = new Dog(dogName, breed, age, bio, currentPhotoPath, numOfSteps);
-            savedPetDataIntent.putExtra(Constants.EXTRA_SAVED_PET, newDog);
-            setResult(RESULT_OK, savedPetDataIntent);
+            String updatedPhotoPath = dogToBeUpdated.getPhotoPath();
+            int id = dogToBeUpdated.getPetId();
+            int numOfSteps = dogToBeUpdated.getNumOfSteps();
+            Dog updatedDog = new Dog(id, dogName, breed, age, bio, updatedPhotoPath, numOfSteps);
+            updatePetDataIntent.putExtra(EXTRA_SAVED_PET, updatedDog);
+            updatePetDataIntent.putExtra(Constants.EXTRA_SAVED_PET, updatedDog);
+            setResult(RESULT_OK, updatePetDataIntent);
             finish();
         }
+
     }
 
     private void dispatchTakePictureIntent() {
@@ -165,17 +220,39 @@ public class PetEntryActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("add_button_visibility", addPhotoButton.getVisibility());
-        outState.putInt("empty_background_visibility", emptyViewBackground.getVisibility());
-        outState.putInt("pet_photo_visibility", petImageView.getVisibility());
-        outState.putString("photo_path", currentPhotoPath);
+        outState.putInt(ADD_BUTTON_VISIBILITY_STATE, addPhotoButton.getVisibility());
+        outState.putInt(EMPTY_BACKGROUND_VISIBILITY_STATE, emptyViewBackground.getVisibility());
+        outState.putInt(PET_PHOTO_VISIBILITY_STATE, petImageView.getVisibility());
+        if (dogToBeUpdated != null) {
+            outState.putString(PREFERENCES_PHOTO_PATH, dogToBeUpdated.getPhotoPath());
+        } else {
+            outState.putString(PREFERENCES_PHOTO_PATH, currentPhotoPath);
+        }
     }
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        addPhotoButton.setVisibility(savedInstanceState.getInt("add_button_visibility"));
-        emptyViewBackground.setVisibility(savedInstanceState.getInt("empty_background_visibility"));
-        petImageView.setVisibility(savedInstanceState.getInt("pet_photo_visibility"));
+        addPhotoButton.setVisibility(savedInstanceState.getInt(ADD_BUTTON_VISIBILITY_STATE));
+        emptyViewBackground.setVisibility(savedInstanceState.getInt(EMPTY_BACKGROUND_VISIBILITY_STATE));
+        petImageView.setVisibility(savedInstanceState.getInt(PET_PHOTO_VISIBILITY_STATE));
+    }
+
+    private void setEntryDetails(Dog dog) {
+        entryToolbarTitle.setText(R.string.update_title_text);
+        emptyViewBackground.setVisibility(View.GONE);
+        addPhotoButton.setVisibility(View.GONE);
+        petImageView.setVisibility(View.VISIBLE);
+        Glide.with(this)
+                .load(dog.getPhotoPath())
+                .placeholder(R.drawable.ic_action_pet_favorites)
+                .fallback(R.drawable.ic_action_pet_favorites)
+                .centerCrop()
+                .into(petImageView);
+        nameEntry.setText(dog.getPetName());
+        breedEntry.setText(dog.getBreed());
+        ageEntry.setText(dog.getAge());
+        bioEntry.setText(dog.getPetBio());
+        saveButton.setText(R.string.update_button_text);
     }
 }

@@ -36,12 +36,13 @@ public class Dog implements Parcelable {
         this.numOfSteps = numOfSteps;
     }
 
-    public Dog(int petId, String petName, String breed, String age, String petBio, int numOfSteps) {
+    public Dog(int petId, String petName, String breed, String age, String petBio, String photoPath, int numOfSteps) {
         this.petId = petId;
         this.petName = petName;
         this.breed = breed;
         this.age = age;
         this.petBio = petBio;
+        this.photoPath = photoPath;
         this.numOfSteps = numOfSteps;
     }
 
@@ -54,7 +55,6 @@ public class Dog implements Parcelable {
         photoPath = in.readString();
         numOfSteps = in.readInt();
     }
-
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {

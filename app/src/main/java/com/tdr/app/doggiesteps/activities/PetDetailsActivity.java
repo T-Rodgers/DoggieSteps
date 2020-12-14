@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
@@ -47,6 +48,8 @@ import com.tdr.app.doggiesteps.utils.FitnessUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.tdr.app.doggiesteps.utils.Constants.EXTRA_PET_DETAILS;
+import static com.tdr.app.doggiesteps.utils.Constants.EXTRA_SAVED_PET;
 import static com.tdr.app.doggiesteps.utils.Constants.EXTRA_SELECTED_PET;
 import static com.tdr.app.doggiesteps.utils.Constants.NOTIFICATION_PET_NAME;
 import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_ACTIVE_STATE;
@@ -54,7 +57,7 @@ import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_ID;
 import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_PET_NAME;
 import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_STEPS;
 import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCE_ID;
-import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCE_ISFAVORITED;
+import static com.tdr.app.doggiesteps.utils.Constants.UPDATE_PET_REQUEST_CODE;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_NULL_PHOTO;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PET_NAME;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PHOTO_PATH;
@@ -72,13 +75,14 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     private Dog dog;
     private boolean isActive;
-    private boolean isFavorite;
     private Favorite favorite;
     private int petId;
     private String photoPath;
     private String favoritePetName;
     private GoogleSignInAccount googleSignInAccount;
 
+    @BindView(R.id.edit_pet_icon)
+    ImageButton editPetButton;
     @BindView(R.id.details_snackbar_view)
     View snackBarView;
     @BindView(R.id.add_widget_icon)
@@ -107,7 +111,7 @@ public class PetDetailsActivity extends AppCompatActivity {
     MaterialToolbar toolbar;
 
     private SharedPreferences preferences;
-    private DogDatabase database;
+    private DogDatabase dogDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +120,7 @@ public class PetDetailsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        dogDatabase = DogDatabase.getInstance(this);
 
         GoogleSignInOptionsExtension fitnessOptions =
                 FitnessOptions.builder()
@@ -149,7 +154,6 @@ public class PetDetailsActivity extends AppCompatActivity {
         int savedID = preferences.getInt(PREFERENCES_ID, 0);
         int savedSteps = preferences.getInt(PREFERENCES_STEPS, numOfSteps);
         isActive = preferences.getBoolean(PREFERENCES_ACTIVE_STATE, false);
-        isFavorite = preferences.getBoolean(PREFERENCE_ISFAVORITED, false);
         if (savedID == petId && isActive && isServiceRunning()) {
             registerSensorListener();
             numOfSteps = savedSteps;
@@ -159,15 +163,25 @@ public class PetDetailsActivity extends AppCompatActivity {
         }
         setPetData(dog);
 
-        database = DogDatabase.getInstance(this);
         favorite = new Favorite(petId, photoPath, favoritePetName, dog.getNumOfSteps());
 
         addWidgetIcon.setOnClickListener(v -> addToWidgets());
-        favoriteButton.setOnClickListener(v -> {
-            if (!isFavorite) {
+        favoriteButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
                 addToFavorites();
             } else {
                 removeFromFavorites();
+            }
+        });
+
+        editPetButton.setOnClickListener(v -> {
+            if (isServiceRunning()) {
+                CustomToastUtils.buildCustomToast(this, getString(R.string.edit_error_message));
+            } else {
+
+                Intent editPetIntent = new Intent(PetDetailsActivity.this, PetEntryActivity.class);
+                editPetIntent.putExtra(EXTRA_PET_DETAILS, dog);
+                startActivityForResult(editPetIntent, UPDATE_PET_REQUEST_CODE);
             }
         });
 
@@ -211,8 +225,8 @@ public class PetDetailsActivity extends AppCompatActivity {
                     getString(R.string.finished_toast_message, dog.getPetName()));
 
             AppExecutors.getInstance().diskIO().execute(() -> {
-                database.dogDao().updateSteps(dog.getPetId(), dog.getNumOfSteps());
-                database.favoriteDao().updateSteps(favorite.getId(), totalSteps);
+                dogDatabase.dogDao().updateSteps(dog.getPetId(), dog.getNumOfSteps());
+                dogDatabase.favoriteDao().updateSteps(favorite.getId(), totalSteps);
 
             });
             stepsTextView.setText(String.valueOf(0));
@@ -241,24 +255,14 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     public void addToFavorites() {
         favorite = new Favorite(petId, photoPath, favoritePetName, totalSteps);
-        isFavorite = true;
-        preferences.edit()
-                .putBoolean(PREFERENCE_ISFAVORITED, isFavorite)
-                .apply();
-        CustomToastUtils.buildCustomToast(this, getString(R.string.add_to_favorites_message, favoritePetName));
-
         int totalFavoriteSteps = Integer.parseInt(totalStepsTextView.getText().toString());
-        AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().insert(favorite));
-        AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().updateSteps(petId, totalFavoriteSteps));
+        AppExecutors.getInstance().diskIO().execute(() -> dogDatabase.favoriteDao().insert(favorite));
+        AppExecutors.getInstance().diskIO().execute(() -> dogDatabase.favoriteDao().updateSteps(petId, totalFavoriteSteps));
     }
 
     public void removeFromFavorites() {
-        isFavorite = false;
-        preferences.edit()
-                .putBoolean(PREFERENCE_ISFAVORITED, isFavorite)
-                .apply();
         CustomToastUtils.buildCustomToast(this, getString(R.string.removed_from_favorites_message, favoritePetName));
-        AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().delete(favorite));
+        AppExecutors.getInstance().diskIO().execute(() -> dogDatabase.favoriteDao().delete(favorite));
     }
 
     public void registerSensorListener() {
@@ -270,10 +274,7 @@ public class PetDetailsActivity extends AppCompatActivity {
                 // Previous steps returned will be steps that are from last read. Therefore
                 // We have to set them to "0" or else our initial value will be the total of all
                 // prior steps from sensors.
-                if (numOfSteps == 0) {
-                    steps = 0;
-                    steps++;
-                } else if (isActive) {
+                if (isActive) {
                     resumedSteps = numOfSteps + steps;
                     stepsTextView.setText(String.valueOf(resumedSteps));
                 }
@@ -295,7 +296,7 @@ public class PetDetailsActivity extends AppCompatActivity {
     }
 
     private void initiateViewModel() {
-        FavoritesViewModelFactory factory = new FavoritesViewModelFactory(database, favorite.getId());
+        FavoritesViewModelFactory factory = new FavoritesViewModelFactory(dogDatabase, favorite.getId());
         FavoritesViewModel viewModel = new ViewModelProvider(this, factory).get(FavoritesViewModel.class);
         viewModel.getFavorite().observe(this, new Observer<Favorite>() {
             @Override
@@ -303,10 +304,8 @@ public class PetDetailsActivity extends AppCompatActivity {
                 viewModel.getFavorite().removeObserver(this);
                 if (favoriteData == null) {
                     favoriteButton.setChecked(false);
-                } else if ((favorite.getId() == dog.getPetId()) && !favoriteButton.isChecked()) {
-                    favoriteData.setId(dog.getPetId());
-                    favoriteButton.setChecked(true);
-                }
+                } else
+                    favoriteButton.setChecked((favorite.getId() == dog.getPetId()) && !favoriteButton.isChecked());
             }
         });
     }
@@ -349,6 +348,7 @@ public class PetDetailsActivity extends AppCompatActivity {
                 .show();
 
     }
+
     private boolean isServiceRunning() {
         boolean serviceRunning = false;
         ActivityManager manager = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
@@ -380,6 +380,31 @@ public class PetDetailsActivity extends AppCompatActivity {
             unregisterSensorListener();
         }
         super.onDestroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == UPDATE_PET_REQUEST_CODE) {
+
+            if (data != null) {
+                Dog updatedDog = data.getParcelableExtra(EXTRA_SAVED_PET);
+                if (updatedDog != null) {
+                    AppExecutors.getInstance().diskIO().execute(() ->
+                            dogDatabase.dogDao().insert(updatedDog));
+
+                    dog = updatedDog;
+
+                    setPetData(updatedDog);
+
+                    Snackbar.make(snackBarView,
+                            dog.getPetName() + getResources().getString(R.string.pet_updated_snackbar_message),
+                            Snackbar.LENGTH_SHORT)
+                            .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
+                            .show();
+                }
+            }
+        }
     }
 }
 

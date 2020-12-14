@@ -26,7 +26,7 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
     private final LayoutInflater inflater;
     private List<Dog> dogList;
     private final Context context;
-    private DogListAdapterClickHandler mclickhandler;
+    private final DogListAdapterClickHandler mClickHandler;
 
     public interface DogListAdapterClickHandler {
         void onClick(Dog dogData);
@@ -35,7 +35,7 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
     public DogListAdapter(Context context, DogListAdapterClickHandler handler) {
         inflater = LayoutInflater.from(context);
         this.context = context;
-        mclickhandler = handler;
+        mClickHandler = handler;
 
     }
 
@@ -54,6 +54,8 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
         Dog currentDog = dogList.get(position);
         holder.dogNameView.setText(currentDog.getPetName());
         holder.breedView.setText(currentDog.getBreed());
+        holder.petPhotoImageView.setContentDescription(context.getString(
+                R.string.content_description_favorite_photo, currentDog.getPetName()));
         String photoPath = currentDog.getPhotoPath();
         Glide.with(context)
                 .load(photoPath)
@@ -124,7 +126,7 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
         public void onClick(View v) {
             int position = getAdapterPosition();
             Dog dog = dogList.get(position);
-            mclickhandler.onClick(dog);
+            mClickHandler.onClick(dog);
         }
     }
 

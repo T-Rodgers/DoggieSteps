@@ -1,7 +1,6 @@
 package com.tdr.app.doggiesteps.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,17 +20,17 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
 
     private final LayoutInflater inflater;
     private List<Favorite> favoriteList;
-    private Context context;
-    private FavoritesAdapter.FavoritesClickHandler mclickHandler;
+    private final Context context;
+    private final FavoritesAdapter.FavoritesClickHandler mClickHandler;
 
     public FavoritesAdapter(Context context, FavoritesAdapter.FavoritesClickHandler handler) {
         inflater = LayoutInflater.from(context);
         this.context = context;
-        mclickHandler = handler;
+        mClickHandler = handler;
 
     }
 
-    public interface FavoritesClickHandler{
+    public interface FavoritesClickHandler {
         void onClick(Favorite favoriteData);
     }
 
@@ -49,6 +48,8 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
 
         Favorite currentFavorite = favoriteList.get(position);
         String favoriteImagePath = currentFavorite.getPhotoPath();
+        holder.favoritePetImage.setContentDescription(context.getString(
+                R.string.content_description_favorite_photo, currentFavorite.getFavoritePetName()));
 
         holder.petNameTextView.setText(String.valueOf(currentFavorite.getFavoritePetName()));
         Glide.with(context)
@@ -61,8 +62,6 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
     public void setFavoriteList(List<Favorite> favorites) {
         favoriteList = favorites;
         notifyDataSetChanged();
-
-        Log.d("Total Items ", String.valueOf(favoriteList.size()));
 
     }
 
@@ -94,7 +93,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
         public void onClick(View v) {
             int position = getAdapterPosition();
             Favorite favorite = favoriteList.get(position);
-            mclickHandler.onClick(favorite);
+            mClickHandler.onClick(favorite);
         }
     }
 }
