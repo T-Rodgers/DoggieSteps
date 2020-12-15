@@ -21,7 +21,6 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.snackbar.Snackbar;
 import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.model.Dog;
-import com.tdr.app.doggiesteps.utils.Constants;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +38,7 @@ import static com.tdr.app.doggiesteps.utils.Constants.EXTRA_PET_DETAILS;
 import static com.tdr.app.doggiesteps.utils.Constants.EXTRA_SAVED_PET;
 import static com.tdr.app.doggiesteps.utils.Constants.PET_PHOTO_VISIBILITY_STATE;
 import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_PHOTO_PATH;
+import static com.tdr.app.doggiesteps.utils.Constants.REQUEST_IMAGE_CAPTURE;
 
 public class PetEntryActivity extends AppCompatActivity {
     private static final String TAG = PetEntryActivity.class.getSimpleName();
@@ -126,7 +126,7 @@ public class PetEntryActivity extends AppCompatActivity {
                 }
                 int numOfSteps = 0;
                 Dog newDog = new Dog(dogName, breed, age, bio, currentPhotoPath, numOfSteps);
-                savedPetDataIntent.putExtra(Constants.EXTRA_SAVED_PET, newDog);
+                savedPetDataIntent.putExtra(EXTRA_SAVED_PET, newDog);
                 setResult(RESULT_OK, savedPetDataIntent);
                 finish();
             }
@@ -158,7 +158,6 @@ public class PetEntryActivity extends AppCompatActivity {
             int numOfSteps = dogToBeUpdated.getNumOfSteps();
             Dog updatedDog = new Dog(id, dogName, breed, age, bio, updatedPhotoPath, numOfSteps);
             updatePetDataIntent.putExtra(EXTRA_SAVED_PET, updatedDog);
-            updatePetDataIntent.putExtra(Constants.EXTRA_SAVED_PET, updatedDog);
             setResult(RESULT_OK, updatePetDataIntent);
             finish();
         }
@@ -166,24 +165,25 @@ public class PetEntryActivity extends AppCompatActivity {
     }
 
     private void dispatchTakePictureIntent() {
-        File photoFile = null;
-        try {
-            photoFile = createImageFile();
 
-        } catch (IOException e) {
-            // display error state to the user
-            e.printStackTrace();
-        }
-        Uri imageUri =
-                null;
-        if (photoFile != null) {
-            imageUri = FileProvider.getUriForFile(this, "com.tdr.app.doggiesteps.fileprovider", photoFile);
-        }
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
 
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        startActivityForResult(takePictureIntent, Constants.REQUEST_IMAGE_CAPTURE);
-    }
+            } catch (IOException e) {
+                // display error state to the user
+                e.printStackTrace();
+            }
+            Uri imageUri =
+                    null;
+            if (photoFile != null) {
+                imageUri = FileProvider.getUriForFile(this, "com.tdr.app.doggiesteps.fileprovider", photoFile);
+            }
+
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
 
     private File createImageFile() throws IOException {
         // Create an image file name
@@ -204,7 +204,7 @@ public class PetEntryActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
             emptyViewBackground.setVisibility(View.GONE);
             addPhotoButton.setVisibility(View.GONE);
@@ -256,3 +256,5 @@ public class PetEntryActivity extends AppCompatActivity {
         saveButton.setText(R.string.update_button_text);
     }
 }
+
+//TODO IMPLEMENT PERMISSIONS FOR CAMERA
