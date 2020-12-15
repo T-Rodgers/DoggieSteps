@@ -53,6 +53,13 @@
     <string name="content_description_empty_list_image">Empty List Image</string>
     <string name="content_description_favorite_photo">Photo of %1s</string>
     <string name="content_description_more_options">More Options</string>
-    <string name="content_descripiton_save_button">Save Button</string>
+    <string name="content_description_save_button">Save Button</string>
     <string name="content_description_close_window">Close Window</string>
+    <string name="content_description_add_new_pet_button">Add new pet button</string>
+    <string name="content_description_edit_pet">Edit pet button</string>
+    <string name="content_description_add_to_widgets">Add to widgets</string>
+    <string name="content_description_favorite_button">Add to favorites button</string>
+    <string name="content_description_walk_button">Walk Button</string>
+    <string name="content_description_stop_button">Stop button</string>
+    <string name="content_description_widget_pet_photo">Widget pet photo</string>
 </resources>

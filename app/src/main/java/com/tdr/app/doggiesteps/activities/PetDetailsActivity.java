@@ -273,7 +273,13 @@ public class PetDetailsActivity extends AppCompatActivity {
                 Value value = dataPoint.getValue(field);
                 int steps = value.asInt();
 
-                if (isActive) {
+                if (numOfSteps == 0) {
+                    // Previous steps returned will be steps that are from last read. Therefore
+                    // We have to set them to "0" or else our initial value will be the total of all
+                    // prior steps from sensors.
+                    steps = 0;
+                    steps++;
+                } else if (isActive) {
                     resumedSteps = numOfSteps + steps;
                     stepsTextView.setText(String.valueOf(resumedSteps));
                 }

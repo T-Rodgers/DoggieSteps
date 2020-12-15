@@ -23,20 +23,20 @@
 
                 <ImageButton
                     android:id="@+id/edit_pet_icon"
-                    android:padding="16dp"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_toLeftOf="@id/add_widget_icon"
                     android:layout_centerVertical="true"
+                    android:layout_toStartOf="@id/add_widget_icon"
+                    android:layout_toLeftOf="@id/add_widget_icon"
                     android:background="?selectableItemBackgroundBorderless"
                     android:clickable="true"
-                    android:src="@drawable/edit_icon"
+                    android:contentDescription="@string/content_description_edit_pet"
                     android:focusable="true"
-                    android:layout_toStartOf="@id/add_widget_icon" />
+                    android:padding="16dp"
+                    android:src="@drawable/edit_icon" />
 
                 <ImageButton
                     android:id="@+id/add_widget_icon"
-                    android:padding="16dp"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_alignParentEnd="true"
@@ -44,8 +44,10 @@
                     android:layout_centerVertical="true"
                     android:background="?selectableItemBackgroundBorderless"
                     android:clickable="true"
-                    android:src="@drawable/add_to_widgets_icon"
-                    android:focusable="true" />
+                    android:contentDescription="@string/content_description_add_to_widgets"
+                    android:focusable="true"
+                    android:padding="16dp"
+                    android:src="@drawable/add_to_widgets_icon" />
             </RelativeLayout>
         </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>
@@ -69,171 +71,174 @@
             android:scaleType="centerCrop"
             android:src="@drawable/dog_photo"
             app:layout_constraintBottom_toTopOf="@+id/guideline"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
-            <RelativeLayout
-                android:id="@+id/title_container"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:background="@color/primaryLightColor"
-                android:padding="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/guideline">
-
-
-                <TextView
-                    android:id="@+id/details_pet_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                    android:textColor="@android:color/white"
-                    tools:text="Diesel" />
-
-                <TextView
-                    android:id="@+id/details_pet_breed"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/details_pet_name"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                    android:textColor="@android:color/white"
-                    android:textStyle="italic"
-                    tools:text="Miniature-Schnauzer" />
-
-                <TextView
-                    android:id="@+id/details_pet_age"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_toEndOf="@id/details_pet_name"
-                    android:layout_toRightOf="@id/details_pet_name"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                    android:textColor="@android:color/white"
-                    tools:text="12" />
-
-
-            </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/title_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/primaryLightColor"
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline">
 
 
             <TextView
-                android:id="@+id/details_pet_bio"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginBottom="16dp"
-                android:isScrollContainer="true"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-                app:layout_constraintBottom_toTopOf="@+id/steps_label_text_view"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/title_container"
+                android:id="@+id/details_pet_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+                android:textColor="@android:color/white"
+                tools:text="Diesel" />
+
+            <TextView
+                android:id="@+id/details_pet_breed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/details_pet_name"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textColor="@android:color/white"
+                android:textStyle="italic"
                 tools:text="Miniature-Schnauzer" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/details_walk_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:text="@string/take_a_walk_button_text"
-                app:icon="@drawable/ic_action_pet_favorites"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/guideline2"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/details_stop_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:text="@string/stop_button_text"
-                app:icon="@drawable/ic_action_pet_favorites"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/guideline2" />
-
-            <ToggleButton
-                android:id="@+id/details_favorite_button"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginBottom="8dp"
-                android:background="@android:color/transparent"
-                android:button="@drawable/favorite_button_48dp"
-                android:textOff=""
-                android:textOn=""
-                app:buttonTint="@color/primaryDarkColor"
-                app:layout_constraintBottom_toBottomOf="@+id/title_container"
-                app:layout_constraintEnd_toEndOf="@+id/title_container"
-                app:layout_constraintTop_toTopOf="@+id/title_container"
-                tools:checked="true" />
-
             <TextView
-                android:id="@+id/steps_label_text_view"
+                android:id="@+id/details_pet_age"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="@string/steps_label_text"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                app:layout_constraintBottom_toTopOf="@+id/steps_text_view"
-                app:layout_constraintEnd_toEndOf="@+id/steps_text_view"
-                app:layout_constraintStart_toStartOf="@+id/steps_text_view" />
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_toEndOf="@id/details_pet_name"
+                android:layout_toRightOf="@id/details_pet_name"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+                android:textColor="@android:color/white"
+                tools:text="12" />
 
-            <TextView
-                android:id="@+id/steps_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                app:layout_constraintBottom_toTopOf="@+id/details_walk_button"
-                app:layout_constraintEnd_toEndOf="@+id/details_walk_button"
-                app:layout_constraintStart_toStartOf="@+id/details_walk_button" />
 
-            <TextView
-                android:id="@+id/all_time_steps_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/all_time_total_label_text"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                app:layout_constraintBaseline_toBaselineOf="@+id/steps_label_text_view"
-                app:layout_constraintEnd_toEndOf="@+id/details_stop_button"
-                app:layout_constraintStart_toStartOf="@+id/details_stop_button" />
+        </RelativeLayout>
 
-            <TextView
-                android:id="@+id/total_steps_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                app:layout_constraintBottom_toTopOf="@+id/details_stop_button"
-                app:layout_constraintEnd_toEndOf="@+id/details_stop_button"
-                app:layout_constraintStart_toStartOf="@+id/details_stop_button" />
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline2"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="731dp"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent=".5" />
+        <TextView
+            android:id="@+id/details_pet_bio"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:isScrollContainer="true"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            app:layout_constraintBottom_toTopOf="@+id/steps_label_text_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title_container"
+            tools:text="Miniature-Schnauzer" />
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintGuide_percent=".40" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/details_walk_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="@string/content_description_walk_button"
+            android:text="@string/take_a_walk_button_text"
+            app:icon="@drawable/ic_action_pet_favorites"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintStart_toStartOf="parent" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/details_stop_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="@string/content_description_stop_button"
+            android:text="@string/stop_button_text"
+            app:icon="@drawable/ic_action_pet_favorites"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline2" />
+
+        <ToggleButton
+            android:id="@+id/details_favorite_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="8dp"
+            android:background="@android:color/transparent"
+            android:button="@drawable/favorite_button_48dp"
+            android:contentDescription="@string/content_description_favorite_button"
+            android:textOff=""
+            android:textOn=""
+            app:buttonTint="@color/primaryDarkColor"
+            app:layout_constraintBottom_toBottomOf="@+id/title_container"
+            app:layout_constraintEnd_toEndOf="@+id/title_container"
+            app:layout_constraintTop_toTopOf="@+id/title_container"
+            tools:checked="true" />
+
+        <TextView
+            android:id="@+id/steps_label_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/steps_label_text"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            app:layout_constraintBottom_toTopOf="@+id/steps_text_view"
+            app:layout_constraintEnd_toEndOf="@+id/steps_text_view"
+            app:layout_constraintStart_toStartOf="@+id/steps_text_view" />
+
+        <TextView
+            android:id="@+id/steps_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            app:layout_constraintBottom_toTopOf="@+id/details_walk_button"
+            app:layout_constraintEnd_toEndOf="@+id/details_walk_button"
+            app:layout_constraintStart_toStartOf="@+id/details_walk_button" />
+
+        <TextView
+            android:id="@+id/all_time_steps_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/all_time_total_label_text"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            app:layout_constraintBaseline_toBaselineOf="@+id/steps_label_text_view"
+            app:layout_constraintEnd_toEndOf="@+id/details_stop_button"
+            app:layout_constraintStart_toStartOf="@+id/details_stop_button" />
+
+        <TextView
+            android:id="@+id/total_steps_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            app:layout_constraintBottom_toTopOf="@+id/details_stop_button"
+            app:layout_constraintEnd_toEndOf="@+id/details_stop_button"
+            app:layout_constraintStart_toStartOf="@+id/details_stop_button" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="731dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".5" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".40" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
