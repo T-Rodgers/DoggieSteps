@@ -19,7 +19,7 @@ More features with this API are to come in the future!
 - Also utilizes FirebaseJobDispatcher to send periodic notification to get active!
 
 ## Building blocks
-This application is build using the following libraries:
+This application is built using the following libraries:
 
 - Glide for loading and formatting images.
 - Room Database for data persistence
