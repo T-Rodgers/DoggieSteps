@@ -2,6 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
 
+    signingConfigs{
+        release{
+            keyAlias 'capstoneUdacity'
+            keyPassword 'udacity2020'
+            storeFile file('..\\app\\keystores\\capstonekeystore.jks')
+            storePassword 'udacity2020'
+        }
+    }
     compileOptions{
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -24,6 +32,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 }
