@@ -80,6 +80,8 @@ public class PetEntryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pet_entry);
         ButterKnife.bind(this);
 
+        setSupportActionBar(materialToolbar);
+
         materialToolbar.setNavigationOnClickListener(v -> finish());
 
         Intent petData = getIntent();

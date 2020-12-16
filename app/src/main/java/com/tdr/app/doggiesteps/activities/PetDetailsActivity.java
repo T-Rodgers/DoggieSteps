@@ -120,6 +120,8 @@ public class PetDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pet_details);
         ButterKnife.bind(this);
 
+        setSupportActionBar(toolbar);
+
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         dogDatabase = DogDatabase.getInstance(this);
 

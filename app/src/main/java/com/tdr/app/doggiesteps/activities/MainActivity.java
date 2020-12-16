@@ -9,10 +9,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -33,8 +35,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int MY_PERMISSIONS_REQUEST_ACTIVITY_RECOGNITION = 125;
 
-    @BindView(R.id.main_toolbar_title)
-    TextView toolBarTextView;
     @BindView(R.id.main_snackbar_view)
     View snackBarView;
     @BindView(R.id.fab)
@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
     BottomAppBar bottomAppBar;
     @BindView(R.id.tabLayout)
     TabLayout tabLayout;
+    @BindView(R.id.main_toolbar)
+    Toolbar toolbar;
 
     private DogDatabase dogDatabase;
 
@@ -53,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        setSupportActionBar(toolbar);
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACTIVITY_RECOGNITION)
@@ -64,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
                         MY_PERMISSIONS_REQUEST_ACTIVITY_RECOGNITION);
             }
         }
-
 
         ReminderUtilities.scheduleChargingReminder(this);
 
@@ -84,11 +87,11 @@ public class MainActivity extends AppCompatActivity {
                 viewPager.setCurrentItem(position);
                 switch (position) {
                     case 0:
-                        toolBarTextView.setText(R.string.my_doggies_toolbar_title);
+                        toolbar.setTitle(R.string.my_doggies_toolbar_title);
 
                         break;
                     case 1:
-                        toolBarTextView.setText(R.string.favorites_toolbar_title);
+                        toolbar.setTitle(R.string.favorites_toolbar_title);
                         break;
                 }
 

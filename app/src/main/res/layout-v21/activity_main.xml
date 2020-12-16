@@ -22,13 +22,6 @@
                 app:layout_collapseMode="pin"
                 app:layout_scrollFlags="noScroll">
 
-                <TextView
-                    android:id="@+id/main_toolbar_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/my_doggies_toolbar_title"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                    android:textColor="@android:color/white" />
             </com.google.android.material.appbar.MaterialToolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
