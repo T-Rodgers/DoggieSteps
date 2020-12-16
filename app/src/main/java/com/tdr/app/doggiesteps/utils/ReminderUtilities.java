@@ -13,13 +13,14 @@ import com.tdr.app.doggiesteps.services.WalkReminderJobService;
 
 import java.util.concurrent.TimeUnit;
 
+import static com.tdr.app.doggiesteps.utils.Constants.WALK_REMINDER_JOB_TAG;
+
 public class ReminderUtilities {
 
-    private static final int REMINDER_INTERVAL_MINUTES = 60;
+    private static final int REMINDER_INTERVAL_MINUTES = 480;
     private static final int REMINDER_INTERVAL_SECONDS = (int) (TimeUnit.MINUTES.toSeconds(REMINDER_INTERVAL_MINUTES));
     private static final int SYNC_FLEXTIME_SECONDS = REMINDER_INTERVAL_SECONDS;
 
-    private static final String REMINDER_JOB_TAG = "walk_reminder_tag";
     private static boolean sInitialized;
 
     synchronized public static void scheduleChargingReminder(final Context context) {
@@ -28,8 +29,8 @@ public class ReminderUtilities {
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(driver);
         Job constraintReminderJob = dispatcher.newJobBuilder()
                 .setService(WalkReminderJobService.class)
-                .setTag(REMINDER_JOB_TAG)
-                .setConstraints(Constraint.DEVICE_CHARGING)
+                .setTag(WALK_REMINDER_JOB_TAG)
+                .setConstraints(Constraint.DEVICE_IDLE)
                 .setLifetime(Lifetime.UNTIL_NEXT_BOOT)
                 .setRecurring(false)
                 .setTrigger(Trigger.executionWindow(

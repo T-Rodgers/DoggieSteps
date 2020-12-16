@@ -62,4 +62,5 @@
     <string name="content_description_walk_button">Walk Button</string>
     <string name="content_description_stop_button">Stop button</string>
     <string name="content_description_widget_pet_photo">Widget pet photo</string>
+    <string name="camera_permission_denied_message">Unable to perform image capture without permission</string>
 </resources>

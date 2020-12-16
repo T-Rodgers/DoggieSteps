@@ -17,6 +17,7 @@ public class Constants {
     public static final String WIDGET_NULL_PHOTO = "null_photo";
 
     // Notification Constants
+    public static final String WALK_REMINDER_JOB_TAG = "walk_reminder_tag";
     public static final int WALK_REMINDER_PENDING_INTENT_ID = 3;
     public static final String WALK_REMINDER_NOTIFICATION_CHANNEL_ID = "reminder_notification_channel";
     public static final int WALK_REMINDER_NOTIFICATION_ID = 4;
