@@ -36,7 +36,6 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
         inflater = LayoutInflater.from(context);
         this.context = context;
         mClickHandler = handler;
-
     }
 
     @NonNull
@@ -76,7 +75,6 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
                         database.dogDao().delete(currentDog);
                         
                     });
-
                 }
                 return false;
             });
@@ -84,8 +82,6 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
             popup.show();
 
         });
-
-
     }
 
     public void setDogList(List<Dog> dogs) {
