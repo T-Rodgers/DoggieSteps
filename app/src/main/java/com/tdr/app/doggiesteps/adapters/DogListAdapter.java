@@ -75,12 +75,12 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
                         database.dogDao().delete(currentDog);
                         
                     });
+
                 }
                 return false;
             });
             //displaying the popup
             popup.show();
-
         });
     }
 
@@ -89,7 +89,6 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
         notifyDataSetChanged();
 
         Log.d("Total Items ", String.valueOf(dogList.size()));
-
     }
 
     @Override
@@ -115,7 +114,6 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
             options = itemView.findViewById(R.id.list_item_options);
             petPhotoImageView = itemView.findViewById(R.id.list_pet_image);
             itemView.setOnClickListener(this);
-
         }
 
         @Override
@@ -125,5 +123,4 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewH
             mClickHandler.onClick(dog);
         }
     }
-
 }

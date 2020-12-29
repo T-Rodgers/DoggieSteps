@@ -2,6 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
 
+    signingConfigs{
+    release {
+        storeFile file('C:\\Users\\tdr00\\Desktop\\keystores\\tdrkeystore.jks')
+        storePassword 'viw84N!u1w?'
+        keyAlias 'alias_ds_0'
+        keyPassword 'p34B6!2kl%'
+    }
+    }
     compileOptions{
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -24,6 +32,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 }
