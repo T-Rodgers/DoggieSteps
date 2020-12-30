@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
 import android.widget.RemoteViews;
 
+import androidx.annotation.NonNull;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.AppWidgetTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -23,8 +25,6 @@ import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_TOTAL_STEPS;
 
 public class DogAppWidget extends AppWidgetProvider {
 
-    private static final String TAG = "DogAppWidget: ";
-
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.dog_app_widget);
@@ -32,7 +32,7 @@ public class DogAppWidget extends AppWidgetProvider {
         String photoPath = preferences.getString(WIDGET_PHOTO_PATH, null);
         AppWidgetTarget appWidgetTarget = new AppWidgetTarget(context, R.id.widget_pet_photo, views, appWidgetId) {
             @Override
-            public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+            public void onResourceReady(@NonNull Bitmap resource, Transition<? super Bitmap> transition) {
                 super.onResourceReady(resource, transition);
             }
         };

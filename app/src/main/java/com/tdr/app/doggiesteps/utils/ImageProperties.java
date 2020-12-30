@@ -19,15 +19,13 @@ public class ImageProperties {
                 bitmap.getHeight(),
                 true);
 
-        Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap,
+        return Bitmap.createBitmap(scaledBitmap,
                 0,
                 0,
                 scaledBitmap.getWidth(),
                 scaledBitmap.getHeight(),
                 matrix,
                 true);
-
-        return rotatedBitmap;
     }
 
 }

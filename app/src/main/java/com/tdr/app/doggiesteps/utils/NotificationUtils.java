@@ -36,15 +36,14 @@ public class NotificationUtils {
     private static Bitmap largeIcon(Context context) {
         Resources res = context.getResources();
 
-        Bitmap largeIcon = BitmapFactory.decodeResource(res, R.drawable.dog_photo);
-        return largeIcon;
+        return BitmapFactory.decodeResource(res, R.drawable.dog_photo);
     }
 
     public static void remindBecauseCharging(Context context) {
         NotificationManager notificationManager = (NotificationManager)
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        NotificationChannel mChannel = null;
+        NotificationChannel mChannel;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             mChannel = new NotificationChannel(
                     Constants.WALK_REMINDER_NOTIFICATION_CHANNEL_ID,
@@ -81,7 +80,7 @@ public class NotificationUtils {
         NotificationManager notificationManager = (NotificationManager)
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        NotificationChannel mChannel = null;
+        NotificationChannel mChannel;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             mChannel = new NotificationChannel(
                     ACTIVE_NOTIFICATION_CHANNEL_ID,

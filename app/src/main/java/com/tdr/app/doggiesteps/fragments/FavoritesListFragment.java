@@ -48,9 +48,7 @@ public class FavoritesListFragment extends Fragment implements FavoritesAdapter.
 
     private void initiateViewModel() {
         MainViewModel viewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        viewModel.getFavorites().observe(getViewLifecycleOwner(), favorites -> {
-            adapter.setFavoriteList(favorites);
-        });
+        viewModel.getFavorites().observe(getViewLifecycleOwner(), favorites -> adapter.setFavoriteList(favorites));
 
     }
 
@@ -65,8 +63,7 @@ public class FavoritesListFragment extends Fragment implements FavoritesAdapter.
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
         int scalingFactor = 150;
-        int noOfColumns = (int) (dpWidth / scalingFactor);
-        return noOfColumns;
+        return (int) (dpWidth / scalingFactor);
     }
 }
 

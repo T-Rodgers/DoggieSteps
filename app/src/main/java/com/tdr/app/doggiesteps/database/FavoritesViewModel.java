@@ -7,7 +7,7 @@ import com.tdr.app.doggiesteps.model.Favorite;
 
 public class FavoritesViewModel extends ViewModel {
 
-    private LiveData<Favorite> favorite;
+    private final LiveData<Favorite> favorite;
 
     public FavoritesViewModel(DogDatabase database, int favoriteId) {
         favorite = database.favoriteDao().getFavoriteById(favoriteId);

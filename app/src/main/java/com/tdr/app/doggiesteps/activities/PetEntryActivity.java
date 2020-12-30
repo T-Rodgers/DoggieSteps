@@ -105,16 +105,13 @@ public class PetEntryActivity extends AppCompatActivity {
         }
 
         saveButton.setOnClickListener(v -> savePet());
-        addPhotoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(PetEntryActivity.this, Manifest.permission.CAMERA)
-                        == PackageManager.PERMISSION_DENIED) {
-                    ActivityCompat.requestPermissions(PetEntryActivity.this, new String[]{Manifest.permission.CAMERA},
-                            REQUEST_IMAGE_CAPTURE);
-                } else {
-                    dispatchTakePictureIntent();
-                }
+        addPhotoButton.setOnClickListener(v -> {
+            if (ContextCompat.checkSelfPermission(PetEntryActivity.this, Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_DENIED) {
+                ActivityCompat.requestPermissions(PetEntryActivity.this, new String[]{Manifest.permission.CAMERA},
+                        REQUEST_IMAGE_CAPTURE);
+            } else {
+                dispatchTakePictureIntent();
             }
         });
     }

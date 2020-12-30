@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 public class FavoritesViewModelFactory extends ViewModelProvider.NewInstanceFactory {
-    private DogDatabase mDb;
-    private int mFavoriteId;
+    private final DogDatabase mDb;
+    private final int mFavoriteId;
 
     public FavoritesViewModelFactory(DogDatabase database, int favoriteId) {
         mDb = database;

@@ -1,7 +1,5 @@
 package com.tdr.app.doggiesteps.adapters;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -11,7 +9,7 @@ import com.tdr.app.doggiesteps.fragments.FavoritesListFragment;
 import com.tdr.app.doggiesteps.fragments.PetListFragment;
 
 public class TabsAdapter extends FragmentStatePagerAdapter {
-    int numberOfTabs;
+    final int numberOfTabs;
 
     public TabsAdapter(FragmentManager fm, int numberOfTabs) {
         super(fm, numberOfTabs);

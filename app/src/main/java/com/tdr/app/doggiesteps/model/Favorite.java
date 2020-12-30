@@ -1,6 +1,5 @@
 package com.tdr.app.doggiesteps.model;
 
-import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
@@ -12,7 +11,6 @@ import androidx.room.PrimaryKey;
         onDelete = ForeignKey.CASCADE))
 public class Favorite {
 
-    @NonNull
     @PrimaryKey
     @ColumnInfo
     private int id;

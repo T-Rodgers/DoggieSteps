@@ -12,8 +12,8 @@ import java.util.List;
 
 public class MainViewModel extends AndroidViewModel {
 
-    private LiveData<List<Dog>> mAllDogs;
-    private LiveData<List<Favorite>> mAllFavorites;
+    private final LiveData<List<Dog>> mAllDogs;
+    private final LiveData<List<Favorite>> mAllFavorites;
 
     public MainViewModel(Application application) {
         super(application);
