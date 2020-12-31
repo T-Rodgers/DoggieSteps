@@ -132,14 +132,6 @@ public class PetDetailsActivity extends AppCompatActivity {
 
         googleSignInAccount = GoogleSignIn.getAccountForExtension(this, fitnessOptions);
 
-        if (!GoogleSignIn.hasPermissions(googleSignInAccount, fitnessOptions)) {
-            GoogleSignIn.requestPermissions(
-                    this,
-                    REQUEST_OAUTH_REQUEST_CODE,
-                    googleSignInAccount,
-                    fitnessOptions);
-        }
-
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
         stopButton.setEnabled(false);
@@ -191,7 +183,15 @@ public class PetDetailsActivity extends AppCompatActivity {
         });
 
         takeWalkButton.setOnClickListener(v -> {
-            if (isServiceRunning() && petId != preferences.getInt(PREFERENCES_ID, 0)) {
+            if (!GoogleSignIn.hasPermissions(googleSignInAccount, fitnessOptions)) {
+                GoogleSignIn.requestPermissions(
+                        this,
+                        REQUEST_OAUTH_REQUEST_CODE,
+                        googleSignInAccount,
+                        fitnessOptions);
+
+                CustomToastUtils.buildCustomToast(this, "Needs Access to read Steps");
+            } else if (isServiceRunning() && petId != preferences.getInt(PREFERENCES_ID, 0)) {
                 CustomToastUtils.buildCustomToast(this,
                         getString(R.string.already_walking_toast_message,
                                 preferences.getString(PREFERENCES_PET_NAME, "")));

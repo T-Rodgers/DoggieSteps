@@ -21,6 +21,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+                <ToggleButton
+                    android:id="@+id/details_favorite_button"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center"
+                    android:background="@android:color/transparent"
+                    android:button="@drawable/favorite_button_24dp"
+                    android:contentDescription="@string/content_description_favorite_button"
+                    android:textOff=""
+                    android:textOn=""
+                    android:layout_toLeftOf="@id/edit_pet_icon"
+                    app:buttonTint="@color/primaryDarkColor"
+                    tools:checked="true" />
+
                 <ImageButton
                     android:id="@+id/edit_pet_icon"
                     android:layout_width="wrap_content"
@@ -165,24 +183,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline2" />
 
-        <ToggleButton
-            android:id="@+id/details_favorite_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="8dp"
-            android:background="@android:color/transparent"
-            android:button="@drawable/favorite_button_48dp"
-            android:contentDescription="@string/content_description_favorite_button"
-            android:textOff=""
-            android:textOn=""
-            app:buttonTint="@color/primaryDarkColor"
-            app:layout_constraintBottom_toBottomOf="@+id/title_container"
-            app:layout_constraintEnd_toEndOf="@+id/title_container"
-            app:layout_constraintTop_toTopOf="@+id/title_container"
-            tools:checked="true" />
 
         <TextView
             android:id="@+id/steps_label_text_view"
