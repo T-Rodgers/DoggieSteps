@@ -163,3 +163,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
+
+// TODO: Create dialogs for certain actions.
+// TODO: Implement today daily steps.
