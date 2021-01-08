@@ -36,11 +36,13 @@
     <string name="update_button_text">Update</string>
     <string name="update_title_text">Update Pet</string>
     <string name="edit_error_message">Please stop activity before editing Pet</string>
+    <string name="empty_view_text">Looks empty in here…Add a Pet!</string>
+
+    <!-- Content Description Strings -->
     <string name="content_description_favorites_icon">Favorites Icon</string>
     <string name="content_description_empty_view">empty_view</string>
-    <string name="empty_view_text">Looks empty in here…Add a Pet!</string>
     <string name="content_description_empty_list_image">Empty List Image</string>
-    <string name="content_description_favorite_photo">Photo of %1s</string>
+    <string name="content_description_favorite_photo">Photo of %1$s</string>
     <string name="content_description_more_options">More Options</string>
     <string name="content_description_save_button">Save Button</string>
     <string name="content_description_close_window">Close Window</string>
@@ -51,5 +53,7 @@
     <string name="content_description_walk_button">Walk Button</string>
     <string name="content_description_stop_button">Stop button</string>
     <string name="content_description_widget_pet_photo">Widget pet photo</string>
+
     <string name="camera_permission_denied_message">Unable to perform image capture without permission</string>
+    <string name="delete_pet_message">Are you sure you want to delete %1$s?</string>
 </resources>
