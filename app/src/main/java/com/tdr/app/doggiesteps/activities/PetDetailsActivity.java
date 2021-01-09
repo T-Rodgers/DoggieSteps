@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -191,23 +193,10 @@ public class PetDetailsActivity extends AppCompatActivity {
                         fitnessOptions);
 
                 CustomToastUtils.buildCustomToast(this, "Needs Access to read Steps");
-            } else if (isServiceRunning() && petId != preferences.getInt(PREFERENCES_ID, 0)) {
-                CustomToastUtils.buildCustomToast(this,
-                        getString(R.string.already_walking_toast_message,
-                                preferences.getString(PREFERENCES_PET_NAME, "")));
             } else {
-                Intent intent = new Intent(this, StepCounterService.class);
-                intent.putExtra(NOTIFICATION_PET_NAME, dog.getPetName());
-                preferences.edit()
-                        .putInt(PREFERENCES_ID, dog.getPetId())
-                        .putString(PREFERENCES_PET_NAME, dog.getPetName())
-                        .apply();
-                ContextCompat.startForegroundService(this, intent);
-                registerSensorListener();
-                takeWalkButton.setEnabled(false);
-                stopButton.setEnabled(true);
-            }
 
+                startWalking();
+            }
         });
 
         stopButton.setOnClickListener(v -> {
@@ -236,6 +225,25 @@ public class PetDetailsActivity extends AppCompatActivity {
         });
 
         initiateViewModel();
+    }
+
+    private void startWalking() {
+        if (isServiceRunning() && petId != preferences.getInt(PREFERENCES_ID, 0)) {
+            CustomToastUtils.buildCustomToast(this,
+                    getString(R.string.already_walking_toast_message,
+                            preferences.getString(PREFERENCES_PET_NAME, "")));
+        } else {
+            Intent intent = new Intent(this, StepCounterService.class);
+            intent.putExtra(NOTIFICATION_PET_NAME, dog.getPetName());
+            preferences.edit()
+                    .putInt(PREFERENCES_ID, dog.getPetId())
+                    .putString(PREFERENCES_PET_NAME, dog.getPetName())
+                    .apply();
+            ContextCompat.startForegroundService(this, intent);
+            registerSensorListener();
+            takeWalkButton.setEnabled(false);
+            stopButton.setEnabled(true);
+        }
     }
 
     public void setPetData(Dog dog) {
@@ -392,35 +400,40 @@ public class PetDetailsActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == UPDATE_PET_REQUEST_CODE) {
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_OAUTH_REQUEST_CODE:
+                    startWalking();
+                    break;
 
-            if (data != null) {
-                Dog updatedDog = data.getParcelableExtra(EXTRA_SAVED_PET);
-                if (updatedDog != null) {
-                    AppExecutors.getInstance().diskIO().execute(() ->
-                            dogDatabase.dogDao().insert(updatedDog));
+                case UPDATE_PET_REQUEST_CODE:
+                    if (data != null) {
+                        Dog updatedDog = data.getParcelableExtra(EXTRA_SAVED_PET);
+                        if (updatedDog != null) {
+                            AppExecutors.getInstance().diskIO().execute(() ->
+                                    dogDatabase.dogDao().insert(updatedDog));
+                            dog = updatedDog;
+                            setPetData(updatedDog);
 
-                    dog = updatedDog;
+                            favoriteButton.setChecked(preferences.getBoolean(PREFERENCE_ISFAVORITED, false));
+                            if (favoriteButton.isChecked()) {
+                                favorite = new Favorite(
+                                        updatedDog.getPetId(),
+                                        updatedDog.getPhotoPath(),
+                                        updatedDog.getPetName(),
+                                        updatedDog.getNumOfSteps());
+                                AppExecutors.getInstance().diskIO().execute(() -> dogDatabase.favoriteDao().insert(favorite));
+                            }
 
-                    setPetData(updatedDog);
-
-                    Log.d(TAG, "onActivityResult: " + preferences.getBoolean(PREFERENCE_ISFAVORITED, false));
-                    favoriteButton.setChecked(preferences.getBoolean(PREFERENCE_ISFAVORITED, false));
-                    if (favoriteButton.isChecked()) {
-                        favorite = new Favorite(
-                                updatedDog.getPetId(),
-                                updatedDog.getPhotoPath(),
-                                updatedDog.getPetName(),
-                                updatedDog.getNumOfSteps());
-                        AppExecutors.getInstance().diskIO().execute(() -> dogDatabase.favoriteDao().insert(favorite));
+                            Snackbar.make(snackBarView,
+                                    dog.getPetName() + getResources().getString(R.string.pet_updated_snackbar_message),
+                                    Snackbar.LENGTH_SHORT)
+                                    .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
+                                    .show();
+                            break;
+                        }
                     }
 
-                    Snackbar.make(snackBarView,
-                            dog.getPetName() + getResources().getString(R.string.pet_updated_snackbar_message),
-                            Snackbar.LENGTH_SHORT)
-                            .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
-                            .show();
-                }
             }
         }
     }
