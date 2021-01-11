@@ -439,6 +439,5 @@ public class PetDetailsActivity extends AppCompatActivity {
     }
 }
 
-// TODO: Check widget implementation
 // TODO: Finish setting up menu button to read daily steps
 // TODO: change color of main activity menu button to white
