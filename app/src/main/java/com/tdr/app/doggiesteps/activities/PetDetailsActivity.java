@@ -60,6 +60,7 @@ import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_PET_NAME;
 import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCES_STEPS;
 import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCE_ID;
 import static com.tdr.app.doggiesteps.utils.Constants.PREFERENCE_ISFAVORITED;
+import static com.tdr.app.doggiesteps.utils.Constants.REQUEST_OAUTH_REQUEST_CODE;
 import static com.tdr.app.doggiesteps.utils.Constants.UPDATE_PET_REQUEST_CODE;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_NULL_PHOTO;
 import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_PET_NAME;
@@ -69,7 +70,7 @@ import static com.tdr.app.doggiesteps.utils.Constants.WIDGET_TOTAL_STEPS;
 public class PetDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = PetDetailsActivity.class.getSimpleName();
-    private static final int REQUEST_OAUTH_REQUEST_CODE = 0x6884;
+
 
     private int numOfSteps;
     private int resumedSteps;
@@ -361,7 +362,6 @@ public class PetDetailsActivity extends AppCompatActivity {
                 Snackbar.LENGTH_SHORT)
                 .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
                 .show();
-
     }
 
     private boolean isServiceRunning() {

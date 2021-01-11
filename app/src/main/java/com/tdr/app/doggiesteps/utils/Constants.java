@@ -2,6 +2,8 @@ package com.tdr.app.doggiesteps.utils;
 
 public class Constants {
 
+    public static final int REQUEST_OAUTH_REQUEST_CODE = 0x6884;
+
     public static final String EXTRA_SAVED_PET = "saved_pet";
     public static final String EXTRA_PET_DETAILS = "pet_details";
     public static final int NEW_PET_REQUEST_CODE = 1;

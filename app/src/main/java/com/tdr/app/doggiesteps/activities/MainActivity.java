@@ -16,6 +16,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptionsExtension;
+import com.google.android.gms.fitness.FitnessOptions;
+import com.google.android.gms.fitness.data.DataType;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -27,10 +32,14 @@ import com.tdr.app.doggiesteps.model.Dog;
 import com.tdr.app.doggiesteps.utils.AppExecutors;
 import com.tdr.app.doggiesteps.utils.Constants;
 import com.tdr.app.doggiesteps.utils.CustomToastUtils;
+import com.tdr.app.doggiesteps.utils.FitnessUtils;
 import com.tdr.app.doggiesteps.utils.ReminderUtilities;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.tdr.app.doggiesteps.utils.Constants.NEW_PET_REQUEST_CODE;
+import static com.tdr.app.doggiesteps.utils.Constants.REQUEST_OAUTH_REQUEST_CODE;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
 
     private DogDatabase dogDatabase;
+    private GoogleSignInAccount googleSignInAccount;
+    private GoogleSignInOptionsExtension fitnessOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +81,13 @@ public class MainActivity extends AppCompatActivity {
                         MY_PERMISSIONS_REQUEST_ACTIVITY_RECOGNITION);
             }
         }
+
+        fitnessOptions =
+                FitnessOptions.builder()
+                        .addDataType(DataType.TYPE_STEP_COUNT_DELTA)
+                        .build();
+
+        googleSignInAccount = GoogleSignIn.getAccountForExtension(this, fitnessOptions);
 
         ReminderUtilities.scheduleChargingReminder(this);
 
@@ -96,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
                         toolbar.setTitle(R.string.favorites_toolbar_title);
                         break;
                 }
-
             }
 
             @Override
@@ -109,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
     }
 
     public void addPet() {
@@ -119,47 +135,61 @@ public class MainActivity extends AppCompatActivity {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == Constants.NEW_PET_REQUEST_CODE) {
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_OAUTH_REQUEST_CODE:
+                    FitnessUtils.readDailySteps(this, googleSignInAccount);
+                    break;
 
-            Dog dog = data.getParcelableExtra(Constants.EXTRA_SAVED_PET);
+                case NEW_PET_REQUEST_CODE:
+                    Dog dog = data.getParcelableExtra(Constants.EXTRA_SAVED_PET);
+                    if (dog != null) {
+                        AppExecutors.getInstance().diskIO().execute(() ->
+                                dogDatabase.dogDao().insert(dog));
 
-            if (dog != null) {
-                AppExecutors.getInstance().diskIO().execute(() ->
-                        dogDatabase.dogDao().insert(dog));
-
-                Snackbar.make(snackBarView,
-                        dog.getPetName() + getResources().getString(R.string.pet_added_snackbar_message),
-                        Snackbar.LENGTH_SHORT)
-                        .setAnchorView(fab)
-                        .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
-                        .show();
+                        Snackbar.make(snackBarView,
+                                dog.getPetName() + getResources().getString(R.string.pet_added_snackbar_message),
+                                Snackbar.LENGTH_SHORT)
+                                .setAnchorView(fab)
+                                .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
+                                .show();
+                    }
+                    break;
             }
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.action_read_steps) {
-            CustomToastUtils.buildCustomToast(this, "Daily Total: 5k");
+        @Override
+        public boolean onCreateOptionsMenu (Menu menu){
+            getMenuInflater().inflate(R.menu.main_menu, menu);
+            return true;
         }
-        return super.onOptionsItemSelected(item);
-    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == MY_PERMISSIONS_REQUEST_ACTIVITY_RECOGNITION) {
-            if (grantResults.length > 0 &&
-                    grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                CustomToastUtils.buildCustomToast(this, "Unable to track steps without permission");
-                finish();
+        @Override
+        public boolean onOptionsItemSelected (@NonNull MenuItem item){
+            if (item.getItemId() == R.id.action_read_steps) {
+                if (!GoogleSignIn.hasPermissions(googleSignInAccount, fitnessOptions)) {
+                    GoogleSignIn.requestPermissions(
+                            this,
+                            REQUEST_OAUTH_REQUEST_CODE,
+                            googleSignInAccount,
+                            fitnessOptions);
+                }
+                FitnessUtils.readDailySteps(this, googleSignInAccount);
+            }
+            return super.onOptionsItemSelected(item);
+        }
+
+        @Override
+        public void onRequestPermissionsResult ( int requestCode, @NonNull String[] permissions,
+        @NonNull int[] grantResults){
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            if (requestCode == MY_PERMISSIONS_REQUEST_ACTIVITY_RECOGNITION) {
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                    CustomToastUtils.buildCustomToast(this, "Unable to track steps without permission");
+                    finish();
+                }
             }
         }
     }
-}

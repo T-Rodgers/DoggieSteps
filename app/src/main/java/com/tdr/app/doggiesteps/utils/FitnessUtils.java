@@ -6,11 +6,17 @@ import android.util.Log;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.fitness.Fitness;
+import com.google.android.gms.fitness.data.DataPoint;
+import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.fitness.data.Field;
+import com.google.android.gms.fitness.data.Value;
 import com.google.android.gms.fitness.request.OnDataPointListener;
 import com.google.android.gms.fitness.request.SensorRequest;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.tdr.app.doggiesteps.R;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class FitnessUtils {
@@ -40,7 +46,16 @@ public class FitnessUtils {
                 });
     }
 
-    public static void readDailySteps() {
+    public static void readDailySteps(Context context, GoogleSignInAccount account) {
+        Fitness.getHistoryClient(context, account)
+                .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
+                .addOnSuccessListener(new OnSuccessListener<DataSet>() {
+                    @Override
+                    public void onSuccess(DataSet dataSet) {
+                        int totalSteps = dataSet.getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
+                        CustomToastUtils.buildCustomToast(context, "Total steps for the Day: " + totalSteps);
+                    }
+                });
 
     }
 
