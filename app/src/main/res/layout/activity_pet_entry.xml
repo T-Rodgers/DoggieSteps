@@ -16,8 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/primaryDarkColor"
-            app:navigationIcon="@drawable/ic_close_white"
-            app:navigationContentDescription="@string/content_description_close_window">
+            app:navigationContentDescription="@string/content_description_close_window"
+            app:navigationIcon="@drawable/ic_close_white">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -27,26 +27,25 @@
                     android:id="@+id/entry_toolbar_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:text="@string/enter_new_dog"
-                android:layout_centerVertical="true"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                android:textColor="@android:color/white" />
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:textColor="@android:color/white" />
 
-            <com.google.android.material.button.MaterialButton
-                android:contentDescription="@string/content_description_save_button"
-                android:id="@+id/save_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="16dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:text="@string/save_button_text"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="16dp"
-                tools:ignore="RelativeOverlap" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/save_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"
+                    android:contentDescription="@string/content_description_save_button"
+                    android:text="@string/save_button_text"
+                    tools:ignore="RelativeOverlap" />
             </RelativeLayout>
         </com.google.android.material.appbar.MaterialToolbar>
-
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -67,16 +66,16 @@
                 app:layout_constraintGuide_percent=".55" />
 
             <com.google.android.material.button.MaterialButton
-                android:contentDescription="@string/add_an_image_button_text"
                 android:id="@+id/add_photo_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:backgroundTint="@color/parentBackgroundColor"
+                android:contentDescription="@string/add_an_image_button_text"
                 android:text="@string/add_an_image_button_text"
-                app:elevation="16dp"
-                app:iconTint="@color/primaryDarkColor"
                 android:textColor="@color/primaryDarkColor"
+                app:backgroundTint="@color/parentBackgroundColor"
+                app:elevation="16dp"
                 app:icon="@drawable/ic_action_add_photo"
+                app:iconTint="@color/primaryDarkColor"
                 app:layout_constraintBottom_toBottomOf="@+id/empty_add_photo_background"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -93,10 +92,10 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:contentDescription="@string/content_description_empty_view"
                 android:id="@+id/petImage"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:contentDescription="@string/content_description_empty_view"
                 android:scaleType="centerCrop"
                 android:visibility="invisible"
                 app:layout_constraintBottom_toTopOf="@+id/guideline3"
@@ -195,8 +194,18 @@
                     android:inputType="textCapSentences" />
             </com.google.android.material.textfield.TextInputLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:contentDescription="@string/content_description_edit_photo"
+                android:id="@+id/edit_image_icon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@color/primaryLightColor"
+                android:src="@drawable/edit_icon"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
     <View
