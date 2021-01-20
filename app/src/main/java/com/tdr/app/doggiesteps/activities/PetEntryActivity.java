@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -92,6 +93,7 @@ public class PetEntryActivity extends AppCompatActivity {
             if (dogToBeUpdated != null) {
                 setEntryDetails(dogToBeUpdated);
                 editPhoto.setVisibility(View.VISIBLE);
+                currentPhotoPath = dogToBeUpdated.getPhotoPath();
             }
         }
 
@@ -107,7 +109,15 @@ public class PetEntryActivity extends AppCompatActivity {
                     .into(petImageView);
         }
 
-        editPhoto.setOnClickListener(v -> dispatchTakePictureIntent());
+        editPhoto.setOnClickListener(v -> {
+            if (ContextCompat.checkSelfPermission(PetEntryActivity.this, Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_DENIED) {
+                ActivityCompat.requestPermissions(PetEntryActivity.this, new String[]{Manifest.permission.CAMERA},
+                        REQUEST_IMAGE_CAPTURE);
+            } else {
+                dispatchTakePictureIntent();
+            }
+        });
         saveButton.setOnClickListener(v -> savePet());
         addPhotoButton.setOnClickListener(v -> {
             if (ContextCompat.checkSelfPermission(PetEntryActivity.this, Manifest.permission.CAMERA)
@@ -172,37 +182,35 @@ public class PetEntryActivity extends AppCompatActivity {
             if (bio.equals("")) {
                 bio = getString(R.string.empty_bio_message);
             }
-            String updatedPhotoPath = currentPhotoPath;
             int id = dogToBeUpdated.getPetId();
             int numOfSteps = dogToBeUpdated.getNumOfSteps();
-            Dog updatedDog = new Dog(id, dogName, breed, age, bio, updatedPhotoPath, numOfSteps);
+            Dog updatedDog = new Dog(id, dogName, breed, age, bio, currentPhotoPath, numOfSteps);
             updatePetDataIntent.putExtra(EXTRA_SAVED_PET, updatedDog);
             setResult(RESULT_OK, updatePetDataIntent);
             finish();
         }
-
     }
 
     private void dispatchTakePictureIntent() {
 
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
+        File photoFile = null;
+        try {
+            photoFile = createImageFile();
 
-            } catch (IOException e) {
-                // display error state to the user
-                e.printStackTrace();
-            }
-            Uri imageUri =
-                    null;
-            if (photoFile != null) {
-                imageUri = FileProvider.getUriForFile(this, "com.tdr.app.doggiesteps.fileprovider", photoFile);
-            }
-
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        } catch (IOException e) {
+            // display error state to the user
+            e.printStackTrace();
         }
+        Uri imageUri =
+                null;
+        if (photoFile != null) {
+            imageUri = FileProvider.getUriForFile(this, "com.tdr.app.doggiesteps.fileprovider", photoFile);
+        }
+
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+    }
 
     private File createImageFile() throws IOException {
         // Create an image file name
@@ -256,6 +264,12 @@ public class PetEntryActivity extends AppCompatActivity {
         addPhotoButton.setVisibility(savedInstanceState.getInt(ADD_BUTTON_VISIBILITY_STATE));
         emptyViewBackground.setVisibility(savedInstanceState.getInt(EMPTY_BACKGROUND_VISIBILITY_STATE));
         petImageView.setVisibility(savedInstanceState.getInt(PET_PHOTO_VISIBILITY_STATE));
+        Glide.with(this)
+                .load(savedInstanceState.getString(PREFERENCES_PHOTO_PATH))
+                .placeholder(R.drawable.ic_action_pet_favorites)
+                .fallback(R.drawable.ic_action_pet_favorites)
+                .centerCrop()
+                .into(petImageView);
     }
 
     private void setEntryDetails(Dog dog) {

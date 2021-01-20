@@ -1,0 +1,520 @@
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_1_8_2021_3_29_PM_[Default_Changelist]/shelved.patch
+===================================================================
+--- .idea/shelf/Uncommitted_changes_before_Update_at_1_8_2021_3_29_PM_[Default_Changelist]/shelved.patch	(revision 90d01922411b899c8a1a259123d1d691b3267551)
++++ .idea/shelf/Uncommitted_changes_before_Update_at_1_8_2021_3_29_PM_[Default_Changelist]/shelved.patch	(revision 90d01922411b899c8a1a259123d1d691b3267551)
+@@ -1,505 +0,0 @@
+-Index: .idea/shelf/Uncommitted_changes_before_Update_at_12_28_2020_6_42_PM_[Default_Changelist]/shelved.patch
+-===================================================================
+---- .idea/shelf/Uncommitted_changes_before_Update_at_12_28_2020_6_42_PM_[Default_Changelist]/shelved.patch	(revision e381001a4167e15b2228099abd0854add773abd2)
+-+++ .idea/shelf/Uncommitted_changes_before_Update_at_12_28_2020_6_42_PM_[Default_Changelist]/shelved.patch	(revision e381001a4167e15b2228099abd0854add773abd2)
+-@@ -1,262 +0,0 @@
+--Index: app/src/main/java/com/tdr/app/doggiesteps/adapters/DogListAdapter.java
+--IDEA additional info:
+--Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+--<+>package com.tdr.app.doggiesteps.adapters;\r\n\r\nimport android.content.Context;\r\nimport android.util.Log;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.ImageView;\r\nimport android.widget.PopupMenu;\r\nimport android.widget.TextView;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport com.bumptech.glide.Glide;\r\nimport com.tdr.app.doggiesteps.R;\r\nimport com.tdr.app.doggiesteps.database.DogDatabase;\r\nimport com.tdr.app.doggiesteps.model.Dog;\r\nimport com.tdr.app.doggiesteps.utils.AppExecutors;\r\n\r\nimport java.util.List;\r\n\r\n\r\npublic class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewHolder> {\r\n\r\n    private final LayoutInflater inflater;\r\n    private List<Dog> dogList;\r\n    private final Context context;\r\n    private final DogListAdapterClickHandler mClickHandler;\r\n\r\n    public interface DogListAdapterClickHandler {\r\n        void onClick(Dog dogData);\r\n    }\r\n\r\n    public DogListAdapter(Context context, DogListAdapterClickHandler handler) {\r\n        inflater = LayoutInflater.from(context);\r\n        this.context = context;\r\n        mClickHandler = handler;\r\n\r\n    }\r\n\r\n    @NonNull\r\n    @Override\r\n    public DogViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {\r\n\r\n        View view = inflater.inflate(R.layout.pet_list_item, parent, false);\r\n\r\n        return new DogViewHolder(view);\r\n    }\r\n\r\n    @Override\r\n    public void onBindViewHolder(@NonNull DogViewHolder holder, int position) {\r\n\r\n        Dog currentDog = dogList.get(position);\r\n        holder.dogNameView.setText(currentDog.getPetName());\r\n        holder.breedView.setText(currentDog.getBreed());\r\n        holder.petPhotoImageView.setContentDescription(context.getString(\r\n                R.string.content_description_favorite_photo, currentDog.getPetName()));\r\n        String photoPath = currentDog.getPhotoPath();\r\n        Glide.with(context)\r\n                .load(photoPath)\r\n                .error(R.drawable.ic_action_pet_favorites)\r\n                .fallback(R.drawable.ic_action_pet_favorites)\r\n                .into(holder.petPhotoImageView);\r\n        holder.options.setOnClickListener(view -> {\r\n\r\n            //creating a popup menu\r\n            PopupMenu popup = new PopupMenu(context, holder.options);\r\n            //inflating menu from xml resource\r\n            popup.inflate(R.menu.menu_list_item);\r\n            //adding click listener\r\n            popup.setOnMenuItemClickListener(item -> {\r\n                if (item.getItemId() == R.id.delete_list_item) {\r\n                    AppExecutors.getInstance().diskIO().execute(() -> {\r\n                        DogDatabase database = DogDatabase.getInstance(context.getApplicationContext());\r\n                        database.dogDao().delete(currentDog);\r\n                        \r\n                    });\r\n\r\n                }\r\n                return false;\r\n            });\r\n            //displaying the popup\r\n            popup.show();\r\n\r\n        });\r\n\r\n\r\n    }\r\n\r\n    public void setDogList(List<Dog> dogs) {\r\n        dogList = dogs;\r\n        notifyDataSetChanged();\r\n\r\n        Log.d(\"Total Items \", String.valueOf(dogList.size()));\r\n\r\n    }\r\n\r\n    @Override\r\n    public int getItemCount() {\r\n        if (dogList != null) {\r\n            return dogList.size();\r\n        } else {\r\n            return 0;\r\n        }\r\n    }\r\n\r\n    public class DogViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {\r\n\r\n        private final TextView dogNameView;\r\n        private final TextView breedView;\r\n        private final ImageView options;\r\n        private final ImageView petPhotoImageView;\r\n\r\n        private DogViewHolder(View itemView) {\r\n            super(itemView);\r\n            dogNameView = itemView.findViewById(R.id.dog_name_text_view);\r\n            breedView = itemView.findViewById(R.id.dog_breed_text_view);\r\n            options = itemView.findViewById(R.id.list_item_options);\r\n            petPhotoImageView = itemView.findViewById(R.id.list_pet_image);\r\n            itemView.setOnClickListener(this);\r\n\r\n        }\r\n\r\n        @Override\r\n        public void onClick(View v) {\r\n            int position = getAdapterPosition();\r\n            Dog dog = dogList.get(position);\r\n            mClickHandler.onClick(dog);\r\n        }\r\n    }\r\n\r\n}\r\n
+--Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+--<+>UTF-8
+--===================================================================
+----- app/src/main/java/com/tdr/app/doggiesteps/adapters/DogListAdapter.java	(revision 6b9a8cfaacc0bb9139cb0e862db0fdced9194dd9)
+--+++ app/src/main/java/com/tdr/app/doggiesteps/adapters/DogListAdapter.java	(date 1608423013235)
+--@@ -129,5 +129,4 @@
+--             mClickHandler.onClick(dog);
+--         }
+--     }
+---
+-- }
+--Index: .idea/shelf/Uncommitted_changes_before_Update_at_12_9_2020_9_35_PM__Default_Changelist_.xml
+--===================================================================
+----- .idea/shelf/Uncommitted_changes_before_Update_at_12_9_2020_9_35_PM__Default_Changelist_.xml	(revision 6b9a8cfaacc0bb9139cb0e862db0fdced9194dd9)
+--+++ .idea/shelf/Uncommitted_changes_before_Update_at_12_9_2020_9_35_PM__Default_Changelist_.xml	(revision 6b9a8cfaacc0bb9139cb0e862db0fdced9194dd9)
+--@@ -1,4 +0,0 @@
+---<changelist name="Uncommitted_changes_before_Update_at_12_9_2020_9_35_PM_[Default_Changelist]" date="1607571314857" recycled="true" deleted="true">
+---  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_9_2020_9_35_PM_[Default_Changelist]/shelved.patch" />
+---  <option name="DESCRIPTION" value="Uncommitted changes before Update at 12/9/2020 9:35 PM [Default Changelist]" />
+---</changelist>
+--\ No newline at end of file
+--Index: .idea/shelf/Uncommitted_changes_before_Update_at_12_9_2020_9_35_PM_[Default_Changelist]/shelved.patch
+--===================================================================
+----- .idea/shelf/Uncommitted_changes_before_Update_at_12_9_2020_9_35_PM_[Default_Changelist]/shelved.patch	(revision 6b9a8cfaacc0bb9139cb0e862db0fdced9194dd9)
+--+++ .idea/shelf/Uncommitted_changes_before_Update_at_12_9_2020_9_35_PM_[Default_Changelist]/shelved.patch	(revision 6b9a8cfaacc0bb9139cb0e862db0fdced9194dd9)
+--@@ -1,214 +0,0 @@
+---Index: .idea/shelf/Uncommitted_changes_before_Update_at_12_2_2020_9_00_AM_[Default_Changelist]/shelved.patch
+---===================================================================
+------ .idea/shelf/Uncommitted_changes_before_Update_at_12_2_2020_9_00_AM_[Default_Changelist]/shelved.patch	(revision 384db7d45959c72a6c1a3565a865ed746c84d48b)
+---+++ .idea/shelf/Uncommitted_changes_before_Update_at_12_2_2020_9_00_AM_[Default_Changelist]/shelved.patch	(revision 384db7d45959c72a6c1a3565a865ed746c84d48b)
+---@@ -1,199 +0,0 @@
+----Index: .idea/shelf/Uncommitted_changes_before_Update_at_11_24_2020_1_02_PM_[Default_Changelist]/shelved.patch
+----===================================================================
+------- .idea/shelf/Uncommitted_changes_before_Update_at_11_24_2020_1_02_PM_[Default_Changelist]/shelved.patch	(revision 6ff5504bcf36a666c19293c3c0ead0cd4900cf25)
+----+++ .idea/shelf/Uncommitted_changes_before_Update_at_11_24_2020_1_02_PM_[Default_Changelist]/shelved.patch	(revision 6ff5504bcf36a666c19293c3c0ead0cd4900cf25)
+----@@ -1,184 +0,0 @@
+-----Index: app/src/main/java/com/tdr/app/doggiesteps/model/Favorite.java
+-----IDEA additional info:
+-----Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-----<+>package com.tdr.app.doggiesteps.model;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.room.ColumnInfo;\r\nimport androidx.room.Entity;\r\nimport androidx.room.PrimaryKey;\r\n\r\n@Entity(tableName = \"favorites\")\r\npublic class Favorite {\r\n\r\n    @NonNull\r\n    @PrimaryKey\r\n    @ColumnInfo\r\n    private int id;\r\n\r\n    private String photoPath;\r\n\r\n    private String favoritePetName;\r\n\r\n    public String getPhotoPath() {\r\n        return photoPath;\r\n    }\r\n\r\n    public void setPhotoPath(String photoPath) {\r\n        this.photoPath = photoPath;\r\n    }\r\n\r\n    public String getFavoritePetName() {\r\n        return favoritePetName;\r\n    }\r\n\r\n    public void setFavoritePetName(String favoritePetName) {\r\n        this.favoritePetName = favoritePetName;\r\n    }\r\n\r\n    public Favorite(int id, String photoPath, String favoritePetName) {\r\n        this.id = id;\r\n        this.photoPath = photoPath;\r\n        this.favoritePetName = favoritePetName;\r\n    }\r\n\r\n    public int getId() {\r\n        return id;\r\n    }\r\n\r\n    public void setId(int id) {\r\n        this.id = id;\r\n    }\r\n}\r\n
+-----Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-----<+>UTF-8
+-----===================================================================
+-------- app/src/main/java/com/tdr/app/doggiesteps/model/Favorite.java	(revision 891f99be6e0d97f05eb94ac573b4f51a88f1f5d8)
+-----+++ app/src/main/java/com/tdr/app/doggiesteps/model/Favorite.java	(date 1605043201696)
+-----@@ -3,9 +3,14 @@
+----- import androidx.annotation.NonNull;
+----- import androidx.room.ColumnInfo;
+----- import androidx.room.Entity;
+-----+import androidx.room.ForeignKey;
+----- import androidx.room.PrimaryKey;
+----- 
+------@Entity(tableName = "favorites")
+-----+@Entity(tableName = "favorites", foreignKeys = @ForeignKey(entity = Dog.class,
+-----+parentColumns = "petId",
+-----+childColumns = "id", 
+-----+onDelete = ForeignKey.CASCADE,
+-----+onUpdate = ForeignKey.CASCADE))
+----- public class Favorite {
+----- 
+-----     @NonNull
+-----@@ -17,6 +22,23 @@
+----- 
+-----     private String favoritePetName;
+----- 
+-----+    private int numOfSteps;
+-----+
+-----+    public Favorite(int id, String photoPath, String favoritePetName, int numOfSteps) {
+-----+        this.id = id;
+-----+        this.photoPath = photoPath;
+-----+        this.favoritePetName = favoritePetName;
+-----+        this.numOfSteps = numOfSteps;
+-----+    }
+-----+
+-----+    public int getId() {
+-----+        return id;
+-----+    }
+-----+
+-----+    public void setId(int id) {
+-----+        this.id = id;
+-----+    }
+-----+
+-----     public String getPhotoPath() {
+-----         return photoPath;
+-----     }
+-----@@ -33,17 +55,11 @@
+-----         this.favoritePetName = favoritePetName;
+-----     }
+----- 
+------    public Favorite(int id, String photoPath, String favoritePetName) {
+------        this.id = id;
+------        this.photoPath = photoPath;
+------        this.favoritePetName = favoritePetName;
+------    }
+------
+------    public int getId() {
+------        return id;
+-----+    public int getNumOfSteps() {
+-----+        return numOfSteps;
+-----     }
+----- 
+------    public void setId(int id) {
+------        this.id = id;
+-----+    public void setNumOfSteps(int numOfSteps) {
+-----+        this.numOfSteps = numOfSteps;
+-----     }
+----- }
+-----Index: app/src/main/java/com/tdr/app/doggiesteps/model/Dog.java
+-----IDEA additional info:
+-----Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-----<+>package com.tdr.app.doggiesteps.model;\r\n\r\nimport android.os.Parcel;\r\nimport android.os.Parcelable;\r\n\r\nimport androidx.room.Entity;\r\nimport androidx.room.PrimaryKey;\r\n\r\n@Entity(tableName = \"my_pets\")\r\npublic class Dog implements Parcelable {\r\n\r\n    @PrimaryKey(autoGenerate = true)\r\n    private int petId;\r\n\r\n    private String petName;\r\n\r\n    private String breed;\r\n\r\n    private String age;\r\n\r\n    private String petBio;\r\n\r\n    private String photoPath;\r\n\r\n    private int numOfSteps;\r\n\r\n\r\n    public Dog() {\r\n    }\r\n\r\n    public Dog(String petName, String breed, String age, String petBio, String photoPath, int numOfSteps) {\r\n        this.petName = petName;\r\n        this.breed = breed;\r\n        this.age = age;\r\n        this.petBio = petBio;\r\n        this.photoPath = photoPath;\r\n        this.numOfSteps = numOfSteps;\r\n    }\r\n\r\n    public Dog(int petId, String petName, String breed, String age, String petBio, int numOfSteps) {\r\n        this.petId = petId;\r\n        this.petName = petName;\r\n        this.breed = breed;\r\n        this.age = age;\r\n        this.petBio = petBio;\r\n        this.numOfSteps = numOfSteps;\r\n    }\r\n\r\n    protected Dog(Parcel in) {\r\n        petId = in.readInt();\r\n        petName = in.readString();\r\n        breed = in.readString();\r\n        age = in.readString();\r\n        petBio = in.readString();\r\n        photoPath = in.readString();\r\n        numOfSteps = in.readInt();\r\n    }\r\n\r\n    @Override\r\n    public void writeToParcel(Parcel dest, int flags) {\r\n        dest.writeInt(petId);\r\n        dest.writeString(petName);\r\n        dest.writeString(breed);\r\n        dest.writeString(age);\r\n        dest.writeString(petBio);\r\n        dest.writeString(photoPath);\r\n        dest.writeInt(numOfSteps);\r\n    }\r\n\r\n    @Override\r\n    public int describeContents() {\r\n        return 0;\r\n    }\r\n\r\n    public static final Creator<Dog> CREATOR = new Creator<Dog>() {\r\n        @Override\r\n        public Dog createFromParcel(Parcel in) {\r\n            return new Dog(in);\r\n        }\r\n\r\n        @Override\r\n        public Dog[] newArray(int size) {\r\n            return new Dog[size];\r\n        }\r\n    };\r\n\r\n    public int getPetId() {\r\n        return petId;\r\n    }\r\n\r\n    public void setPetId(int petId) {\r\n        this.petId = petId;\r\n    }\r\n\r\n    public String getPetName() {\r\n        return petName;\r\n    }\r\n\r\n    public void setPetName(String petName) {\r\n        this.petName = petName;\r\n    }\r\n\r\n    public String getBreed() {\r\n        return breed;\r\n    }\r\n\r\n    public void setBreed(String breed) {\r\n        this.breed = breed;\r\n    }\r\n\r\n    public String getAge() {\r\n        return age;\r\n    }\r\n\r\n    public void setAge(String age) {\r\n        this.age = age;\r\n    }\r\n\r\n    public String getPetBio() {\r\n        return petBio;\r\n    }\r\n\r\n    public void setPetBio(String petBio) {\r\n        this.petBio = petBio;\r\n    }\r\n\r\n    public String getPhotoPath() {\r\n        return photoPath;\r\n    }\r\n\r\n    public void setPhotoPath(String photoPath) {\r\n        this.photoPath = photoPath;\r\n    }\r\n\r\n    public int getNumOfSteps() {\r\n        return numOfSteps;\r\n    }\r\n\r\n    public void setNumOfSteps(int numOfSteps) {\r\n        this.numOfSteps = numOfSteps;\r\n    }\r\n}\r\n
+-----Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-----<+>UTF-8
+-----===================================================================
+-------- app/src/main/java/com/tdr/app/doggiesteps/model/Dog.java	(revision 891f99be6e0d97f05eb94ac573b4f51a88f1f5d8)
+-----+++ app/src/main/java/com/tdr/app/doggiesteps/model/Dog.java	(date 1605042966006)
+-----@@ -3,6 +3,7 @@
+----- import android.os.Parcel;
+----- import android.os.Parcelable;
+----- 
+-----+import androidx.room.ColumnInfo;
+----- import androidx.room.Entity;
+----- import androidx.room.PrimaryKey;
+----- 
+-----Index: app/src/main/java/com/tdr/app/doggiesteps/fragments/FavoritesListFragment.java
+-----IDEA additional info:
+-----Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-----<+>package com.tdr.app.doggiesteps.fragments;\r\n\r\nimport android.content.Context;\r\nimport android.os.Bundle;\r\nimport android.util.DisplayMetrics;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.annotation.Nullable;\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.lifecycle.ViewModelProvider;\r\nimport androidx.recyclerview.widget.GridLayoutManager;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport com.tdr.app.doggiesteps.R;\r\nimport com.tdr.app.doggiesteps.adapters.FavoritesAdapter;\r\nimport com.tdr.app.doggiesteps.database.MainViewModel;\r\nimport com.tdr.app.doggiesteps.model.Favorite;\r\n\r\nimport butterknife.BindView;\r\nimport butterknife.ButterKnife;\r\n\r\npublic class FavoritesListFragment extends Fragment implements FavoritesAdapter.FavoritesClickHandler {\r\n    @BindView(R.id.favorite_list_recycler_view)\r\n    RecyclerView favoritesRecyclerView;\r\n    private FavoritesAdapter adapter;\r\n\r\n    // TODO: FIX ADDING TO FAVORITES\r\n\r\n    @Nullable\r\n    @Override\r\n    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {\r\n\r\n        View rootView = inflater.inflate(R.layout.fragment_favorites_list, container, false);\r\n        ButterKnife.bind(this, rootView);\r\n\r\n        adapter = new FavoritesAdapter(getContext(), this);\r\n        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), calculateNoOfColumns(getContext()));\r\n        favoritesRecyclerView.setLayoutManager(layoutManager);\r\n        favoritesRecyclerView.setAdapter(adapter);\r\n\r\n        initiateViewModel();\r\n\r\n        return rootView;\r\n    }\r\n\r\n\r\n    private void initiateViewModel() {\r\n        MainViewModel viewModel = new ViewModelProvider(this).get(MainViewModel.class);\r\n        viewModel.getFavorites().observe(getViewLifecycleOwner(), favorites -> {\r\n            adapter.setFavoriteList(favorites);\r\n        });\r\n\r\n    }\r\n\r\n    @Override\r\n    public void onClick(Favorite favoriteData) {\r\n\r\n    }\r\n\r\n    public static int calculateNoOfColumns(Context context) {\r\n        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();\r\n        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;\r\n        int scalingFactor = 150;\r\n        int noOfColumns = (int) (dpWidth / scalingFactor);\r\n        return noOfColumns;\r\n    }\r\n}\r\n\r\n
+-----Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-----<+>UTF-8
+-----===================================================================
+-------- app/src/main/java/com/tdr/app/doggiesteps/fragments/FavoritesListFragment.java	(revision 891f99be6e0d97f05eb94ac573b4f51a88f1f5d8)
+-----+++ app/src/main/java/com/tdr/app/doggiesteps/fragments/FavoritesListFragment.java	(date 1605040998754)
+-----@@ -6,6 +6,7 @@
+----- import android.view.LayoutInflater;
+----- import android.view.View;
+----- import android.view.ViewGroup;
+-----+import android.widget.Toast;
+----- 
+----- import androidx.annotation.NonNull;
+----- import androidx.annotation.Nullable;
+-----@@ -57,7 +58,12 @@
+----- 
+-----     @Override
+-----     public void onClick(Favorite favoriteData) {
+------
+-----+        if (favoriteData != null) {
+-----+            Toast.makeText(getContext(), getResources().getString(
+-----+                    R.string.all_time_total_format,
+-----+                    String.valueOf(favoriteData.getNumOfSteps())),
+-----+                    Toast.LENGTH_LONG).show();
+-----+        }
+-----     }
+----- 
+-----     public static int calculateNoOfColumns(Context context) {
+-----Index: app/src/main/java/com/tdr/app/doggiesteps/activities/PetDetailsActivity.java
+-----IDEA additional info:
+-----Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-----<+>package com.tdr.app.doggiesteps.activities;\r\n\r\nimport android.content.Context;\r\nimport android.content.Intent;\r\nimport android.hardware.Sensor;\r\nimport android.hardware.SensorEvent;\r\nimport android.hardware.SensorEventListener;\r\nimport android.hardware.SensorManager;\r\nimport android.os.Bundle;\r\nimport android.widget.ImageView;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\nimport android.widget.ToggleButton;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.lifecycle.Observer;\r\nimport androidx.lifecycle.ViewModelProvider;\r\n\r\nimport com.bumptech.glide.Glide;\r\nimport com.google.android.material.button.MaterialButton;\r\nimport com.tdr.app.doggiesteps.R;\r\nimport com.tdr.app.doggiesteps.database.DogDatabase;\r\nimport com.tdr.app.doggiesteps.database.FavoritesViewModel;\r\nimport com.tdr.app.doggiesteps.database.FavoritesViewModelFactory;\r\nimport com.tdr.app.doggiesteps.interfaces.StepListener;\r\nimport com.tdr.app.doggiesteps.model.Dog;\r\nimport com.tdr.app.doggiesteps.model.Favorite;\r\nimport com.tdr.app.doggiesteps.utils.AppExecutors;\r\nimport com.tdr.app.doggiesteps.utils.Constants;\r\nimport com.tdr.app.doggiesteps.utils.StepDetector;\r\n\r\nimport butterknife.BindView;\r\nimport butterknife.ButterKnife;\r\n\r\npublic class PetDetailsActivity extends AppCompatActivity implements SensorEventListener, StepListener {\r\n\r\n    private static final String TAG = PetDetailsActivity.class.getSimpleName();\r\n\r\n    private SensorManager sensorManager;\r\n    private StepDetector stepDetector;\r\n    private Sensor sensor;\r\n    private int numOfSteps;\r\n    private int totalSteps;\r\n\r\n\r\n    private int existingSteps;\r\n    private Dog dog;\r\n    private Favorite favorite;\r\n    private int petId;\r\n    private String photoPath;\r\n    private String favoritePetName;\r\n\r\n    @BindView(R.id.details_favorite_button)\r\n    ToggleButton favoriteButton;\r\n    @BindView(R.id.details_walk_button)\r\n    MaterialButton takeWalkButton;\r\n    @BindView(R.id.details_stop_button)\r\n    MaterialButton stopButton;\r\n    @BindView(R.id.details_pet_image)\r\n    ImageView detailsPetImage;\r\n    @BindView(R.id.details_pet_name)\r\n    TextView detailsPetName;\r\n    @BindView(R.id.details_pet_breed)\r\n    TextView detailsPetBreed;\r\n    @BindView(R.id.details_pet_age)\r\n    TextView detailsPetAge;\r\n    @BindView(R.id.details_pet_bio)\r\n    TextView detailsPetBio;\r\n    @BindView(R.id.steps_text_view)\r\n    TextView stepsTextView;\r\n    @BindView(R.id.total_steps_text_view)\r\n    TextView totalStepsTextView;\r\n\r\n    private DogDatabase database;\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.activity_pet_details);\r\n        ButterKnife.bind(this);\r\n\r\n        Intent petData = getIntent();\r\n        if (petData != null) {\r\n            dog = petData.getParcelableExtra(Constants.EXTRA_SELECTED_PET);\r\n        }\r\n\r\n        database = DogDatabase.getInstance(this);\r\n        favorite = new Favorite(petId, photoPath, favoritePetName);\r\n\r\n        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);\r\n        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);\r\n        stepDetector = new StepDetector();\r\n        stepDetector.registerListener(this);\r\n\r\n        favoriteButton.setOnCheckedChangeListener((buttonView, isChecked) -> {\r\n            if (isChecked) {\r\n\r\n                addToFavorites();\r\n            } else {\r\n                removeFromFavorites();\r\n            }\r\n        });\r\n\r\n        takeWalkButton.setOnClickListener(v -> {\r\n            numOfSteps = existingSteps;\r\n            String stepCount = getString(R.string.steps_count_format, String.valueOf(numOfSteps));\r\n            stepsTextView.setText(stepCount);\r\n            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);\r\n\r\n            stopButton.setEnabled(true);\r\n\r\n        });\r\n\r\n        stopButton.setOnClickListener(v -> {\r\n            totalSteps = dog.getNumOfSteps();\r\n            totalSteps = totalSteps + numOfSteps;\r\n            dog.setNumOfSteps(totalSteps);\r\n            String allTimeTotalSteps = getResources().getString(\r\n                    R.string.all_time_total_format,\r\n                    String.valueOf(totalSteps));\r\n            totalStepsTextView.setText(allTimeTotalSteps);\r\n            stepsTextView.setText(R.string.steps_label_text);\r\n            sensorManager.unregisterListener(this);\r\n\r\n            stopButton.setEnabled(false);\r\n\r\n            AppExecutors.getInstance().diskIO().execute(() -> database.dogDao().updateSteps(dog.getPetId(), dog.getNumOfSteps()));\r\n        });\r\n\r\n        setPetData(dog);\r\n        initiateViewModel();\r\n    }\r\n\r\n    public void setPetData(Dog dog) {\r\n        String dogPhotoPath = dog.getPhotoPath();\r\n        Glide.with(this)\r\n                .load(dogPhotoPath)\r\n                .centerCrop()\r\n                .error(R.drawable.ic_action_pet_favorites)\r\n                .into(detailsPetImage);\r\n        detailsPetImage.setContentDescription(\r\n                getString(R.string.details_image_content_description, dog.getPetName()));\r\n        detailsPetName.setText(dog.getPetName());\r\n        detailsPetBreed.setText(dog.getBreed());\r\n        detailsPetAge.setText(dog.getAge());\r\n        detailsPetBio.setText(dog.getPetBio());\r\n        totalStepsTextView.setText(getResources().getString(\r\n                R.string.all_time_total_format,\r\n                String.valueOf(dog.getNumOfSteps())));\r\n    }\r\n\r\n    public void addToFavorites() {\r\n\r\n        favorite = new Favorite(petId, photoPath, favoritePetName);\r\n        AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().insert(favorite));\r\n    }\r\n\r\n    public void removeFromFavorites() {\r\n        AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().delete(favorite));\r\n        Toast.makeText(\r\n                this,\r\n                dog.getPetName() + \" has been removed from Favorites\",\r\n                Toast.LENGTH_SHORT).show();\r\n    }\r\n\r\n    private void initiateViewModel() {\r\n        FavoritesViewModelFactory factory = new FavoritesViewModelFactory(database, favorite.getId());\r\n        FavoritesViewModel viewModel = new ViewModelProvider(this, factory).get(FavoritesViewModel.class);\r\n        viewModel.getFavorite().observe(this, new Observer<Favorite>() {\r\n            @Override\r\n            public void onChanged(Favorite favoriteData) {\r\n                viewModel.getFavorite().removeObserver(this);\r\n                if (favoriteData == null) {\r\n                    favoriteButton.setChecked(false);\r\n                } else if ((favorite.getId() == dog.getPetId()) && !favoriteButton.isChecked()) {\r\n                    favoriteData.setId(dog.getPetId());\r\n                    favoriteButton.setChecked(true);\r\n                }\r\n            }\r\n        });\r\n    }\r\n\r\n    @Override\r\n    public void onSensorChanged(SensorEvent event) {\r\n        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {\r\n            stepDetector.updateAccel(\r\n                    event.timestamp,\r\n                    event.values[0],\r\n                    event.values[1],\r\n                    event.values[2]);\r\n        }\r\n    }\r\n\r\n    @Override\r\n    public void onAccuracyChanged(Sensor sensor, int accuracy) {\r\n\r\n    }\r\n\r\n    @Override\r\n    public void step(long timeNs) {\r\n        numOfSteps++;\r\n        String stepCount = getString(R.string.steps_count_format, String.valueOf(numOfSteps));\r\n        stepsTextView.setText(stepCount);\r\n    }\r\n\r\n    @Override\r\n    public void onSaveInstanceState(@NonNull Bundle outState) {\r\n        super.onSaveInstanceState(outState);\r\n\r\n        outState.putInt(\"BUNDLE_ID\", petId);\r\n        outState.putInt(\"BUNDLE_STEPS\", numOfSteps);\r\n    }\r\n\r\n\r\n}
+-----Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-----<+>UTF-8
+-----===================================================================
+-------- app/src/main/java/com/tdr/app/doggiesteps/activities/PetDetailsActivity.java	(revision 891f99be6e0d97f05eb94ac573b4f51a88f1f5d8)
+-----+++ app/src/main/java/com/tdr/app/doggiesteps/activities/PetDetailsActivity.java	(date 1605040663508)
+-----@@ -83,10 +83,14 @@
+-----         Intent petData = getIntent();
+-----         if (petData != null) {
+-----             dog = petData.getParcelableExtra(Constants.EXTRA_SELECTED_PET);
+-----+            petId = dog.getPetId();
+-----+            photoPath = dog.getPhotoPath();
+-----+            favoritePetName = dog.getPetName();
+-----+            numOfSteps = dog.getNumOfSteps();
+-----         }
+----- 
+-----         database = DogDatabase.getInstance(this);
+------        favorite = new Favorite(petId, photoPath, favoritePetName);
+-----+        favorite = new Favorite(petId, photoPath, favoritePetName, numOfSteps);
+----- 
+-----         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+-----         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+-----@@ -128,11 +132,11 @@
+-----             AppExecutors.getInstance().diskIO().execute(() -> database.dogDao().updateSteps(dog.getPetId(), dog.getNumOfSteps()));
+-----         });
+----- 
+------        setPetData(dog);
+-----+        setPetData();
+-----         initiateViewModel();
+-----     }
+----- 
+------    public void setPetData(Dog dog) {
+-----+    public void setPetData() {
+-----         String dogPhotoPath = dog.getPhotoPath();
+-----         Glide.with(this)
+-----                 .load(dogPhotoPath)
+-----@@ -152,7 +156,7 @@
+----- 
+-----     public void addToFavorites() {
+----- 
+------        favorite = new Favorite(petId, photoPath, favoritePetName);
+-----+        favorite = new Favorite(petId, photoPath, favoritePetName, numOfSteps);
+-----         AppExecutors.getInstance().diskIO().execute(() -> database.favoriteDao().insert(favorite));
+-----     }
+----- 
+-----Index: app/src/main/res/layout/grid_list_item.xml
+-----IDEA additional info:
+-----Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-----<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout\r\n\r\n    xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"wrap_content\"\r\n    android:layout_height=\"wrap_content\"\r\n    android:layout_marginEnd=\"16dp\"\r\n    android:layout_marginRight=\"16dp\"\r\n    android:layout_marginBottom=\"16dp\"\r\n    android:background=\"@android:color/transparent\">\r\n\r\n    <ImageView\r\n        android:id=\"@+id/favorite_pet_photo\"\r\n        android:layout_width=\"180dp\"\r\n        android:layout_height=\"180dp\"\r\n        android:scaleType=\"centerCrop\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\"\r\n        tools:src=\"@drawable/ic_action_pet_favorites\" />\r\n\r\n    <TextView\r\n        android:id=\"@+id/favorite_pet_name\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:gravity=\"center\"\r\n        android:padding=\"8dp\"\r\n        android:textColor=\"@android:color/white\"\r\n        android:textAppearance=\"@style/TextAppearance.MaterialComponents.Headline6\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toBottomOf=\"@+id/favorite_pet_photo\"\r\n        tools:text=\"Diesel\" />\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+-----Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-----<+>UTF-8
+-----===================================================================
+-------- app/src/main/res/layout/grid_list_item.xml	(revision 891f99be6e0d97f05eb94ac573b4f51a88f1f5d8)
+-----+++ app/src/main/res/layout/grid_list_item.xml	(date 1605041030137)
+-----@@ -6,6 +6,7 @@
+-----     xmlns:tools="http://schemas.android.com/tools"
+-----     android:layout_width="wrap_content"
+-----     android:layout_height="wrap_content"
+-----+    android:clickable="true"
+-----     android:layout_marginEnd="16dp"
+-----     android:layout_marginRight="16dp"
+-----     android:layout_marginBottom="16dp"
+----Index: .idea/shelf/Uncommitted_changes_before_Update_at_11_24_2020_1_02_PM__Default_Changelist_.xml
+----===================================================================
+------- .idea/shelf/Uncommitted_changes_before_Update_at_11_24_2020_1_02_PM__Default_Changelist_.xml	(revision 6ff5504bcf36a666c19293c3c0ead0cd4900cf25)
+----+++ .idea/shelf/Uncommitted_changes_before_Update_at_11_24_2020_1_02_PM__Default_Changelist_.xml	(revision 6ff5504bcf36a666c19293c3c0ead0cd4900cf25)
+----@@ -1,4 +0,0 @@
+-----<changelist name="Uncommitted_changes_before_Update_at_11_24_2020_1_02_PM_[Default_Changelist]" date="1606244607915" recycled="true" deleted="true">
+-----  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_24_2020_1_02_PM_[Default_Changelist]/shelved.patch" />
+-----  <option name="DESCRIPTION" value="Uncommitted changes before Update at 11/24/2020 1:02 PM [Default Changelist]" />
+-----</changelist>
+----\ No newline at end of file
+---Index: .idea/shelf/Uncommitted_changes_before_Update_at_12_2_2020_9_00_AM__Default_Changelist_.xml
+---===================================================================
+------ .idea/shelf/Uncommitted_changes_before_Update_at_12_2_2020_9_00_AM__Default_Changelist_.xml	(revision 384db7d45959c72a6c1a3565a865ed746c84d48b)
+---+++ .idea/shelf/Uncommitted_changes_before_Update_at_12_2_2020_9_00_AM__Default_Changelist_.xml	(revision 384db7d45959c72a6c1a3565a865ed746c84d48b)
+---@@ -1,4 +0,0 @@
+----<changelist name="Uncommitted_changes_before_Update_at_12_2_2020_9_00_AM_[Default_Changelist]" date="1606921213235" recycled="true" deleted="true">
+----  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_2_2020_9_00_AM_[Default_Changelist]/shelved.patch" />
+----  <option name="DESCRIPTION" value="Uncommitted changes before Update at 12/2/2020 9:00 AM [Default Changelist]" />
+----</changelist>
+---\ No newline at end of file
+--Index: .idea/misc.xml
+--IDEA additional info:
+--Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+--<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"NullableNotNullManager\">\r\n    <option name=\"myDefaultNullable\" value=\"org.jetbrains.annotations.Nullable\" />\r\n    <option name=\"myDefaultNotNull\" value=\"androidx.annotation.NonNull\" />\r\n    <option name=\"myNullables\">\r\n      <value>\r\n        <list size=\"14\">\r\n          <item index=\"0\" class=\"java.lang.String\" itemvalue=\"org.jetbrains.annotations.Nullable\" />\r\n          <item index=\"1\" class=\"java.lang.String\" itemvalue=\"edu.umd.cs.findbugs.annotations.Nullable\" />\r\n          <item index=\"2\" class=\"java.lang.String\" itemvalue=\"android.support.annotation.Nullable\" />\r\n          <item index=\"3\" class=\"java.lang.String\" itemvalue=\"androidx.annotation.Nullable\" />\r\n          <item index=\"4\" class=\"java.lang.String\" itemvalue=\"androidx.annotation.RecentlyNullable\" />\r\n          <item index=\"5\" class=\"java.lang.String\" itemvalue=\"com.android.annotations.Nullable\" />\r\n          <item index=\"6\" class=\"java.lang.String\" itemvalue=\"javax.annotation.Nullable\" />\r\n          <item index=\"7\" class=\"java.lang.String\" itemvalue=\"javax.annotation.CheckForNull\" />\r\n          <item index=\"8\" class=\"java.lang.String\" itemvalue=\"org.checkerframework.checker.nullness.qual.Nullable\" />\r\n          <item index=\"9\" class=\"java.lang.String\" itemvalue=\"org.checkerframework.checker.nullness.compatqual.NullableDecl\" />\r\n          <item index=\"10\" class=\"java.lang.String\" itemvalue=\"org.checkerframework.checker.nullness.compatqual.NullableType\" />\r\n          <item index=\"11\" class=\"java.lang.String\" itemvalue=\"org.eclipse.jdt.annotation.Nullable\" />\r\n          <item index=\"12\" class=\"java.lang.String\" itemvalue=\"io.reactivex.annotations.Nullable\" />\r\n          <item index=\"13\" class=\"java.lang.String\" itemvalue=\"io.reactivex.rxjava3.annotations.Nullable\" />\r\n        </list>\r\n      </value>\r\n    </option>\r\n    <option name=\"myNotNulls\">\r\n      <value>\r\n        <list size=\"13\">\r\n          <item index=\"0\" class=\"java.lang.String\" itemvalue=\"org.jetbrains.annotations.NotNull\" />\r\n          <item index=\"1\" class=\"java.lang.String\" itemvalue=\"edu.umd.cs.findbugs.annotations.NonNull\" />\r\n          <item index=\"2\" class=\"java.lang.String\" itemvalue=\"android.support.annotation.NonNull\" />\r\n          <item index=\"3\" class=\"java.lang.String\" itemvalue=\"androidx.annotation.NonNull\" />\r\n          <item index=\"4\" class=\"java.lang.String\" itemvalue=\"androidx.annotation.RecentlyNonNull\" />\r\n          <item index=\"5\" class=\"java.lang.String\" itemvalue=\"com.android.annotations.NonNull\" />\r\n          <item index=\"6\" class=\"java.lang.String\" itemvalue=\"javax.annotation.Nonnull\" />\r\n          <item index=\"7\" class=\"java.lang.String\" itemvalue=\"org.checkerframework.checker.nullness.qual.NonNull\" />\r\n          <item index=\"8\" class=\"java.lang.String\" itemvalue=\"org.checkerframework.checker.nullness.compatqual.NonNullDecl\" />\r\n          <item index=\"9\" class=\"java.lang.String\" itemvalue=\"org.checkerframework.checker.nullness.compatqual.NonNullType\" />\r\n          <item index=\"10\" class=\"java.lang.String\" itemvalue=\"org.eclipse.jdt.annotation.NonNull\" />\r\n          <item index=\"11\" class=\"java.lang.String\" itemvalue=\"io.reactivex.annotations.NonNull\" />\r\n          <item index=\"12\" class=\"java.lang.String\" itemvalue=\"io.reactivex.rxjava3.annotations.NonNull\" />\r\n        </list>\r\n      </value>\r\n    </option>\r\n  </component>\r\n  <component name=\"ProjectRootManager\" version=\"2\" languageLevel=\"JDK_X\" default=\"true\" project-jdk-name=\"15\" project-jdk-type=\"JavaSDK\">\r\n    <output url=\"file://$PROJECT_DIR$/build/classes\" />\r\n  </component>\r\n  <component name=\"ProjectType\">\r\n    <option name=\"id\" value=\"Android\" />\r\n  </component>\r\n</project>
+--Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+--<+>UTF-8
+--===================================================================
+----- .idea/misc.xml	(revision 6b9a8cfaacc0bb9139cb0e862db0fdced9194dd9)
+--+++ .idea/misc.xml	(date 1608415492825)
+--@@ -43,7 +43,7 @@
+--       </value>
+--     </option>
+--   </component>
+---  <component name="ProjectRootManager" version="2" languageLevel="JDK_X" default="true" project-jdk-name="15" project-jdk-type="JavaSDK">
+--+  <component name="ProjectRootManager" version="2" languageLevel="JDK_14" default="false" project-jdk-name="15" project-jdk-type="JavaSDK">
+--     <output url="file://$PROJECT_DIR$/build/classes" />
+--   </component>
+--   <component name="ProjectType">
+-Index: .idea/shelf/Uncommitted_changes_before_Update_at_12_28_2020_6_42_PM__Default_Changelist_.xml
+-===================================================================
+---- .idea/shelf/Uncommitted_changes_before_Update_at_12_28_2020_6_42_PM__Default_Changelist_.xml	(revision e381001a4167e15b2228099abd0854add773abd2)
+-+++ .idea/shelf/Uncommitted_changes_before_Update_at_12_28_2020_6_42_PM__Default_Changelist_.xml	(revision e381001a4167e15b2228099abd0854add773abd2)
+-@@ -1,4 +0,0 @@
+--<changelist name="Uncommitted_changes_before_Update_at_12_28_2020_6_42_PM_[Default_Changelist]" date="1609202572620" recycled="true" deleted="true">
+--  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_28_2020_6_42_PM_[Default_Changelist]/shelved.patch" />
+--  <option name="DESCRIPTION" value="Uncommitted changes before Update at 12/28/2020 6:42 PM [Default Changelist]" />
+--</changelist>
+-\ No newline at end of file
+-Index: app/build.gradle
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>apply plugin: 'com.android.application'\r\n\r\ndef keystorePropertiesFile = rootProject.file(\"keystore.properties\")\r\ndef keystoreProperties = new Properties()\r\nkeystoreProperties.load(new FileInputStream(keystorePropertiesFile))\r\n\r\nandroid {\r\n\r\n    signingConfigs {\r\n        release {\r\n            storeFile file(keystoreProperties['storeFile'])\r\n            storePassword keystoreProperties['storePassword']\r\n            keyAlias keystoreProperties['keyAlias']\r\n            keyPassword keystoreProperties['keyPassword']\r\n        }\r\n    }\r\n    compileOptions {\r\n        sourceCompatibility JavaVersion.VERSION_1_8\r\n        targetCompatibility JavaVersion.VERSION_1_8\r\n    }\r\n\r\n    compileSdkVersion 29\r\n    buildToolsVersion \"30.0.1\"\r\n\r\n    defaultConfig {\r\n        applicationId \"com.tdr.app.doggiesteps\"\r\n        minSdkVersion 16\r\n        targetSdkVersion 29\r\n        versionCode 1\r\n        versionName \"1.0\"\r\n\r\n        testInstrumentationRunner \"androidx.test.runner.AndroidJUnitRunner\"\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            minifyEnabled false\r\n            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'\r\n            signingConfig signingConfigs.release\r\n        }\r\n    }\r\n}\r\n\r\ndependencies {\r\n    implementation fileTree(dir: \"libs\", include: [\"*.jar\"])\r\n    implementation 'androidx.appcompat:appcompat:1.2.0'\r\n    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'\r\n    implementation 'com.google.android.material:material:1.2.1'\r\n\r\n    // Testing\r\n    testImplementation 'junit:junit:4.13.1'\r\n    androidTestImplementation 'androidx.test.ext:junit:1.1.2'\r\n    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'\r\n    androidTestImplementation 'androidx.test:rules:1.3.0'\r\n    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.3.0'\r\n    androidTestImplementation('androidx.test.espresso:espresso-contrib:3.3.0') {\r\n        exclude group: 'com.android.support', module: 'appcompat'\r\n        exclude group: 'com.android.support', module: 'support-v4'\r\n        exclude module: 'recyclerview-v7'\r\n    }\r\n    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.3.0'\r\n\r\n\r\n    // Room Database Dependencies\r\n    implementation \"androidx.room:room-runtime:2.2.6\"\r\n    annotationProcessor \"androidx.room:room-compiler:2.2.6\"\r\n\r\n    // ButterKnife Dependencies\r\n    implementation 'com.jakewharton:butterknife:10.2.3'\r\n    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'\r\n\r\n    // Glide Dependencies\r\n    implementation 'com.github.bumptech.glide:glide:4.11.0'\r\n    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'\r\n\r\n    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'\r\n    implementation \"androidx.lifecycle:lifecycle-viewmodel:2.2.0\"\r\n\r\n    // Google Play Services\r\n    implementation 'com.google.android.gms:play-services-fitness:20.0.0'\r\n    implementation 'com.google.android.gms:play-services-auth:19.0.0'\r\n    implementation \"com.firebase:firebase-jobdispatcher:0.8.5\"\r\n\r\n\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+---- app/build.gradle	(revision e381001a4167e15b2228099abd0854add773abd2)
+-+++ app/build.gradle	(date 1609438337367)
+-@@ -8,10 +8,10 @@
+- 
+-     signingConfigs {
+-         release {
+--            storeFile file(keystoreProperties['storeFile'])
+--            storePassword keystoreProperties['storePassword']
+--            keyAlias keystoreProperties['keyAlias']
+--            keyPassword keystoreProperties['keyPassword']
+-+//            storeFile file(keystoreProperties['storeFile'])
+-+//            storePassword keystoreProperties['storePassword']
+-+//            keyAlias keystoreProperties['keyAlias']
+-+//            keyPassword keystoreProperties['keyPassword']
+-         }
+-     }
+-     compileOptions {
+-Index: .idea/misc.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"NullableNotNullManager\">\r\n    <option name=\"myDefaultNullable\" value=\"org.jetbrains.annotations.Nullable\" />\r\n    <option name=\"myDefaultNotNull\" value=\"androidx.annotation.NonNull\" />\r\n    <option name=\"myNullables\">\r\n      <value>\r\n        <list size=\"14\">\r\n          <item index=\"0\" class=\"java.lang.String\" itemvalue=\"org.jetbrains.annotations.Nullable\" />\r\n          <item index=\"1\" class=\"java.lang.String\" itemvalue=\"edu.umd.cs.findbugs.annotations.Nullable\" />\r\n          <item index=\"2\" class=\"java.lang.String\" itemvalue=\"android.support.annotation.Nullable\" />\r\n          <item index=\"3\" class=\"java.lang.String\" itemvalue=\"androidx.annotation.Nullable\" />\r\n          <item index=\"4\" class=\"java.lang.String\" itemvalue=\"androidx.annotation.RecentlyNullable\" />\r\n          <item index=\"5\" class=\"java.lang.String\" itemvalue=\"com.android.annotations.Nullable\" />\r\n          <item index=\"6\" class=\"java.lang.String\" itemvalue=\"javax.annotation.Nullable\" />\r\n          <item index=\"7\" class=\"java.lang.String\" itemvalue=\"javax.annotation.CheckForNull\" />\r\n          <item index=\"8\" class=\"java.lang.String\" itemvalue=\"org.checkerframework.checker.nullness.qual.Nullable\" />\r\n          <item index=\"9\" class=\"java.lang.String\" itemvalue=\"org.checkerframework.checker.nullness.compatqual.NullableDecl\" />\r\n          <item index=\"10\" class=\"java.lang.String\" itemvalue=\"org.checkerframework.checker.nullness.compatqual.NullableType\" />\r\n          <item index=\"11\" class=\"java.lang.String\" itemvalue=\"org.eclipse.jdt.annotation.Nullable\" />\r\n          <item index=\"12\" class=\"java.lang.String\" itemvalue=\"io.reactivex.annotations.Nullable\" />\r\n          <item index=\"13\" class=\"java.lang.String\" itemvalue=\"io.reactivex.rxjava3.annotations.Nullable\" />\r\n        </list>\r\n      </value>\r\n    </option>\r\n    <option name=\"myNotNulls\">\r\n      <value>\r\n        <list size=\"13\">\r\n          <item index=\"0\" class=\"java.lang.String\" itemvalue=\"org.jetbrains.annotations.NotNull\" />\r\n          <item index=\"1\" class=\"java.lang.String\" itemvalue=\"edu.umd.cs.findbugs.annotations.NonNull\" />\r\n          <item index=\"2\" class=\"java.lang.String\" itemvalue=\"android.support.annotation.NonNull\" />\r\n          <item index=\"3\" class=\"java.lang.String\" itemvalue=\"androidx.annotation.NonNull\" />\r\n          <item index=\"4\" class=\"java.lang.String\" itemvalue=\"androidx.annotation.RecentlyNonNull\" />\r\n          <item index=\"5\" class=\"java.lang.String\" itemvalue=\"com.android.annotations.NonNull\" />\r\n          <item index=\"6\" class=\"java.lang.String\" itemvalue=\"javax.annotation.Nonnull\" />\r\n          <item index=\"7\" class=\"java.lang.String\" itemvalue=\"org.checkerframework.checker.nullness.qual.NonNull\" />\r\n          <item index=\"8\" class=\"java.lang.String\" itemvalue=\"org.checkerframework.checker.nullness.compatqual.NonNullDecl\" />\r\n          <item index=\"9\" class=\"java.lang.String\" itemvalue=\"org.checkerframework.checker.nullness.compatqual.NonNullType\" />\r\n          <item index=\"10\" class=\"java.lang.String\" itemvalue=\"org.eclipse.jdt.annotation.NonNull\" />\r\n          <item index=\"11\" class=\"java.lang.String\" itemvalue=\"io.reactivex.annotations.NonNull\" />\r\n          <item index=\"12\" class=\"java.lang.String\" itemvalue=\"io.reactivex.rxjava3.annotations.NonNull\" />\r\n        </list>\r\n      </value>\r\n    </option>\r\n  </component>\r\n  <component name=\"ProjectRootManager\" version=\"2\" languageLevel=\"JDK_X\" default=\"true\" project-jdk-name=\"15\" project-jdk-type=\"JavaSDK\">\r\n    <output url=\"file://$PROJECT_DIR$/build/classes\" />\r\n  </component>\r\n  <component name=\"ProjectType\">\r\n    <option name=\"id\" value=\"Android\" />\r\n  </component>\r\n</project>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+---- .idea/misc.xml	(revision e381001a4167e15b2228099abd0854add773abd2)
+-+++ .idea/misc.xml	(date 1609438337402)
+-@@ -43,7 +43,7 @@
+-       </value>
+-     </option>
+-   </component>
+--  <component name="ProjectRootManager" version="2" languageLevel="JDK_X" default="true" project-jdk-name="15" project-jdk-type="JavaSDK">
+-+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="15" project-jdk-type="JavaSDK">
+-     <output url="file://$PROJECT_DIR$/build/classes" />
+-   </component>
+-   <component name="ProjectType">
+-Index: app/src/main/java/com/tdr/app/doggiesteps/utils/DialogUtils.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+---- app/src/main/java/com/tdr/app/doggiesteps/utils/DialogUtils.java	(date 1610141026092)
+-+++ app/src/main/java/com/tdr/app/doggiesteps/utils/DialogUtils.java	(date 1610141026092)
+-@@ -0,0 +1,48 @@
+-+package com.tdr.app.doggiesteps.utils;
+-+
+-+
+-+
+-+
+-+import android.app.Dialog;
+-+import android.content.Context;
+-+import android.content.DialogInterface;
+-+
+-+import androidx.appcompat.app.AlertDialog;
+-+
+-+import com.tdr.app.doggiesteps.R;
+-+import com.tdr.app.doggiesteps.database.DogDatabase;
+-+import com.tdr.app.doggiesteps.model.Dog;
+-+
+-+public class DialogUtils {
+-+
+-+    public static void showDeleteDialog(Context context, String petName, Dog dog) {
+-+        String dialogMessage = context.getResources().getString(R.string.delete_pet_message, petName);
+-+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.Custom_Dialog);
+-+        builder.setTitle(R.string.action_delete);
+-+        builder.setMessage(dialogMessage);
+-+        builder.setIcon(R.mipmap.dsteps_launcher);
+-+
+-+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+-+            @Override
+-+            public void onClick(DialogInterface dialog, int which) {
+-+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+-+                    @Override
+-+                    public void run() {
+-+                        DogDatabase database = DogDatabase.getInstance(context.getApplicationContext());
+-+                        database.dogDao().delete(dog);
+-+                    }
+-+                });
+-+            }
+-+        });
+-+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+-+            @Override
+-+            public void onClick(DialogInterface dialog, int which) {
+-+                dialog.dismiss();
+-+            }
+-+        });
+-+
+-+        Dialog dialog = builder.create();
+-+        dialog.show();
+-+
+-+    }
+-+}
+-Index: app/src/main/res/values/styles.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><resources>\r\n    <!-- Base application theme. -->\r\n    <style name=\"AppTheme\" parent=\"Theme.MaterialComponents.Light.NoActionBar.Bridge\">\r\n        <!-- Customize your theme here. -->\r\n        <item name=\"colorPrimary\">@color/primaryColor</item>\r\n        <item name=\"colorPrimaryDark\">@color/primaryDarkColor</item>\r\n        <item name=\"colorAccent\">@color/secondaryLightColor</item>\r\n        <item name=\"titleTextColor\">@color/color_white</item>\r\n\r\n    </style>\r\n\r\n    <style name=\"AppTheme.BottomAppBar\" parent=\"Widget.MaterialComponents.BottomAppBar.PrimarySurface\">\r\n        <item name=\"contentInsetStart\">0dp</item>\r\n        <item name=\"contentInsetStartWithNavigation\">0dp</item>\r\n    </style>\r\n\r\n    <style name=\"AppTheme.FloatingActionButton\" parent=\"Widget.MaterialComponents.FloatingActionButton\">\r\n        <item name=\"backgroundTint\">@color/secondaryLightColor</item>\r\n    </style>\r\n\r\n    <style name=\"AppTheme.TabLayout\" parent=\"Widget.MaterialComponents.TabLayout.Colored\">\r\n        <item name=\"tabSelectedTextColor\">@color/secondaryLightColor</item>\r\n        <item name=\"tabIndicatorColor\">@color/secondaryLightColor</item>\r\n        <item name=\"tabRippleColor\">@color/secondaryColor</item>\r\n    </style>\r\n\r\n</resources>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+---- app/src/main/res/values/styles.xml	(revision e381001a4167e15b2228099abd0854add773abd2)
+-+++ app/src/main/res/values/styles.xml	(date 1610141026110)
+-@@ -24,4 +24,17 @@
+-         <item name="tabRippleColor">@color/secondaryColor</item>
+-     </style>
+- 
+-+    <style name="Custom_Dialog" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+-+        <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+-+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+-+    </style>
+-+
+-+    <style name="NegativeButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+-+        <item name="android:textColor">@android:color/black</item>
+-+    </style>
+-+
+-+    <style name="PositiveButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+-+        <item name="android:textColor">@color/primaryDarkColor</item>
+-+    </style>
+-+
+- </resources>
+-\ No newline at end of file
+-Index: .idea/compiler.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"CompilerConfiguration\">\r\n    <bytecodeTargetLevel target=\"15\" />\r\n  </component>\r\n</project>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+---- .idea/compiler.xml	(revision e381001a4167e15b2228099abd0854add773abd2)
+-+++ .idea/compiler.xml	(date 1609438337599)
+-@@ -1,6 +1,6 @@
+- <?xml version="1.0" encoding="UTF-8"?>
+- <project version="4">
+-   <component name="CompilerConfiguration">
+--    <bytecodeTargetLevel target="15" />
+-+    <bytecodeTargetLevel target="1.8" />
+-   </component>
+- </project>
+-\ No newline at end of file
+-Index: app/src/main/res/values/strings.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><resources>\r\n    <string name=\"app_name\">Doggie Steps</string>\r\n    <string name=\"my_doggies_toolbar_title\">My Doggies</string>\r\n    <string name=\"favorites_toolbar_title\">Favorites</string>\r\n    <string name=\"current_step_count_title\">Current Daily Step Count</string>\r\n    <string name=\"action_delete\">Delete Pet</string>\r\n    <string name=\"enter_new_dog\">Enter New Pet</string>\r\n    <string name=\"pet_name_hint\">Pet Name</string>\r\n    <string name=\"pet_breed_hint\">Breed</string>\r\n    <string name=\"pet_age_hint\">Age</string>\r\n    <string name=\"pet_bio_hint\">Bio</string>\r\n    <string name=\"save_button_text\">Save</string>\r\n    <string name=\"take_a_walk_button_text\">Walk</string>\r\n    <string name=\"add_an_image_button_text\">Add an Image</string>\r\n    <string name=\"stop_button_text\">Stop</string>\r\n    <string name=\"steps_label_text\">Steps: </string>\r\n    <string name=\"main_notification_channel_name\">main_notification</string>\r\n    <string name=\"details_image_content_description\">Image of the pet %1$s</string>\r\n    <string name=\"pet_added_snackbar_message\">\" has been added to the list.\"</string>\r\n    <string name=\"pet_updated_snackbar_message\">\" has been updated</string>\r\n    <string name=\"all_time_total_label_text\">All-Time Total: </string>\r\n    <string name=\"added_to_widgets_message\">\" has been added to widgets\"</string>\r\n    <string name=\"sensor_client_success\">SensorClient Retrieved</string>\r\n    <string name=\"sensor_client_error\">SensorClient not created successfully</string>\r\n    <string name=\"unregistered_listener_message\">Listener was unregistered successfully</string>\r\n    <string name=\"empty_name_message\">Must have Name entered</string>\r\n    <string name=\"empty_breed_message\">Unknown Breed</string>\r\n    <string name=\"empty_age_message\">Age Unknown</string>\r\n    <string name=\"empty_bio_message\">No bio listed.</string>\r\n    <string name=\"active_notification_channel_name\">active_notification</string>\r\n    <string name=\"active_notification_big_text\">Out on a walk with %1$s!</string>\r\n    <string name=\"already_walking_toast_message\">Sorry, Already walking with %1$s!</string>\r\n    <string name=\"finished_toast_message\">What a great walk with %1$s!</string>\r\n    <string name=\"favorites_total_steps_toast_message\">Total Steps: %1$s</string>\r\n    <string name=\"removed_from_favorites_message\">%1$s removed from Favorites</string>\r\n    <string name=\"update_button_text\">Update</string>\r\n    <string name=\"update_title_text\">Update Pet</string>\r\n    <string name=\"edit_error_message\">Please stop activity before editing Pet</string>\r\n    <string name=\"content_description_favorites_icon\">Favorites Icon</string>\r\n    <string name=\"content_description_empty_view\">empty_view</string>\r\n    <string name=\"empty_view_text\">Looks empty in here…Add a Pet!</string>\r\n    <string name=\"content_description_empty_list_image\">Empty List Image</string>\r\n    <string name=\"content_description_favorite_photo\">Photo of %1s</string>\r\n    <string name=\"content_description_more_options\">More Options</string>\r\n    <string name=\"content_description_save_button\">Save Button</string>\r\n    <string name=\"content_description_close_window\">Close Window</string>\r\n    <string name=\"content_description_add_new_pet_button\">Add new pet button</string>\r\n    <string name=\"content_description_edit_pet\">Edit pet button</string>\r\n    <string name=\"content_description_add_to_widgets\">Add to widgets</string>\r\n    <string name=\"content_description_favorite_button\">Add to favorites button</string>\r\n    <string name=\"content_description_walk_button\">Walk Button</string>\r\n    <string name=\"content_description_stop_button\">Stop button</string>\r\n    <string name=\"content_description_widget_pet_photo\">Widget pet photo</string>\r\n    <string name=\"camera_permission_denied_message\">Unable to perform image capture without permission</string>\r\n</resources>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+---- app/src/main/res/values/strings.xml	(revision e381001a4167e15b2228099abd0854add773abd2)
+-+++ app/src/main/res/values/strings.xml	(date 1610140246290)
+-@@ -36,11 +36,13 @@
+-     <string name="update_button_text">Update</string>
+-     <string name="update_title_text">Update Pet</string>
+-     <string name="edit_error_message">Please stop activity before editing Pet</string>
+-+    <string name="empty_view_text">Looks empty in here…Add a Pet!</string>
+-+
+-+    <!-- Content Description Strings -->
+-     <string name="content_description_favorites_icon">Favorites Icon</string>
+-     <string name="content_description_empty_view">empty_view</string>
+--    <string name="empty_view_text">Looks empty in here…Add a Pet!</string>
+-     <string name="content_description_empty_list_image">Empty List Image</string>
+--    <string name="content_description_favorite_photo">Photo of %1s</string>
+-+    <string name="content_description_favorite_photo">Photo of %1$s</string>
+-     <string name="content_description_more_options">More Options</string>
+-     <string name="content_description_save_button">Save Button</string>
+-     <string name="content_description_close_window">Close Window</string>
+-@@ -51,5 +53,7 @@
+-     <string name="content_description_walk_button">Walk Button</string>
+-     <string name="content_description_stop_button">Stop button</string>
+-     <string name="content_description_widget_pet_photo">Widget pet photo</string>
+-+
+-     <string name="camera_permission_denied_message">Unable to perform image capture without permission</string>
+-+    <string name="delete_pet_message">Are you sure you want to delete %1$s?</string>
+- </resources>
+-\ No newline at end of file
+-Index: app/src/main/java/com/tdr/app/doggiesteps/adapters/DogListAdapter.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.tdr.app.doggiesteps.adapters;\r\n\r\nimport android.content.Context;\r\nimport android.util.Log;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.ImageView;\r\nimport android.widget.PopupMenu;\r\nimport android.widget.TextView;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport com.bumptech.glide.Glide;\r\nimport com.tdr.app.doggiesteps.R;\r\nimport com.tdr.app.doggiesteps.database.DogDatabase;\r\nimport com.tdr.app.doggiesteps.model.Dog;\r\nimport com.tdr.app.doggiesteps.utils.AppExecutors;\r\n\r\nimport java.util.List;\r\n\r\n\r\npublic class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.DogViewHolder> {\r\n\r\n    private final LayoutInflater inflater;\r\n    private List<Dog> dogList;\r\n    private final Context context;\r\n    private final DogListAdapterClickHandler mClickHandler;\r\n\r\n    public interface DogListAdapterClickHandler {\r\n        void onClick(Dog dogData);\r\n    }\r\n\r\n    public DogListAdapter(Context context, DogListAdapterClickHandler handler) {\r\n        inflater = LayoutInflater.from(context);\r\n        this.context = context;\r\n        mClickHandler = handler;\r\n    }\r\n\r\n    @NonNull\r\n    @Override\r\n    public DogViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {\r\n\r\n        View view = inflater.inflate(R.layout.pet_list_item, parent, false);\r\n\r\n        return new DogViewHolder(view);\r\n    }\r\n\r\n    @Override\r\n    public void onBindViewHolder(@NonNull DogViewHolder holder, int position) {\r\n\r\n        Dog currentDog = dogList.get(position);\r\n        holder.dogNameView.setText(currentDog.getPetName());\r\n        holder.breedView.setText(currentDog.getBreed());\r\n        holder.petPhotoImageView.setContentDescription(context.getString(\r\n                R.string.content_description_favorite_photo, currentDog.getPetName()));\r\n        String photoPath = currentDog.getPhotoPath();\r\n        Glide.with(context)\r\n                .load(photoPath)\r\n                .error(R.drawable.ic_action_pet_favorites)\r\n                .fallback(R.drawable.ic_action_pet_favorites)\r\n                .into(holder.petPhotoImageView);\r\n        holder.options.setOnClickListener(view -> {\r\n\r\n            //creating a popup menu\r\n            PopupMenu popup = new PopupMenu(context, holder.options);\r\n            //inflating menu from xml resource\r\n            popup.inflate(R.menu.menu_list_item);\r\n            //adding click listener\r\n            popup.setOnMenuItemClickListener(item -> {\r\n                if (item.getItemId() == R.id.delete_list_item) {\r\n                    AppExecutors.getInstance().diskIO().execute(() -> {\r\n                        DogDatabase database = DogDatabase.getInstance(context.getApplicationContext());\r\n                        database.dogDao().delete(currentDog);\r\n                        \r\n                    });\r\n\r\n                }\r\n                return false;\r\n            });\r\n            //displaying the popup\r\n            popup.show();\r\n        });\r\n    }\r\n\r\n    public void setDogList(List<Dog> dogs) {\r\n        dogList = dogs;\r\n        notifyDataSetChanged();\r\n\r\n        Log.d(\"Total Items \", String.valueOf(dogList.size()));\r\n    }\r\n\r\n    @Override\r\n    public int getItemCount() {\r\n        if (dogList != null) {\r\n            return dogList.size();\r\n        } else {\r\n            return 0;\r\n        }\r\n    }\r\n\r\n    public class DogViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {\r\n\r\n        private final TextView dogNameView;\r\n        private final TextView breedView;\r\n        private final ImageView options;\r\n        private final ImageView petPhotoImageView;\r\n\r\n        private DogViewHolder(View itemView) {\r\n            super(itemView);\r\n            dogNameView = itemView.findViewById(R.id.dog_name_text_view);\r\n            breedView = itemView.findViewById(R.id.dog_breed_text_view);\r\n            options = itemView.findViewById(R.id.list_item_options);\r\n            petPhotoImageView = itemView.findViewById(R.id.list_pet_image);\r\n            itemView.setOnClickListener(this);\r\n        }\r\n\r\n        @Override\r\n        public void onClick(View v) {\r\n            int position = getAdapterPosition();\r\n            Dog dog = dogList.get(position);\r\n            mClickHandler.onClick(dog);\r\n        }\r\n    }\r\n}\r\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+---- app/src/main/java/com/tdr/app/doggiesteps/adapters/DogListAdapter.java	(revision e381001a4167e15b2228099abd0854add773abd2)
+-+++ app/src/main/java/com/tdr/app/doggiesteps/adapters/DogListAdapter.java	(date 1610140688650)
+-@@ -1,5 +1,6 @@
+- package com.tdr.app.doggiesteps.adapters;
+- 
+-+import android.app.Dialog;
+- import android.content.Context;
+- import android.util.Log;
+- import android.view.LayoutInflater;
+-@@ -8,8 +9,10 @@
+- import android.widget.ImageView;
+- import android.widget.PopupMenu;
+- import android.widget.TextView;
+-+import android.widget.Toast;
+- 
+- import androidx.annotation.NonNull;
+-+import androidx.appcompat.app.AlertDialog;
+- import androidx.recyclerview.widget.RecyclerView;
+- 
+- import com.bumptech.glide.Glide;
+-@@ -17,6 +20,7 @@
+- import com.tdr.app.doggiesteps.database.DogDatabase;
+- import com.tdr.app.doggiesteps.model.Dog;
+- import com.tdr.app.doggiesteps.utils.AppExecutors;
+-+import com.tdr.app.doggiesteps.utils.DialogUtils;
+- 
+- import java.util.List;
+- 
+-@@ -70,12 +74,7 @@
+-             //adding click listener
+-             popup.setOnMenuItemClickListener(item -> {
+-                 if (item.getItemId() == R.id.delete_list_item) {
+--                    AppExecutors.getInstance().diskIO().execute(() -> {
+--                        DogDatabase database = DogDatabase.getInstance(context.getApplicationContext());
+--                        database.dogDao().delete(currentDog);
+--                        
+--                    });
+--
+-+                    DialogUtils.showDeleteDialog(context, currentDog.getPetName(), currentDog);
+-                 }
+-                 return false;
+-             });
+-diff --git .idea/shelf/Uncommitted_changes_before_Update_at_12_29_2020_10_30_PM__Default_Changelist_.xml .idea/shelf/Uncommitted_changes_before_Update_at_12_29_2020_10_30_PM__Default_Changelist_.xml
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_1_8_2021_3_29_PM__Default_Changelist_.xml
+===================================================================
+--- .idea/shelf/Uncommitted_changes_before_Update_at_1_8_2021_3_29_PM__Default_Changelist_.xml	(revision 90d01922411b899c8a1a259123d1d691b3267551)
++++ .idea/shelf/Uncommitted_changes_before_Update_at_1_8_2021_3_29_PM__Default_Changelist_.xml	(revision 90d01922411b899c8a1a259123d1d691b3267551)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_1_8_2021_3_29_PM_[Default_Changelist]" date="1610141407806" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_1_8_2021_3_29_PM_[Default_Changelist]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 1/8/2021 3:29 PM [Default Changelist]" />
+-</changelist>
+\ No newline at end of file
