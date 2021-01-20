@@ -20,7 +20,7 @@ public class DialogUtils {
         AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.Custom_Dialog);
         builder.setTitle(R.string.action_delete);
         builder.setMessage(dialogMessage);
-        builder.setIcon(R.mipmap.dsteps_launcher);
+        builder.setIcon(R.mipmap.ds_icon_round);
 
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
