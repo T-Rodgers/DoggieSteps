@@ -73,6 +73,8 @@ public class PetEntryActivity extends AppCompatActivity {
     Button addPhotoButton;
     @BindView(R.id.entry_toolbar)
     MaterialToolbar materialToolbar;
+    @BindView(R.id.edit_image_icon)
+    ImageView editPhoto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +91,7 @@ public class PetEntryActivity extends AppCompatActivity {
             dogToBeUpdated = petData.getParcelableExtra(EXTRA_PET_DETAILS);
             if (dogToBeUpdated != null) {
                 setEntryDetails(dogToBeUpdated);
+                editPhoto.setVisibility(View.VISIBLE);
             }
         }
 
@@ -104,6 +107,7 @@ public class PetEntryActivity extends AppCompatActivity {
                     .into(petImageView);
         }
 
+        editPhoto.setOnClickListener(v -> dispatchTakePictureIntent());
         saveButton.setOnClickListener(v -> savePet());
         addPhotoButton.setOnClickListener(v -> {
             if (ContextCompat.checkSelfPermission(PetEntryActivity.this, Manifest.permission.CAMERA)
@@ -168,7 +172,7 @@ public class PetEntryActivity extends AppCompatActivity {
             if (bio.equals("")) {
                 bio = getString(R.string.empty_bio_message);
             }
-            String updatedPhotoPath = dogToBeUpdated.getPhotoPath();
+            String updatedPhotoPath = currentPhotoPath;
             int id = dogToBeUpdated.getPetId();
             int numOfSteps = dogToBeUpdated.getNumOfSteps();
             Dog updatedDog = new Dog(id, dogName, breed, age, bio, updatedPhotoPath, numOfSteps);
@@ -223,6 +227,7 @@ public class PetEntryActivity extends AppCompatActivity {
 
             emptyViewBackground.setVisibility(View.GONE);
             addPhotoButton.setVisibility(View.GONE);
+            editPhoto.setVisibility(View.VISIBLE);
             petImageView.setVisibility(View.VISIBLE);
             Glide.with(this)
                     .load(currentPhotoPath)
