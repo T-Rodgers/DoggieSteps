@@ -54,8 +54,8 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
         holder.petNameTextView.setText(String.valueOf(currentFavorite.getFavoritePetName()));
         Glide.with(context)
                 .load(favoriteImagePath)
-                .circleCrop()
                 .error(R.drawable.dog_photo)
+                .circleCrop()
                 .into(holder.favoritePetImage);
     }
 

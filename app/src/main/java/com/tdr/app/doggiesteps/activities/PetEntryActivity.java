@@ -1,14 +1,11 @@
 package com.tdr.app.doggiesteps.activities;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,8 +14,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
@@ -26,7 +21,6 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.snackbar.Snackbar;
 import com.tdr.app.doggiesteps.R;
 import com.tdr.app.doggiesteps.model.Dog;
-import com.tdr.app.doggiesteps.utils.CustomToastUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -97,7 +91,6 @@ public class PetEntryActivity extends AppCompatActivity {
             }
         }
 
-
         if (savedInstanceState != null) {
             petImageView.setVisibility(View.VISIBLE);
             currentPhotoPath = savedInstanceState.getString(PREFERENCES_PHOTO_PATH);
@@ -109,25 +102,9 @@ public class PetEntryActivity extends AppCompatActivity {
                     .into(petImageView);
         }
 
-        editPhoto.setOnClickListener(v -> {
-            if (ContextCompat.checkSelfPermission(PetEntryActivity.this, Manifest.permission.CAMERA)
-                    == PackageManager.PERMISSION_DENIED) {
-                ActivityCompat.requestPermissions(PetEntryActivity.this, new String[]{Manifest.permission.CAMERA},
-                        REQUEST_IMAGE_CAPTURE);
-            } else {
-                dispatchTakePictureIntent();
-            }
-        });
+        editPhoto.setOnClickListener(v -> dispatchTakePictureIntent());
         saveButton.setOnClickListener(v -> savePet());
-        addPhotoButton.setOnClickListener(v -> {
-            if (ContextCompat.checkSelfPermission(PetEntryActivity.this, Manifest.permission.CAMERA)
-                    == PackageManager.PERMISSION_DENIED) {
-                ActivityCompat.requestPermissions(PetEntryActivity.this, new String[]{Manifest.permission.CAMERA},
-                        REQUEST_IMAGE_CAPTURE);
-            } else {
-                dispatchTakePictureIntent();
-            }
-        });
+        addPhotoButton.setOnClickListener(v -> dispatchTakePictureIntent());
     }
 
     public void savePet() {
@@ -288,18 +265,5 @@ public class PetEntryActivity extends AppCompatActivity {
         ageEntry.setText(dog.getAge());
         bioEntry.setText(dog.getPetBio());
         saveButton.setText(R.string.update_button_text);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_IMAGE_CAPTURE) {
-            if (grantResults.length > 0 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                dispatchTakePictureIntent();
-            } else {
-                CustomToastUtils.buildCustomToast(this, getString(R.string.camera_permission_denied_message));
-            }
-        }
     }
 }

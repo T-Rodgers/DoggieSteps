@@ -188,7 +188,6 @@ public class MainActivity extends AppCompatActivity {
                 if (grantResults.length > 0 &&
                         grantResults[0] == PackageManager.PERMISSION_DENIED) {
                     CustomToastUtils.buildCustomToast(this, "Unable to track steps without permission");
-                    finish();
                 }
             }
         }

@@ -1,0 +1,14 @@
+<changelist name="Uncommitted_changes_before_Update_at_1_20_2021_8_56_PM_[Default_Changelist]" date="1611197806085" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_1_20_2021_8_56_PM_[Default_Changelist]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Update at 1/20/2021 8:56 PM [Default Changelist]" />
+  <binary>
+    <option name="BEFORE_PATH" value="app/src/main/ic_launcher-playstore.png" />
+    <option name="AFTER_PATH" />
+    <option name="SHELVED_PATH" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="app/src/main/dsteps_launcher-playstore.png" />
+    <option name="AFTER_PATH" />
+    <option name="SHELVED_PATH" />
+  </binary>
+</changelist>

@@ -1,11 +1,11 @@
 package com.tdr.app.doggiesteps.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +26,11 @@ import butterknife.ButterKnife;
 public class FavoritesListFragment extends Fragment implements FavoritesAdapter.FavoritesClickHandler {
     @BindView(R.id.favorite_list_recycler_view)
     RecyclerView favoritesRecyclerView;
+    @BindView(R.id.empty_favorite_icon)
+    ImageView emptyViewIcon;
+    @BindView(R.id.empty_favorite_textview)
+    TextView emptyViewTextView;
+
     private FavoritesAdapter adapter;
 
     @Nullable
@@ -36,7 +41,7 @@ public class FavoritesListFragment extends Fragment implements FavoritesAdapter.
         ButterKnife.bind(this, rootView);
 
         adapter = new FavoritesAdapter(getContext(), this);
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), calculateNoOfColumns(getContext()));
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
         favoritesRecyclerView.setLayoutManager(layoutManager);
         favoritesRecyclerView.setAdapter(adapter);
 
@@ -45,11 +50,18 @@ public class FavoritesListFragment extends Fragment implements FavoritesAdapter.
         return rootView;
     }
 
-
     private void initiateViewModel() {
         MainViewModel viewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        viewModel.getFavorites().observe(getViewLifecycleOwner(), favorites -> adapter.setFavoriteList(favorites));
-
+        viewModel.getFavorites().observe(getViewLifecycleOwner(), favorites -> {
+            if (favorites.size() != 0) {
+                emptyViewIcon.setVisibility(View.GONE);
+                emptyViewTextView.setVisibility(View.GONE);
+            } else {
+                emptyViewIcon.setVisibility(View.VISIBLE);
+                emptyViewTextView.setVisibility(View.VISIBLE);
+            }
+            adapter.setFavoriteList(favorites);
+        });
     }
 
     @Override
@@ -57,13 +69,6 @@ public class FavoritesListFragment extends Fragment implements FavoritesAdapter.
         CustomToastUtils.buildCustomToast(getContext(),
                 getString(R.string.favorites_total_steps_toast_message,
                         String.valueOf(favoriteData.getTotalSteps())));
-    }
-
-    public static int calculateNoOfColumns(Context context) {
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-        int scalingFactor = 150;
-        return (int) (dpWidth / scalingFactor);
     }
 }
 
