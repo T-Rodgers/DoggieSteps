@@ -25,17 +25,16 @@
                     android:id="@+id/details_favorite_button"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginEnd="16dp"
                     android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
-                    android:gravity="center"
+                    android:layout_toStartOf="@id/edit_pet_icon"
                     android:background="@android:color/transparent"
                     android:button="@drawable/favorite_button_24dp"
                     android:contentDescription="@string/content_description_favorite_button"
+                    android:gravity="center"
                     android:textOff=""
                     android:textOn=""
-                    android:layout_toLeftOf="@id/edit_pet_icon"
                     app:buttonTint="@color/primaryDarkColor"
                     tools:checked="true" />
 
@@ -45,7 +44,6 @@
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
                     android:layout_toStartOf="@id/add_widget_icon"
-                    android:layout_toLeftOf="@id/add_widget_icon"
                     android:background="?selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:contentDescription="@string/content_description_edit_pet"
@@ -58,7 +56,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:background="?selectableItemBackgroundBorderless"
                     android:clickable="true"
@@ -78,6 +75,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/primaryLightColor"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
         <ImageView
@@ -94,69 +92,70 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
-        <RelativeLayout
-            android:id="@+id/title_container"
-            android:layout_width="0dp"
+
+        <TextView
+            android:id="@+id/details_pet_name"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/primaryLightColor"
-            android:padding="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            android:textColor="@android:color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/guideline"
+            tools:text="Diesel" />
+
+        <TextView
+            android:id="@+id/details_pet_breed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/details_pet_name"
+            android:layout_marginStart="16dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:textColor="@android:color/white"
+            android:textStyle="italic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline">
+            app:layout_constraintTop_toBottomOf="@+id/details_pet_name"
+            tools:text="Miniature-Schnauzer" />
 
-
-            <TextView
-                android:id="@+id/details_pet_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                android:textColor="@android:color/white"
-                tools:text="Diesel" />
-
-            <TextView
-                android:id="@+id/details_pet_breed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/details_pet_name"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                android:textColor="@android:color/white"
-                android:textStyle="italic"
-                tools:text="Miniature-Schnauzer" />
-
-            <TextView
-                android:id="@+id/details_pet_age"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_toEndOf="@id/details_pet_name"
-                android:layout_toRightOf="@id/details_pet_name"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                android:textColor="@android:color/white"
-                tools:text="12" />
-
-
-        </RelativeLayout>
+        <TextView
+            android:id="@+id/details_pet_age"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/details_pet_breed"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/guideline"
+            tools:text="12" />
 
 
         <TextView
             android:id="@+id/details_pet_bio"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/rounded_border"
+            android:elevation="10dp"
             android:isScrollContainer="true"
+            android:padding="8dp"
+
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-            app:layout_constraintBottom_toTopOf="@+id/steps_label_text_view"
+            app:layout_constraintBottom_toTopOf="@+id/materialCardView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title_container"
+            app:layout_constraintTop_toBottomOf="@+id/details_pet_breed"
             tools:text="Miniature-Schnauzer" />
 
         <com.google.android.material.button.MaterialButton
@@ -183,46 +182,87 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline2" />
 
-
-        <TextView
-            android:id="@+id/steps_label_text_view"
-            android:layout_width="wrap_content"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardView"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="4dp"
             android:layout_marginBottom="8dp"
-            android:text="@string/steps_label_text"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-            app:layout_constraintBottom_toTopOf="@+id/steps_text_view"
-            app:layout_constraintEnd_toEndOf="@+id/steps_text_view"
-            app:layout_constraintStart_toStartOf="@+id/steps_text_view" />
-
-        <TextView
-            android:id="@+id/steps_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            app:cardCornerRadius="6dp"
+            app:cardElevation="10dp"
             app:layout_constraintBottom_toTopOf="@+id/details_walk_button"
-            app:layout_constraintEnd_toEndOf="@+id/details_walk_button"
-            app:layout_constraintStart_toStartOf="@+id/details_walk_button" />
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:strokeColor="@color/primaryColor"
+            app:strokeWidth="4dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/all_time_total_label_text"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-            app:layout_constraintBaseline_toBaselineOf="@+id/steps_label_text_view"
-            app:layout_constraintEnd_toEndOf="@+id/details_stop_button"
-            app:layout_constraintStart_toStartOf="@+id/details_stop_button" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="8dp">
 
-        <TextView
-            android:id="@+id/total_steps_text_view"
-            android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/steps_label_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/steps_label_text"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
+                <TextView
+                    android:id="@+id/steps_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="8dp"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                    tools:text="0" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            app:cardCornerRadius="6dp"
+            app:cardElevation="10dp"
             app:layout_constraintBottom_toTopOf="@+id/details_stop_button"
-            app:layout_constraintEnd_toEndOf="@+id/details_stop_button"
-            app:layout_constraintStart_toStartOf="@+id/details_stop_button" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline2"
+            app:strokeColor="@color/primaryColor"
+            app:strokeWidth="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/all_time_total_label_text"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
+                <TextView
+                    android:id="@+id/total_steps_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="8dp"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                    tools:text="0" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline2"
@@ -237,7 +277,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent=".40" />
+            app:layout_constraintGuide_percent=".50" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
