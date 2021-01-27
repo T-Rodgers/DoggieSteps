@@ -1,36 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primaryDarkColor">
 
     <ImageView
-        android:visibility="invisible"
-        android:contentDescription="@string/content_description_empty_favorite_icon"
         android:id="@+id/empty_favorite_icon"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_centerHorizontal="true"
-        android:layout_above="@id/empty_favorite_textview"
-        android:src="@drawable/favorite_button_24dp" />
+        android:contentDescription="@string/content_description_empty_favorite_icon"
+        android:src="@drawable/favorite_button_24dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias=".35" />
 
     <TextView
         android:id="@+id/empty_favorite_textview"
-        android:visibility="invisible"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:text="@string/empty_favorites_message"
-        android:layout_centerInParent="true"
-        android:textColor="@color/color_white" />
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+        android:textColor="@color/color_white"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/empty_favorite_icon" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:padding="8dp"
         android:id="@+id/favorite_list_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/grid_list_item" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

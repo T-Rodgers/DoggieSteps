@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -58,8 +59,11 @@ public class MainActivity extends AppCompatActivity {
     TabLayout tabLayout;
     @BindView(R.id.main_toolbar)
     Toolbar toolbar;
+    @BindView(R.id.main_title_view)
+    TextView titleTextView;
 
     private DogDatabase dogDatabase;
+
     private GoogleSignInAccount googleSignInAccount;
     private GoogleSignInOptionsExtension fitnessOptions;
 
@@ -69,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        setSupportActionBar(toolbar);
+        titleTextView.setText(R.string.my_doggies_toolbar_title);
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACTIVITY_RECOGNITION)
@@ -107,11 +111,11 @@ public class MainActivity extends AppCompatActivity {
                 viewPager.setCurrentItem(position);
                 switch (position) {
                     case 0:
-                        toolbar.setTitle(R.string.my_doggies_toolbar_title);
+                        titleTextView.setText(R.string.my_doggies_toolbar_title);
 
                         break;
                     case 1:
-                        toolbar.setTitle(R.string.favorites_toolbar_title);
+                        titleTextView.setText(R.string.favorites_toolbar_title);
                         break;
                 }
             }

@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -124,6 +125,7 @@ public class PetDetailsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
+        detailsPetBio.setMovementMethod(new ScrollingMovementMethod());
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         dogDatabase = DogDatabase.getInstance(this);

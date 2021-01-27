@@ -21,6 +21,16 @@
                 android:layout_gravity="bottom"
                 app:layout_collapseMode="pin"
                 app:layout_scrollFlags="noScroll">
+
+                <TextView
+                    android:id="@+id/main_title_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/galindo_regular_400"
+                    android:gravity="center_vertical"
+                    android:textColor="@android:color/white"
+                    android:textSize="36sp"
+                    tools:text="My Pets" />
             </com.google.android.material.appbar.MaterialToolbar>
 
         </com.google.android.material.appbar.AppBarLayout>

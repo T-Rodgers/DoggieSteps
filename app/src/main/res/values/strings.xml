@@ -13,12 +13,12 @@
     <string name="take_a_walk_button_text">Walk</string>
     <string name="add_an_image_button_text">Add an Image</string>
     <string name="stop_button_text">Stop</string>
-    <string name="steps_label_text">Steps: </string>
+    <string name="steps_label_text">Steps</string>
     <string name="main_notification_channel_name">main_notification</string>
     <string name="details_image_content_description">Image of the pet %1$s</string>
     <string name="pet_added_snackbar_message">" has been added to the list."</string>
     <string name="pet_updated_snackbar_message">" has been updated</string>
-    <string name="all_time_total_label_text">All-Time Total: </string>
+    <string name="all_time_total_label_text">All-Time Total</string>
     <string name="added_to_widgets_message">" has been added to widgets"</string>
     <string name="sensor_client_success">SensorClient Retrieved</string>
     <string name="sensor_client_error">SensorClient not created successfully</string>
