@@ -54,7 +54,6 @@
     <string name="content_description_stop_button">Stop button</string>
     <string name="content_description_widget_pet_photo">Widget pet photo</string>
 
-    <string name="camera_permission_denied_message">Unable to perform image capture without permission</string>
     <string name="delete_pet_message">Are you sure you want to delete %1$s?</string>
     <string name="content_description_edit_photo">Edit Photo Button</string>
     <string name="content_description_empty_favorite_icon">Empty Favorite Icon</string>

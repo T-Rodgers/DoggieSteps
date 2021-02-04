@@ -11,53 +11,56 @@
         android:layout_height="?actionBarSize"
         android:layout_marginBottom="8dp"
         android:background="@color/primaryDarkColor"
-        app:elevation="16dp"
+        android:elevation="16dp"
         app:liftOnScroll="true">
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/main_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                android:layout_gravity="bottom"
-                app:layout_collapseMode="pin"
-                app:layout_scrollFlags="noScroll">
-
-                <TextView
-                    android:id="@+id/main_title_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:fontFamily="@font/galindo_regular_400"
-                    android:gravity="center_vertical"
-                    android:textColor="@android:color/white"
-                    android:textSize="36sp"
-                    tools:text="My Pets" />
-            </com.google.android.material.appbar.MaterialToolbar>
-
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/view_pager"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/main_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+            android:layout_gravity="bottom"
+            app:layout_collapseMode="pin"
+            app:layout_scrollFlags="noScroll">
+
+            <TextView
+                android:id="@+id/main_title_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/galindo_regular_400"
+                android:gravity="center_vertical"
+                android:textColor="@android:color/white"
+                android:textSize="36sp"
+                tools:text="My Pets" />
+
+        </com.google.android.material.appbar.MaterialToolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <View
         android:id="@+id/main_snackbar_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottom_bar"
-        app:hideOnScroll="true"
         style="@style/AppTheme.BottomAppBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:fabAlignmentMode="center"
+        android:backgroundTint="@color/primaryColor"
         app:elevation="8dp"
+        app:fabAlignmentMode="center"
         app:fabCradleMargin="8dp"
         app:fabCradleRoundedCornerRadius="4dp"
-        app:fabCradleVerticalOffset="16dp">
+        app:fabCradleVerticalOffset="16dp"
+        app:hideOnScroll="true">
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
@@ -85,13 +88,13 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
-        android:contentDescription="@string/content_description_add_new_pet_button"
         style="@style/AppTheme.FloatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/content_description_add_new_pet_button"
         android:src="@drawable/ic_action_add"
-        app:pressedTranslationZ="16dp"
         app:layout_anchor="@+id/bottom_bar"
-        app:layout_anchorGravity="top|center" />
+        app:layout_anchorGravity="top|center"
+        app:pressedTranslationZ="16dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
