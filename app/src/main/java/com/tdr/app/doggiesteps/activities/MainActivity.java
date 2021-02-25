@@ -73,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        setSupportActionBar(toolbar);
+
         titleTextView.setText(R.string.my_doggies_toolbar_title);
 
         if (ContextCompat.checkSelfPermission(this,
@@ -178,8 +180,9 @@ public class MainActivity extends AppCompatActivity {
                             REQUEST_OAUTH_REQUEST_CODE,
                             googleSignInAccount,
                             fitnessOptions);
+                } else {
+                    FitnessUtils.readDailySteps(this, googleSignInAccount);
                 }
-                FitnessUtils.readDailySteps(this, googleSignInAccount);
             }
             return super.onOptionsItemSelected(item);
         }
